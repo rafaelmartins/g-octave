@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__all__ = ['Description', 're_depends', 're_atom']
+
 import re
+
+re_depends = re.compile(r'([a-zA-Z]+) *(\(([><]?=?) *([0-9.]+)\))?')
+re_atom = re.compile(r'^([><]?=?)([a-zA-Z\-/]+)(-(.*))?$')
+
 
 class Description(object):
     
@@ -35,8 +41,7 @@ class Description(object):
                 self.__desc[i] = self.__depends(self.__desc[i])
             if i == 'systemrequirements' or i == 'buildrequires':
                 self.__desc[i] = self.__requirements(self.__desc[i])
-        
-        print self.__desc
+    
     
     def __depends(self, long_atom):
         
@@ -44,22 +49,24 @@ class Description(object):
         
         for atom in long_atom.split(','):
             
-            r = re.match(r'([a-zA-Z]+) ?(\(([><]?=?) ([0-9.]+)\))?', atom.strip())
+            r = re_depends.match(atom.strip())
             
-            myatom = ''
-            
-            if r.group(3) != None:
-                myatom += r.group(3)
-            
-            if r.group(1) == 'octave':
-                myatom += 'sci-mathematics/octave'
-            else:
-                myatom += 'g-portage/%s' % r.group(1)
-            
-            if r.group(4) != None:
-                myatom += '-%s' % r.group(4)
-            
-            tmp.append(myatom)
+            if r != None:
+                
+                myatom = ''
+                
+                if r.group(3) != None:
+                    myatom += str(r.group(3))
+                
+                if r.group(1) == 'octave':
+                    myatom += 'sci-mathematics/octave'
+                else:
+                    myatom += 'g-portage/%s' % r.group(1)
+                
+                if r.group(4) != None:
+                    myatom += '-%s' % r.group(4)
+                
+                tmp.append(myatom)
         
         return tmp
     
@@ -84,4 +91,4 @@ class Description(object):
 
 if __name__ == '__main__':
     a = Description('/development/contrib/octave-forge-20090607/main/image-1.0.10/DESCRIPTION')
-    #print a.depends
+    print a.depends
