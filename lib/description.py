@@ -1,17 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['Description', 're_depends', 're_atom']
+__all__ = ['Description', 're_depends', 're_atom', 're_pkg_atom']
 
-import re
+import re, os
 
-re_depends = re.compile(r'([a-zA-Z]+) *(\(([><]?=?) *([0-9.]+)\))?')
+# octave-forge DESCRIPTION's dependencies atoms
+re_depends = re.compile(r'([a-zA-Z]+) *(\(([><=]?=?) *([0-9.]+)\))?')
+
+# gentoo-like atoms, to use with emerge/whatever package manager
 re_atom = re.compile(r'^([><]?=?)([a-zA-Z\-/]+)(-(.*))?$')
+
+# we'll use atoms like 'control' or 'control-1.0.11' to g-octave packages
+re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
+
+
+class DescriptionException(Exception):
+    pass
 
 
 class Description(object):
     
     def __init__(self, file):
+        
+        if not os.path.exists(file):
+            raise DescriptionException('File not found: %s' % file)
         
         fp = open(file)
         myfile = fp.readlines()
@@ -56,7 +69,7 @@ class Description(object):
                 myatom = ''
                 
                 if r.group(3) != None:
-                    myatom += str(r.group(3))
+                    myatom += str(r.group(3)) == '==' and '=' or str(r.group(3))
                 
                 if r.group(1) == 'octave':
                     myatom += 'sci-mathematics/octave'
