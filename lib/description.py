@@ -11,7 +11,7 @@ re_depends = re.compile(r'([a-zA-Z]+) *(\(([><=]?=?) *([0-9.]+)\))?')
 # gentoo-like atoms, to use with emerge/whatever package manager
 re_atom = re.compile(r'^([><]?=?)([a-zA-Z\-/]+)(-(.*))?$')
 
-# we'll use atoms like 'control' or 'control-1.0.11' to g-octave packages
+# we'll use atoms like 'control-1.0.11' to g-octave packages
 re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
 
 
@@ -36,24 +36,28 @@ class Description(object):
         
         for i in myfile:
             line = i.split(':')
-            if len(line) != 2:
+            if len(line) < 2:
                 if i[0].isspace() and kw != '':
                     self.__desc[kw] += ' ' + i.strip()
             else:
                 kw = line[0].strip().lower()
+                value = ':'.join(line[1:]).strip()
                 if self.__desc.has_key(kw):
                     if kw == 'depends' or kw == 'systemrequirements' or kw == 'buildrequires':
-                        self.__desc[kw] += ', ' + line[1].strip()
+                        self.__desc[kw] += ', ' + value
                     else:
-                        self.__desc[kw] += ' ' + line[1].strip()
+                        self.__desc[kw] += ' ' + value
                 else:
-                    self.__desc[kw] = line[1].strip()
+                    self.__desc[kw] = value
                  
         for i in self.__desc:
             if i == 'depends':
+                mycopy = self.__desc[i][:]
                 self.__desc[i] = self.__depends(self.__desc[i])
             if i == 'systemrequirements' or i == 'buildrequires':
                 self.__desc[i] = self.__requirements(self.__desc[i])
+    
+        self.__desc['self_depends'] = self.__self_depends(mycopy)
     
     
     def __depends(self, long_atom):
@@ -80,6 +84,21 @@ class Description(object):
                     myatom += '-%s' % r.group(4)
                 
                 tmp.append(myatom)
+        
+        return tmp
+    
+    
+    def __self_depends(self, long_atom):
+        
+        tmp = []
+        
+        for atom in long_atom.split(','):
+            
+            r = re_depends.match(atom.strip())
+            
+            if r != None:
+                if r.group(1) != 'octave':
+                    tmp.append((r.group(1), r.group(3), r.group(4)))
         
         return tmp
     

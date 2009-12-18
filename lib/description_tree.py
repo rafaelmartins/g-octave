@@ -40,7 +40,7 @@ class DescriptionTree(object):
         
         mykey = re_pkg_atom.match(key)
         if mykey == None:
-            raise DescriptionTreeException('Invalid Atom: %s' % mypkg)
+            return None
         
         name = mykey.group(1)
         version = mykey.group(2)
@@ -57,9 +57,43 @@ class DescriptionTree(object):
                     return Description(pkgfile)
         
         return None
+    
+    def package_versions(self, pkgname):
+        
+        tmp = []
+        
+        for cat in self.pkg_list:
+            for pkg in self.pkg_list[cat]:
+                if pkg['name'] == pkgname:
+                    tmp.append(pkg['version'])
+        
+        return tmp
+        
+    
+    def latest_version(self, pkgname):
+        
+        tmp = self.package_versions(pkgname)
+        return self.version_compare(tmp)
+
+
+    def version_compare(self, versions):
+        
+        max = ('0',)
+        maxstr = None
+        
+        for version in versions:
+            tmp = tuple(version.split('.'))
+            if tmp > max:
+                max = tmp
+                maxstr = version
+        
+        return maxstr
+        
 
 
 if __name__ == '__main__':
     a = DescriptionTree()
-    b = a['bugfix-3.0.6-1.0']
-    print b.depends
+    print a.latest_version('bugfix-3.0.6')
+    #print b.depends
+    
+    
