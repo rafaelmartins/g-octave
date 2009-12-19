@@ -82,7 +82,7 @@ RDEPEND="${DEPEND}
         vars = {
             'description': description,
             'url': self.__desc.url,
-            'keywords': ' '.join(portage.settings['ACCEPT_KEYWORDS']),
+            'keywords': portage.settings['ACCEPT_KEYWORDS'],
             'depend': '',
             'rdepend': '',
         }
