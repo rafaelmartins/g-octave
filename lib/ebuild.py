@@ -7,15 +7,18 @@ conf = Config()
 from description import *
 from description_tree import *
 
-import re
+import os, portage, imp
 
 class EbuildException(Exception):
     pass
 
 class Ebuild:
     
-    def __init__(self, pkg_atom):
+    def __init__(self, pkg_atom, force=False):
         
+        self.__init_portage()
+        
+        self.__force = force
         self.__dbtree = DescriptionTree()
         
         atom = re_pkg_atom.match(pkg_atom)
@@ -31,10 +34,22 @@ class Ebuild:
         if self.__desc == None:
             raise EbuildException('Package not found: %s' % pkg_atom)
 
+
+    def __init_portage(self):
+        
+        os.environ["PORTDIR_OVERLAY"] = os.environ.get("PORTDIR_OVERLAY","") + " " + conf.overlay
+        portage.close_portdbapi_caches()
+        imp.reload(portage)
+        
+
     def create(self):
         
-        overlay = conf.overlay
-        ebuild_path = os.path.join(overlay, 'g-octave', self.pkgname)
+        ebuild_path = os.path.join(conf.overlay, 'g-octave', self.pkgname)
+        ebuild_file = os.path.join(ebuild_path, '%s-%s.ebuild' % (self.pkgname, self.version))
+        
+        if os.path.exists(ebuild_file) and not self.__force:
+            return
+        
         if not os.path.exists(ebuild_path):
             os.makedirs(ebuild_path, 0755)
         
@@ -61,21 +76,32 @@ RDEPEND="${DEPEND}
 \t%(rdepend)s"
 """
         
+        description = self.__desc.description > 70 and \
+            self.__desc.description[:70]+'...' or self.__desc.description
+        
         vars = {
-            'description': self.__desc.description,
+            'description': description,
             'url': self.__desc.url,
-            'keywords': '~x86', # for tests
+            'keywords': ' '.join(portage.settings['ACCEPT_KEYWORDS']),
             'depend': '',
             'rdepend': '',
         }
         
         vars['depend']   = self.depends(self.__desc.buildrequires)
+        vars['depend']  += "\n\t"+self.depends(self.__desc.systemrequirements)
         vars['rdepend']  = self.depends(self.__desc.depends)
-        vars['rdepend'] += "\n\t"+self.depends(self.__desc.systemrequirements)
         
-        fp = open(os.path.join(ebuild_path, '%s-%s.ebuild' % (self.pkgname, self.version)), 'w')
+        fp = open(ebuild_file, 'w')
         fp.write(ebuild % vars)
         fp.close()
+        
+        portage.doebuild(
+            ebuild_file,
+            "manifest",
+            portage.root,
+            portage.config(clone=portage.settings),
+            tree="porttree"
+        )
         
         self.__resolve_dependencies()
         
@@ -119,5 +145,5 @@ RDEPEND="${DEPEND}
 
 
 if __name__ == '__main__':
-    a = Ebuild('signal')
+    a = Ebuild('image', True)
     a.create()

@@ -5,14 +5,20 @@ from description import *
 from config import Config
 conf = Config()
 
-import os
+import os, simplejson
+
 
 class DescriptionTreeException(Exception):
     pass
 
+
 class DescriptionTree(object):
     
     def __init__(self):
+        
+        fp = open(os.path.join(os.path.dirname(__file__), '..', 'share', 'info.json'))
+        self.__vars = simplejson.load(fp)
+        fp.close()
         
         self.pkg_list = {}
         
@@ -30,10 +36,11 @@ class DescriptionTree(object):
                     mypkg = re_pkg_atom.match(pkg)
                     if mypkg == None:
                         raise DescriptionTreeException('Invalid Atom: %s' % mypkg)
-                    self.pkg_list[cat].append({
-                        'name': mypkg.group(1),
-                        'version': mypkg.group(2),
-                    })
+                    if mypkg.group(1) not in self.__vars['blacklist']:
+                        self.pkg_list[cat].append({
+                            'name': mypkg.group(1),
+                            'version': mypkg.group(2),
+                        })
     
     
     def __getitem__(self, key):
@@ -57,6 +64,7 @@ class DescriptionTree(object):
                     return Description(pkgfile)
         
         return None
+    
     
     def package_versions(self, pkgname):
         

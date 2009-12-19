@@ -3,10 +3,10 @@
 
 __all__ = ['Description', 're_depends', 're_atom', 're_pkg_atom']
 
-import re, os
+import re, os, simplejson
 
 # octave-forge DESCRIPTION's dependencies atoms
-re_depends = re.compile(r'([a-zA-Z]+) *(\(([><=]?=?) *([0-9.]+)\))?')
+re_depends = re.compile(r'([a-zA-Z]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
 
 # gentoo-like atoms, to use with emerge/whatever package manager
 re_atom = re.compile(r'^([><]?=?)([a-zA-Z\-/]+)(-(.*))?$')
@@ -30,6 +30,10 @@ class Description(object):
         myfile = fp.readlines()
         fp.close()
         
+        fp = open(os.path.join(os.path.dirname(__file__), '..', 'share', 'info.json'))
+        self.__vars = simplejson.load(fp)
+        fp.close()
+        
         kw = ''
         
         self.__desc = {}
@@ -49,15 +53,18 @@ class Description(object):
                         self.__desc[kw] += ' ' + value
                 else:
                     self.__desc[kw] = value
-                 
+        
+        self_depends = []
+        
         for i in self.__desc:
             if i == 'depends':
-                mycopy = self.__desc[i][:]
-                self.__desc[i] = self.__depends(self.__desc[i])
+                depends = self.__desc[i]
+                self.__desc[i] = self.__depends(depends)
+                self_depends = self.__self_depends(depends)
             if i == 'systemrequirements' or i == 'buildrequires':
                 self.__desc[i] = self.__requirements(self.__desc[i])
-    
-        self.__desc['self_depends'] = self.__self_depends(mycopy)
+            
+        self.__desc['self_depends'] = self_depends
     
     
     def __depends(self, long_atom):
@@ -75,7 +82,7 @@ class Description(object):
                 if r.group(3) != None:
                     myatom += str(r.group(3)) == '==' and '=' or str(r.group(3))
                 
-                if r.group(1) == 'octave':
+                if r.group(1).lower() == 'octave':
                     myatom += 'sci-mathematics/octave'
                 else:
                     myatom += 'g-portage/%s' % r.group(1)
@@ -97,7 +104,7 @@ class Description(object):
             r = re_depends.match(atom.strip())
             
             if r != None:
-                if r.group(1) != 'octave':
+                if r.group(1).lower() != 'octave':
                     tmp.append((r.group(1), r.group(3), r.group(4)))
         
         return tmp
@@ -108,7 +115,13 @@ class Description(object):
         tmp = []
         
         for atom in long_atom.split(','):
-            tmp.append(atom.strip())
+            atom = atom.strip()
+            
+            if self.__vars['dependencies'].has_key(atom):
+                dep = self.__vars['dependencies'][atom]
+            
+                if dep != '':
+                    tmp.append(dep)
         
         return tmp
 
@@ -122,5 +135,5 @@ class Description(object):
 
 
 if __name__ == '__main__':
-    a = Description('/development/contrib/octave-forge-20090607/main/image-1.0.10/DESCRIPTION')
+    a = Description('/development/contrib/octave-forge-20090607/main/zenity-0.5.7/DESCRIPTION')
     print a.depends
