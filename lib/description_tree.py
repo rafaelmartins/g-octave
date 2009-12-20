@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from description import *
+__all__ = [
+    'DescriptionTree',
+    'DescriptionTreeException',
+]
+
 from config import Config
 conf = Config()
 
-import os, simplejson
+from description import *
 
+import os
 
 class DescriptionTreeException(Exception):
     pass
@@ -16,10 +21,6 @@ class DescriptionTree(object):
     
     def __init__(self):
         
-        fp = open(os.path.join(os.path.dirname(__file__), '..', 'share', 'info.json'))
-        self.__vars = simplejson.load(fp)
-        fp.close()
-        
         self.pkg_list = {}
         
         self.__db_path = conf.db
@@ -27,7 +28,7 @@ class DescriptionTree(object):
         if not os.path.isdir(self.__db_path):
             raise DescriptionTreeException('Invalid db: %s' % self.__db_path)
         
-        for cat in conf.categories:
+        for cat in [i.strip() for i in conf.categories.split(',')]:
             catdir = os.path.join(self.__db_path, cat)
             if os.path.isdir(catdir):
                 self.pkg_list[cat] = []
@@ -36,7 +37,7 @@ class DescriptionTree(object):
                     mypkg = re_pkg_atom.match(pkg)
                     if mypkg == None:
                         raise DescriptionTreeException('Invalid Atom: %s' % mypkg)
-                    if mypkg.group(1) not in self.__vars['blacklist']:
+                    if mypkg.group(1) not in conf.blacklist:
                         self.pkg_list[cat].append({
                             'name': mypkg.group(1),
                             'version': mypkg.group(2),
@@ -102,6 +103,3 @@ class DescriptionTree(object):
 if __name__ == '__main__':
     a = DescriptionTree()
     print a.latest_version('bugfix-3.0.6')
-    #print b.depends
-    
-    

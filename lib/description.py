@@ -1,9 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['Description', 're_depends', 're_atom', 're_pkg_atom']
+__all__ = [
+    'Description',
+    'DescriptionException',
+    're_depends',
+    're_atom',
+    're_pkg_atom'
+]
 
-import re, os, simplejson
+from config import Config
+conf = Config()
+
+import re, os
 
 # octave-forge DESCRIPTION's dependencies atoms
 re_depends = re.compile(r'([a-zA-Z]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
@@ -28,10 +37,6 @@ class Description(object):
         
         fp = open(file)
         myfile = fp.readlines()
-        fp.close()
-        
-        fp = open(os.path.join(os.path.dirname(__file__), '..', 'share', 'info.json'))
-        self.__vars = simplejson.load(fp)
         fp.close()
         
         kw = ''
@@ -117,8 +122,8 @@ class Description(object):
         for atom in long_atom.split(','):
             atom = atom.strip()
             
-            if self.__vars['dependencies'].has_key(atom):
-                dep = self.__vars['dependencies'][atom]
+            if conf.dependencies.has_key(atom):
+                dep = conf.dependencies[atom]
             
                 if dep != '':
                     tmp.append(dep)

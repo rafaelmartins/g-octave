@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__all__ = [
+    'Ebuild',
+    'EbuildException',
+]
+
 from config import Config
 conf = Config()
 
@@ -11,6 +16,7 @@ import os, portage, imp
 
 class EbuildException(Exception):
     pass
+
 
 class Ebuild:
     
@@ -37,9 +43,10 @@ class Ebuild:
 
     def __init_portage(self):
         
-        os.environ["PORTDIR_OVERLAY"] = os.environ.get("PORTDIR_OVERLAY","") + " " + conf.overlay
-        portage.close_portdbapi_caches()
-        imp.reload(portage)
+        pass
+        #os.environ["PORTDIR_OVERLAY"] = os.environ.get("PORTDIR_OVERLAY","") + " " + conf.overlay
+        #portage.close_portdbapi_caches()
+        #imp.reload(portage)
         
 
     def create(self):
@@ -138,6 +145,9 @@ RDEPEND="${DEPEND}
                     allowed_versions.append(_version)
                 
             to_install.append('%s-%s' % (pkg, self.__dbtree.version_compare(allowed_versions)))
+        
+            if len(to_install) == 0:
+                raise EbuildException('Can\'t resolve a dependency: %s' % pkg)
         
         # creating the ebuilds for the dependencies, recursivelly
         for ebuild in to_install:
