@@ -18,7 +18,7 @@ class ConfigException(Exception):
 class Config(object):
     
     __defaults = {
-        'db': '/var/db/octave-forge',
+        'db': '/var/cache/octave-forge',
         'overlay': portage.settings['PORTDIR'] + '/local/g-octave',
         'categories': 'main,extra,language',
         'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
@@ -35,7 +35,7 @@ class Config(object):
         if os.path.exists('/etc/g-octave.cfg'):
             self.__config_file = '/etc/g-octave.cfg'
         else:
-            self.__config_file = '../share/g-octave.cfg.devel'
+            self.__config_file = '../etc/g-octave.cfg.devel'
         
         self.__config.read(self.__config_file)
     
