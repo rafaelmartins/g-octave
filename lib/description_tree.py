@@ -23,7 +23,7 @@ class DescriptionTree(object):
         
         self.pkg_list = {}
         
-        self.__db_path = conf.db
+        self.__db_path = conf.db+'/octave-forge'
         
         if not os.path.isdir(self.__db_path):
             raise DescriptionTreeException('Invalid db: %s' % self.__db_path)
@@ -102,4 +102,4 @@ class DescriptionTree(object):
 
 if __name__ == '__main__':
     a = DescriptionTree()
-    print a.latest_version('bugfix-3.0.6')
+    print a.latest_version('parallel')

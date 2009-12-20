@@ -8,7 +8,6 @@ __all__ = [
 
 import ConfigParser
 import simplejson
-import portage
 import os
 
 class ConfigException(Exception):
@@ -19,7 +18,7 @@ class Config(object):
     
     __defaults = {
         'db': '/var/cache/octave-forge',
-        'overlay': portage.settings['PORTDIR'] + '/local/g-octave',
+        'overlay': '/usr/local/g-octave',
         'categories': 'main,extra,language',
         'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
     }
@@ -27,7 +26,7 @@ class Config(object):
     __section_name = 'main'
 
 
-    def __init__(self):
+    def __init__(self, fetch_phase=False):
         
         # Config Parser
         self.__config = ConfigParser.ConfigParser(self.__defaults)
@@ -38,11 +37,22 @@ class Config(object):
             self.__config_file = '../etc/g-octave.cfg.devel'
         
         self.__config.read(self.__config_file)
-    
-        # JSON
-        fp = open(os.path.join(self.__getattr__('db'), 'info.json'))
-        self.__info = simplejson.load(fp)
-        fp.close()
+        
+        if not fetch_phase:
+            
+            # Cache (JSON)
+            cache_file = os.path.join(self.__getattr__('db'), 'cache.json')
+            fp = open(cache_file)
+            self.__cache = simplejson.load(fp)
+            fp.close()
+            
+            # JSON
+            json_file = os.path.join(self.__getattr__('db'), self.__cache['files']['info.json'])
+            fp = open(json_file)
+            self.__info = simplejson.load(fp)
+            fp.close()
+        
+        self.__check_dirs()
         
 
     def __getattr__(self, attr):
@@ -51,10 +61,24 @@ class Config(object):
             return self.__config.get(self.__section_name, attr)
         elif self.__info.has_key(attr):
             return self.__info[attr]
+        elif attr == 'cache':
+            return self.__cache['files']
         else:
             raise ConfigException('Invalid option: %s' % attr)
+    
+    
+    def __check_dirs(self):
         
+        dirs = [
+            self.__config.get(self.__section_name, 'db'),
+            self.__config.get(self.__section_name, 'overlay')
+        ]
+        
+        for dir in dirs:
+            if not os.path.isdir(dir):
+                os.makedirs(dir)
+    
 
 if __name__ == '__main__':
     conf = Config()
-    print conf.dependencies, conf.blacklist
+    print conf.cache

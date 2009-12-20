@@ -22,10 +22,10 @@ for cat in ${CATEGORIES}; do
     done
 done
 
-mkdir ${TMPDIR}/octave-forge-${RELEASE}
-cp -r ${TMPDIR}/db/* ${TMPDIR}/octave-forge-${RELEASE}/
+mkdir ${TMPDIR}/octave-forge
+cp -r ${TMPDIR}/db/* ${TMPDIR}/octave-forge/
 
 cd ${TMPDIR} && tar -cvzf "${CURRENTDIR}/octave-forge-${RELEASE}.db.tar.gz" \
-    octave-forge-${RELEASE}
+    octave-forge
 
 rm -rf ${TMPDIR}

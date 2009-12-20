@@ -9,7 +9,6 @@ conf = Config()
 import os
 import shutil
 
-
 def create_overlay(force=False):
     
     if force:
@@ -27,7 +26,7 @@ def create_overlay(force=False):
         os.path.join(conf.overlay, 'profiles', 'repo_name'): 'g-octave',
         os.path.join(conf.overlay, 'profiles', 'categories'): 'g-octave',
         os.path.join(conf.overlay, 'eclass', 'octave-forge.eclass'):
-            open(os.path.join(conf.db, 'octave-forge.eclass')),
+            open(os.path.join(conf.db, conf.cache['octave-forge.eclass'])),
     }
     for _file in files:
         if not os.path.exists(_file) or force:
