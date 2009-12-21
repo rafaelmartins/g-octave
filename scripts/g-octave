@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 
-# Find our modules
-print os.path.dirname(os.path.realpath(__file__))
+current_dir = os.path.dirname(os.path.realpath(__file__))
+
+if os.path.exists(os.path.join(current_dir, '..', 'g-octave')):
+    sys.path.insert(0, os.path.join(current_dir, '..'))
+
+import g-octave
