@@ -78,7 +78,7 @@ class Config(object):
         
         for dir in dirs:
             if not os.path.isdir(dir):
-                os.makedirs(dir)
+                os.makedirs(dir, 0755)
     
 
 if __name__ == '__main__':

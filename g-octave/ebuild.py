@@ -105,7 +105,7 @@ RDEPEND="${DEPEND}
             patchesdir = os.path.join(conf.db, 'patches')
             filesdir = os.path.join(conf.overlay, 'g-octave', self.pkgname, 'files')
             if not os.path.exists(filesdir):
-                os.makedirs(filesdir)
+                os.makedirs(filesdir, 0755)
             
             patch_string = ''
             for patch in patches:
