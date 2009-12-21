@@ -90,7 +90,7 @@ class Description(object):
                 if r.group(1).lower() == 'octave':
                     myatom += 'sci-mathematics/octave'
                 else:
-                    myatom += 'g-portage/%s' % r.group(1)
+                    myatom += 'g-octave/%s' % r.group(1)
                 
                 if r.group(4) != None:
                     myatom += '-%s' % r.group(4)

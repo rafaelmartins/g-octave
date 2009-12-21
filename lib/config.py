@@ -21,6 +21,8 @@ class Config(object):
         'overlay': '/usr/local/g-octave',
         'categories': 'main,extra,language',
         'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
+        'pm': '/usr/bin/emerge',
+        'pm_options': '--ask --verbose',
     }
 
     __section_name = 'main'
@@ -81,4 +83,4 @@ class Config(object):
 
 if __name__ == '__main__':
     conf = Config()
-    print conf.cache
+    print conf.pm_options

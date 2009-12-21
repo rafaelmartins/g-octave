@@ -2,3 +2,7 @@
 db = /development/contrib/octave-forge
 overlay = /development/contrib/octave-overlay
 categories = main,extra,language
+db_mirror = http://files.rafaelmartins.eng.br/octave-forge
+
+pm = /usr/bin/emerge
+pm_options = --ask --verbose

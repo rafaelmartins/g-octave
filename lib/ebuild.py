@@ -186,5 +186,5 @@ RDEPEND="${DEPEND}
 
 
 if __name__ == '__main__':
-    a = Ebuild('control', True)
+    a = Ebuild('vrml', True)
     a.create()
