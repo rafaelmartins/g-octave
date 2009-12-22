@@ -72,6 +72,10 @@ SLOT="0"
 KEYWORDS="%(keywords)s"
 IUSE=""
 
+# it's annoying have to see the download of packages from the official
+# mirrors fail with a 404 error.
+RESTRICT="mirror"
+
 DEPEND="%(depend)s"
 RDEPEND="${DEPEND}
 \t%(rdepend)s"
