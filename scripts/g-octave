@@ -163,7 +163,7 @@ def main():
             for pkg in tree.pkg_list[category]:
                 print '\t%s-%s' % (pkg['name'], pkg['version'])
             print
-        sys,exit(1)
+        sys,exit(0)
     elif len(args) == 0:
         print >> sys.stderr, light_red('Error:'), white("""\
 You need provide an atom "name", "name-version", or the option "--list" """)
@@ -194,7 +194,7 @@ can install only one package at once and his dependencies.""")
         print light_blue('Categories:'), white(pkg.categories)
         print light_blue('License:'), white(pkg.license)
         print light_blue('Url:'), white(pkg.url)
-        sys.exit(1)
+        sys.exit(0)
 
     if options.verbose:
         print white('>>> Creating the ebuilds to install:'), light_blue(args[0])
