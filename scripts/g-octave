@@ -148,10 +148,13 @@ def main():
             print
         sys,exit(1)
     elif len(args) == 0:
-        print >> sys.stderr, 'You need provide an atom: "name" or "name-version" or --list'
+        print >> sys.stderr, light_red('Error:'), white("""\
+You need provide an atom "name", "name-version", or the option "--list" """)
         sys.exit(1)
     elif len(args) > 1:
-        print >> sys.stderr, 'At this moment g-octave can install only one package and his dependencies.'
+        print >> sys.stderr, light_red('Error:'), white("""\
+You tried to install more than one package, but at this moment g-octave
+can install only one package at once and his dependencies.""")
         sys.exit(1)
     
     # if we're alive yet, we have a package to install! :D
