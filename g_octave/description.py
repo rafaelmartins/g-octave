@@ -3,7 +3,6 @@
 
 __all__ = [
     'Description',
-    'DescriptionException',
     're_depends',
     're_atom',
     're_pkg_atom'
@@ -12,7 +11,8 @@ __all__ = [
 from config import Config
 conf = Config()
 
-import re, os
+import re
+import os
 
 # octave-forge DESCRIPTION's dependencies atoms
 re_depends = re.compile(r'([a-zA-Z]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
@@ -23,10 +23,7 @@ re_atom = re.compile(r'^([><]?=?)([a-zA-Z\-/]+)(-(.*))?$')
 # we'll use atoms like 'control-1.0.11' to g-octave packages
 re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
 
-
-class DescriptionException(Exception):
-    pass
-
+from exception import DescriptionException
 
 class Description(object):
     

@@ -3,10 +3,227 @@
 
 import os
 import sys
+import optparse
+import portage
+import subprocess
+
+# trying to use colors
+have_colors = True
+try:
+    from colors import light_blue, light_red, white, disable_colors
+except:
+    have_colors = False
+    light_blue = light_red = white = lambda(x): str(x)
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
-
-if os.path.exists(os.path.join(current_dir, '..', 'g-octave')):
+if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
     sys.path.insert(0, os.path.join(current_dir, '..'))
 
-import g-octave
+import g_octave
+
+def main():
+
+    parser = optparse.OptionParser(
+        usage = '%prog [options] <package_name | package_name-version>',
+        version = '%prog ' + g_octave.__version__,
+        description = g_octave.__description__
+    )
+    
+    parser.add_option(
+        '-l', '--list',
+        action = 'store_true',
+        dest = 'list',
+        default = False,
+        help = 'show a list of packages available to install and exit'
+    )
+    
+    parser.add_option(
+        '-i', '--info',
+        action = 'store_true',
+        dest = 'info',
+        default = False,
+        help = 'show a description of the required package and exit'
+    )
+    
+    parser.add_option(
+        '-p', '--pretend',
+        action = 'store_true',
+        dest = 'pretend',
+        default = False,
+        help = 'don\'t (un)merge packages, only create ebuilds and solve the dependencies'
+    )
+    
+    parser.add_option(
+        '-a', '--ask',
+        action = 'store_true',
+        dest = 'ask',
+        default = False,
+        help = 'ask to confirmation before perform (un)merges'
+    )
+    
+    parser.add_option(
+        '-v', '--verbose',
+        action = 'store_true',
+        dest = 'verbose',
+        default = False,
+        help = 'Portage makes a lot of noise.'
+    )
+    
+    parser.add_option(
+        '-C', '--unmerge',
+        action = 'store_true',
+        dest = 'unmerge',
+        default = False,
+        help = 'try to unmerge a package instead of merge'
+    )
+    
+    parser.add_option(
+        '-f', '--force',
+        action = 'store_true',
+        dest = 'force',
+        default = False,
+        help = 'forces the recreation of the overlay and of the ebuilds'
+    )
+    
+    parser.add_option(
+        '--force-overlay',
+        action = 'store_true',
+        dest = 'force_overlay',
+        default = False,
+        help = 'forces the recreation of the overlay'
+    )
+    
+    parser.add_option(
+        '--force-ebuilds',
+        action = 'store_true',
+        dest = 'force_ebuilds',
+        default = False,
+        help = 'forces the recreation of the ebuilds'
+    )
+    
+    if have_colors:
+        parser.add_option(
+            '--no-colors',
+            action = 'store_false',
+            dest = 'colors',
+            default = True,
+            help = 'don\'t use colors on the CLI'
+        )
+    
+    options, args = parser.parse_args()
+    
+    if have_colors and not options.colors:
+        disable_colors()
+    
+    from g_octave.config import Config
+    from g_octave.fetch import check_updates, download_files, check_db_cache
+    
+    conf_prefetch = Config(True)
+    
+    # checking if our overlay is correctly added to PORTDIR_OVERLAY
+    if conf_prefetch.overlay not in portage.settings['PORTDIR_OVERLAY'].split(' '):
+        print >> sys.stderr, 'You must append your overlay dir to PORTDIR_OVERLAY'
+        sys.exit(1)
+    
+    if options.verbose:
+        print white('>>> Looking for updates. Some download may be needed.')
+    
+    check_updates()
+    download_files()
+    check_db_cache()
+
+    conf = Config()
+
+    from g_octave.description import Description
+    from g_octave.description_tree import DescriptionTree
+    from g_octave.ebuild import Ebuild, EbuildException
+    from g_octave.overlay import create_overlay
+
+    if options.list:
+        tree = DescriptionTree()
+        print light_blue('Available packages:\n')
+        for category in tree.pkg_list:
+            print white('%s:') % category
+            for pkg in tree.pkg_list[category]:
+                print '\t%s-%s' % (pkg['name'], pkg['version'])
+            print
+        sys,exit(1)
+    elif len(args) == 0:
+        print >> sys.stderr, 'You need provide an atom: "name" or "name-version" or --list'
+        sys.exit(1)
+    elif len(args) > 1:
+        print >> sys.stderr, 'At this moment g-octave can install only one package and his dependencies.'
+        sys.exit(1)
+    
+    # if we're alive yet, we have a package to install! :D
+    
+    create_overlay(options.force or options.force_overlay)
+    
+    try:
+        ebuild = Ebuild(args[0], options.force or options.force_ebuilds)
+    except EbuildException:
+        print >> sys.stderr, light_red('Package not found:'), white(args[0])
+        sys.exit(1)
+    
+    if options.info:
+        pkg = ebuild.description()
+        print light_blue('Package:'), white(pkg.name)
+        print light_blue('Version:'), white(pkg.version)
+        print light_blue('Date:'), white(pkg.date)
+        print light_blue('Maintainer:'), white(pkg.maintainer)
+        print light_blue('Description:'), white(pkg.description)
+        print light_blue('Categories:'), white(pkg.categories)
+        print light_blue('License:'), white(pkg.license)
+        print light_blue('Url:'), white(pkg.url)
+
+    if options.verbose:
+        print white('>>> Creating the ebuilds to install:'), light_blue(args[0])
+    
+    atom = ebuild.create()
+    
+    if options.verbose:
+        print white('>>> Now we\'ll call emerge to do the rest of the job!')
+    
+    emerge = ['emerge']
+    options.ask and emerge.append('--ask')
+    options.verbose and emerge.append('--verbose')
+    options.pretend and emerge.append('--pretend')
+    options.unmerge and emerge.append('--unmerge')
+    emerge.append(atom)
+    
+    if subprocess.call(emerge) != 0:
+        print >> sys.stderr, light_red('emerge returned an error.')
+        sys.exit(1)
+    
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    
+    from g_octave.exception import *
+    
+    try:
+        main()
+    except ConfigException, error:
+        print >> sys.stderr, light_blue('Config class error'), '-', light_red(error)
+        sys.exit(1)
+    except DescriptionException, error:
+        print >> sys.stderr, light_blue('Description class error'), '-', light_red(error)
+        sys.exit(1)
+    except DescriptionTreeException, error:
+        print >> sys.stderr, light_blue('DescriptionTree class error'), '-', light_red(error)
+        sys.exit(1)
+    except EbuildException, error:
+        print >> sys.stderr, light_blue('Ebuild class error'), '-', light_red(error)
+        sys.exit(1)
+    except FetchException, error:
+        print >> sys.stderr, light_blue('Fetch module error'), '-', light_red(error)
+        sys.exit(1)
+    except OSError, error:
+        print >> sys.stderr, light_blue('Config class error'), '-', light_red(error)
+        print >> sys.stderr, white('Try run "g-octave" as root.')
+        sys.exit(1)
+    except Exception, error:
+        print >> sys.stderr, light_blue('Unknown error'), '-', light_red(error)
+        print >> sys.stderr, white('If you fell that this is a bug, please report to us.')
+        sys.exit(1)

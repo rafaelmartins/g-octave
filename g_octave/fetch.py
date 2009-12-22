@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 __all__ = [
-    'FetchException',
     'check_updates',
     'download_files',
     'check_db_cache',
@@ -10,6 +9,8 @@ __all__ = [
 
 from config import Config
 conf = Config(True) # fetch phase
+
+from exception import FetchException
 
 import urllib2
 import os
@@ -25,10 +26,6 @@ re_files = {
     'octave-forge.db.tar.gz': re.compile(r'octave-forge-([0-9]{8})\.db\.tar\.gz'),
     'patches.tar.gz':         re.compile(r'patches-([0-9]{8})-([0-9]+)\.tar\.gz'),
 }
-
-class FetchException(Exception):
-    pass
-
 
 def check_updates():
     

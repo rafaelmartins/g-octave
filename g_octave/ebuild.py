@@ -1,25 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = [
-    'Ebuild',
-    'EbuildException',
-]
+__all__ = ['Ebuild']
 
 from config import Config
 conf = Config()
 
 from description import *
 from description_tree import *
+from exception import EbuildException
 
 import os
 import portage
 import re
 import shutil
-
-class EbuildException(Exception):
-    pass
-
 
 class Ebuild:
     
@@ -42,13 +36,20 @@ class Ebuild:
             raise EbuildException('Package not found: %s' % pkg_atom)
         
 
+    def description(self):
+        
+        return self.__desc
+
+
     def create(self):
         
         ebuild_path = os.path.join(conf.overlay, 'g-octave', self.pkgname)
         ebuild_file = os.path.join(ebuild_path, '%s-%s.ebuild' % (self.pkgname, self.version))
         
+        my_atom = '=g-octave/%s-%s' % (self.pkgname, self.version)
+        
         if os.path.exists(ebuild_file) and not self.__force:
-            return
+            return my_atom
         
         if not os.path.exists(ebuild_path):
             os.makedirs(ebuild_path, 0755)
@@ -88,13 +89,13 @@ RDEPEND="${DEPEND}
             'rdepend': '',
         }
         
-        vars['depend']   = self.depends(self.__desc.buildrequires)
+        vars['depend']   = self.__depends(self.__desc.buildrequires)
         
-        systemrequirements = self.depends(self.__desc.systemrequirements)
+        systemrequirements = self.__depends(self.__desc.systemrequirements)
         if systemrequirements != '':
             vars['depend']  += "\n\t"+systemrequirements
         
-        vars['rdepend']  = self.depends(self.__desc.depends)
+        vars['rdepend']  = self.__depends(self.__desc.depends)
         
         patches = self.__search_patches()
         
@@ -129,8 +130,10 @@ RDEPEND="${DEPEND}
         
         self.__resolve_dependencies()
         
+        return my_atom
+        
     
-    def depends(self, mylist):
+    def __depends(self, mylist):
         
         if mylist != None:
             return "\n\t".join(mylist)

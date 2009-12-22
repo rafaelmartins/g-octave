@@ -12,10 +12,13 @@ __all__ = [
 __author__ = 'Rafael Goncalves Martins'
 __email__ = 'rafael@rafaelmartins.eng.br'
 
-__description__ = 'A tool for Gentoo Linux that generates ebuilds and' + \
-    'installs Octave-Forge packages "on-the-fly"'
+__description__ = """\
+A tool that generates and installs ebuilds for Octave-Forge packages "on-the-fly"
+on Gentoo Linux, using Portage.
+"""
+
 __url__ = 'http://rafaelmartins.eng.br/en-us/projects/g-octave/' # not done yet :(
 __copyright__ = '(c) 2009 %s' % __author__
 __license__ = 'GPLv2'
 
-__version__ = '0.1'
+__version__ = 'tip'

@@ -1,21 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = [
-    'DescriptionTree',
-    'DescriptionTreeException',
-]
+__all__ = ['DescriptionTree']
 
 from config import Config
 conf = Config()
 
 from description import *
+from exception import DescriptionTreeException
 
 import os
-
-class DescriptionTreeException(Exception):
-    pass
-
 
 class DescriptionTree(object):
     

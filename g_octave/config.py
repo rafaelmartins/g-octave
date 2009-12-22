@@ -1,28 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = [
-    'Config',
-    'ConfigException',
-]
+__all__ = ['Config']
 
 import ConfigParser
 import simplejson
 import os
 
-class ConfigException(Exception):
-    pass
-
+from exception import ConfigException
 
 class Config(object):
     
     __defaults = {
         'db': '/var/cache/octave-forge',
-        'overlay': '/usr/local/g-octave',
+        'overlay': '/usr/local/portage/g-octave',
         'categories': 'main,extra,language',
         'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
-        'pm': '/usr/bin/emerge',
-        'pm_options': '--ask --verbose',
     }
 
     __section_name = 'main'
