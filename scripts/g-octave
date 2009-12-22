@@ -86,14 +86,6 @@ def main():
     )
     
     parser.add_option(
-        '--force-overlay',
-        action = 'store_true',
-        dest = 'force_overlay',
-        default = False,
-        help = 'forces the recreation of the overlay'
-    )
-    
-    parser.add_option(
         '--force-ebuilds',
         action = 'store_true',
         dest = 'force_ebuilds',
@@ -122,7 +114,14 @@ def main():
     
     # checking if our overlay is correctly added to PORTDIR_OVERLAY
     if conf_prefetch.overlay not in portage.settings['PORTDIR_OVERLAY'].split(' '):
-        print >> sys.stderr, 'You must append your overlay dir to PORTDIR_OVERLAY'
+        print >> sys.stderr, light_red('ERROR:'), white('g-octave overlay is not configured!')
+        print >> sys.stderr, white('You must append your overlay dir to PORTDIR_OVERLAY.')
+        print >> sys.stderr
+        print >> sys.stderr, light_blue('Example:')
+        print >> sys.stderr, white(
+            '# echo \'PORTDIR_OVERLAY="${PORTDIR_OVERLAY} %s"\' >> /etc/make.conf' \
+                % conf_prefetch.overlay
+        )
         sys.exit(1)
     
     if options.verbose:
@@ -157,7 +156,7 @@ def main():
     
     # if we're alive yet, we have a package to install! :D
     
-    create_overlay(options.force or options.force_overlay)
+    create_overlay(options.force)
     
     try:
         ebuild = Ebuild(args[0], options.force or options.force_ebuilds)
@@ -189,6 +188,8 @@ def main():
     options.verbose and emerge.append('--verbose')
     options.pretend and emerge.append('--pretend')
     options.unmerge and emerge.append('--unmerge')
+    if not options.colors or not have_colors:
+        emerge.append('--color=n')
     emerge.append(atom)
     
     if subprocess.call(emerge) != 0:

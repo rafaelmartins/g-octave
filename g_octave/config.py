@@ -26,10 +26,12 @@ class Config(object):
         # Config Parser
         self.__config = ConfigParser.ConfigParser(self.__defaults)
         
-        if os.path.exists('/etc/g-octave.cfg'):
-            self.__config_file = '/etc/g-octave.cfg'
-        else:
+        if os.path.exists('../etc/g-octave.cfg.devel'):
             self.__config_file = '../etc/g-octave.cfg.devel'
+        else:
+            self.__config_file = '/etc/g-octave.cfg'
+        
+            
         
         self.__config.read(self.__config_file)
         
