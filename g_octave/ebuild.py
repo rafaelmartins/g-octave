@@ -187,7 +187,6 @@ RDEPEND="${DEPEND}
         tmp.sort()
         
         return tmp
-        
 
 
     def __resolve_dependencies(self):

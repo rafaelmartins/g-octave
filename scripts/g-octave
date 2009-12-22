@@ -252,7 +252,7 @@ if __name__ == '__main__':
         print >> sys.stderr, light_blue('I/O error'), '-', light_red(error)
         print >> sys.stderr, white('Try run "g-octave" as root.')
         sys.exit(1)
-    except Exception, error:
-        print >> sys.stderr, light_blue('Unknown error'), '-', light_red(error)
-        print >> sys.stderr, white('If you fell that this is a bug, please report to us.')
-        sys.exit(1)
+    #except Exception, error:
+        #print >> sys.stderr, light_blue('Unknown error'), '-', light_red(error)
+        #print >> sys.stderr, white('If you fell that this is a bug, please report to us.')
+        #sys.exit(1)
