@@ -254,8 +254,8 @@ if __name__ == '__main__':
         sys.exit(1)
     except KeyError, error:
         print >> sys.stderr, light_blue('Key error'), '-', light_red(error)
-        print >> sys.stderr, white('Probably you have more than one overlay configured to g-octave')
-        print >> sys.stderr, white('Try remove the older and maintain only this:'), light_blue(conf.overlay)
+        print >> sys.stderr, white('Probably you have more than one overlay configured use with g-octave')
+        print >> sys.stderr, white('Try remove the oldest and maintain only the overlay actually in use.')
         sys.exit(1)
     except Exception, error:
         print >> sys.stderr, light_blue('Unknown error'), '-', light_red(error)
