@@ -1,8 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import sys
+
+# This block ensures that ^C interrupts are handled quietly. From Portage
+try:
+    import signal
+
+    def exithandler(signum,frame):
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        sys.exit(1)
+
+    signal.signal(signal.SIGINT, exithandler)
+    signal.signal(signal.SIGTERM, exithandler)
+
+except KeyboardInterrupt:
+    sys.exit(1)
+
+
+import os
 import optparse
 import portage
 import subprocess
@@ -177,6 +194,7 @@ can install only one package at once and his dependencies.""")
         print light_blue('Categories:'), white(pkg.categories)
         print light_blue('License:'), white(pkg.license)
         print light_blue('Url:'), white(pkg.url)
+        sys.exit(1)
 
     if options.verbose:
         print white('>>> Creating the ebuilds to install:'), light_blue(args[0])
