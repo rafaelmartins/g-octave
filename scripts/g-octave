@@ -188,7 +188,10 @@ def main():
     options.verbose and emerge.append('--verbose')
     options.pretend and emerge.append('--pretend')
     options.unmerge and emerge.append('--unmerge')
-    if not options.colors or not have_colors:
+    if have_colors:
+        if not options.colors:
+            emerge.append('--color=n')
+    else:
         emerge.append('--color=n')
     emerge.append(atom)
     
