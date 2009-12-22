@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['Ebuild']
+__all__ = [
+    'Ebuild'
+    're_keywords',
+]
 
 from config import Config
 conf = Config()
@@ -14,6 +17,9 @@ import os
 import portage
 import re
 import shutil
+
+# validating keywords (based on the keywords from the sci-mathematics/octave package)
+re_keywords = re.compile(r'(~)?(alpha|amd64|hppa|ppc|ppc64|sparc|x86)')
 
 class Ebuild:
     
@@ -88,7 +94,7 @@ RDEPEND="${DEPEND}
             'eutils': '',
             'description': description,
             'url': self.__desc.url,
-            'keywords': portage.settings['ACCEPT_KEYWORDS'],
+            'keywords': self.__keywords(portage.settings['ACCEPT_KEYWORDS']),
             'depend': '',
             'rdepend': '',
         }
@@ -136,6 +142,31 @@ RDEPEND="${DEPEND}
         
         return my_atom
         
+    
+    def __keywords(self, accept_keywords):
+        
+        keywords = [i.strip() for i in accept_keywords.split(' ')]
+        
+        stable = []
+        unstable = []
+        
+        for keyword in keywords:
+            match = re_keywords.match(keyword)
+            if match == None:
+                raise EbuildException('Invalid keyword: %s' % keyword)
+            if match.group(1) == None:
+                stable.append(match.group(2))
+            else:
+                unstable.append(match.group(2))
+        
+        final = ['~'+i for i in unstable]
+        
+        for keyword in stable:
+            if keyword not in unstable:
+                final.append(keyword)
+        
+        return ' '.join(final)
+    
     
     def __depends(self, mylist):
         
@@ -195,3 +226,6 @@ RDEPEND="${DEPEND}
 if __name__ == '__main__':
     a = Ebuild('vrml', True)
     a.create()
+    
+    #a = re_keywords.match('x86')
+    #print a.groups()
