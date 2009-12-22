@@ -87,7 +87,7 @@ RDEPEND="${DEPEND}
 \t%(rdepend)s"
 """
         
-        description = self.__desc.description > 70 and \
+        description = len(self.__desc.description) > 70 and \
             self.__desc.description[:70]+'...' or self.__desc.description
         
         vars = {
