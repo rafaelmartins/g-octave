@@ -31,9 +31,14 @@ class Config(object):
         else:
             self.__config_file = '/etc/g-octave.cfg'
         
-            
-        
         self.__config.read(self.__config_file)
+        
+        __db = self.__config.get(self.__section_name, 'db')
+        __overlay = self.__config.get(self.__section_name, 'overlay')
+        
+        for dir in [__db, __overlay]:
+            if not os.path.exists(dir):
+                os.makedirs(dir, 0755)
         
         if not fetch_phase:
             

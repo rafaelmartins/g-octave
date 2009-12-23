@@ -17,6 +17,7 @@ import os
 import portage
 import re
 import shutil
+import imp
 
 # validating keywords (based on the keywords from the sci-mathematics/octave package)
 re_keywords = re.compile(r'(~)?(alpha|amd64|hppa|ppc|ppc64|sparc|x86)')
@@ -129,6 +130,9 @@ RDEPEND="${DEPEND}
         fp = open(ebuild_file, 'w', 0644)
         fp.write(ebuild % vars)
         fp.close()
+        
+        portage.close_portdbapi_caches()
+        imp.reload(portage)
         
         portage.doebuild(
             ebuild_file,
