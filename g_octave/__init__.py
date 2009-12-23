@@ -17,7 +17,7 @@ A tool that generates and installs ebuilds for Octave-Forge packages "on-the-fly
 to Gentoo Linux, using Portage.
 """
 
-__url__ = 'http://rafaelmartins.eng.br/en-us/projects/g-octave/' # not done yet :(
+__url__ = 'http://bitbucket.org/rafaelmartins/g-octave/'
 __copyright__ = '(c) 2009 %s' % __author__
 __license__ = 'GPLv2'
 

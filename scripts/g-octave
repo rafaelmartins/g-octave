@@ -222,7 +222,7 @@ can install only one package at once and his dependencies.""")
         sys.exit(1)
     
     if options.unmerge:
-        print white('You may want to remove the dependencies too, using:')
+        print white('\nYou may want to remove the dependencies too, using:')
         print light_blue('# emerge -av --depclean')
     
     sys.exit(0)

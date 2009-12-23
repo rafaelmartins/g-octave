@@ -145,6 +145,28 @@ CLI options
     don't use colors on the CLI
 
 
+Usage Examples
+--------------
+
+Install the latest version of *control*: ::
+    
+    # g-octave control
+
+Install the version 1.0.11 of *control*: ::
+
+    # g-octave control-1.0.11
+
+Remove the package *control*: ::
+
+    # g-octave -C control
+
+Get informations about the package *control*: ::
+
+    # g-octave -i control
+    
+The options *verbose*, *ask* and *pretend* are passed to **emerge**.
+
+
 Dependencies
 ------------
 
@@ -162,6 +184,18 @@ How can I help?
 The users can help testing and reporting bugs in our `issue tracker`_.
 If you can help programming in Python_, please take a look at our missing
 features and at the To-Do list. :)
+
+`g-octave`_ ebuilds are available here:
+http://overlay.rafaelmartins.eng.br/
+
+
+Warning
+-------
+
+If you experienced some random errors when installing some package, please
+retry, using the option *--force-all*, and report the issue to us.
+If you don't want to lose all your ebuilds, you can try to use the option
+*--force*, that will recreate only the affected ebuild.
 
 
 Authors
