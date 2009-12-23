@@ -100,7 +100,7 @@ We have other goals besides implementing the remaining features:
 * Write a man page
 * Convince upstream to distribute the package database
 * Improve the use of `g-octave`_ as a normal user, with "--pretend"
-* Improve the script to generate the package database
+* Improve the script that generate the package database
 * Improve the details available on the packages list
 * more...
 
