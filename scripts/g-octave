@@ -96,19 +96,19 @@ def main():
     )
     
     parser.add_option(
-        '-f', '--force-all',
-        action = 'store_true',
-        dest = 'force_all',
-        default = False,
-        help = 'forces the recreation of the overlay and of the ebuilds'
-    )
-    
-    parser.add_option(
-        '--force',
+        '-f', '--force',
         action = 'store_true',
         dest = 'force',
         default = False,
         help = 'forces the recreation of the ebuilds'
+    )
+    
+    parser.add_option(
+        '--force-all',
+        action = 'store_true',
+        dest = 'force_all',
+        default = False,
+        help = 'forces the recreation of the overlay and of the ebuilds'
     )
     
     if have_colors:
