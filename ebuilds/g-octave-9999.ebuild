@@ -23,6 +23,8 @@ RDEPEND="${DEPEND}
 
 S="${WORKDIR}/${PN}"
 
+DOCS="README.rst"
+
 src_prepare() {
 	if ! use colors; then
 		sed -i -e 's/from colors .*/raise/' scripts/g-octave \
