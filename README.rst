@@ -8,6 +8,7 @@
 .. _Paludis: http://paludis.pioto.org/
 .. _pkgcore: http://www.pkgcore.org/
 .. _`Gentoo Linux`: http://www.gentoo.org/
+.. _`issue tracker`: http://bitbucket.org/rafaelmartins/g-octave/issues/
 
 g-octave
 ========
@@ -79,6 +80,8 @@ Below is a list of features implemented and planned to the next releases.
   on the dependency list, provided by the maintainer of `g-octave`_ **(done)**
 * Supports the installation of multiple packages (not only the dependencies)
 * Handle updates of the eclass and the auxiliary files automatically **(done)**
+* Alert the user that the `g-octave`_ overlay is not appended to the
+  PORTDIR_OVERLAY environment variable **(done)**
 * Support to Portage_ **(done)**
 * Support to Paludis_
 * Support to pkgcore_
@@ -151,3 +154,17 @@ Dependencies
 * Portage_
 * simplejson_
 * pycolors_ (to use colors on the CLI, it's an optional dependency)
+
+
+How can I help?
+---------------
+
+The users can help testing and reporting bugs in our `issue tracker`_.
+If you can help programming in Python_, please take a look at our missing
+features and at the To-Do list. :)
+
+
+Authors
+-------
+
+Rafael Goncalves Martins *<rafael at rafaelmartins dot eng dot br>*

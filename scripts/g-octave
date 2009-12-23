@@ -221,6 +221,10 @@ can install only one package at once and his dependencies.""")
         print >> sys.stderr, light_red('emerge returned an error.')
         sys.exit(1)
     
+    if options.unmerge:
+        print white('You may want to remove the dependencies too, using:')
+        print light_blue('# emerge -av --depclean')
+    
     sys.exit(0)
 
 
