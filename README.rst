@@ -73,6 +73,8 @@ we don't want to do a new release every time that the eclass is changed
 or that a new patch is added. All these files are automatically fetched
 by `g-octave`_
 
+At this time, these files are here:
+http://files.rafaelmartins.eng.br/octave-forge/
 
 Features
 --------
