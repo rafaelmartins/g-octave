@@ -76,6 +76,15 @@ by `g-octave`_
 At this time, these files are here:
 http://files.rafaelmartins.eng.br/octave-forge/
 
+
+Settings
+--------
+
+All the settings are centralized on the file */etc/g-octave.cfg*. Please
+read the comments and change what you need. The recommendation is to keep
+everything as it is. :)
+
+
 Features
 --------
 
