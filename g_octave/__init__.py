@@ -21,4 +21,4 @@ __url__ = 'http://bitbucket.org/rafaelmartins/g-octave/'
 __copyright__ = '(c) 2009 %s' % __author__
 __license__ = 'GPLv2'
 
-__version__ = 'tip'
+__version__ = '0.1b1'
