@@ -12,7 +12,7 @@ from exception import ConfigException
 class Config(object):
     
     __defaults = {
-        'db': '/var/cache/octave-forge',
+        'db': '/var/cache/g-octave',
         'overlay': '/usr/local/portage/g-octave',
         'categories': 'main,extra,language',
         'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
