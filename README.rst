@@ -50,10 +50,34 @@ At this moment `g-octave`_ depends on the Portage_ package manager to works,
 but the support to Paludis_ and pkgcore_ is planned.
 
 
+Dependencies
+------------
+
+`g-octave`_ have some basic dependencies:
+
+* Python_ 2
+* Portage_
+* simplejson_
+* pycolors_ (to use colors on the CLI, it's an optional dependency)
+
+`g-octave`_ also depends on some files, distributed by the maintainer,
+like the package database (a tarball with the DESCRIPTION file of all
+the packages), a file with the dependencies and the blacklist, a tarball
+with the patches, the eclass *octave-forge*, and a file that list the
+updated files.
+
+These files are needed because upstream don't ship a package database
+(they only distribute a tarball with the sources of all the packages, so
+we have a script that create the database using this tarball) and because
+we don't want to do a new release every time that the eclass is changed
+or that a new patch is added. All these files are automatically fetched
+by `g-octave`_
+
+
 Features
 --------
 
-Below is a list of features implemented and planned to the next releases.
+Below is a list of features implemented or planned to the next releases.
 
 * Selection of the packages by name-version **(done)**
 * Selection of the packages by name (using the latest version available)
@@ -61,34 +85,31 @@ Below is a list of features implemented and planned to the next releases.
 * Creation of the ebuilds **(done)**
 * Creation of the Manifest files **(done)**
 * Creation of the overlay automatically **(done)**
-* Installation of the packages automatically **(done)**
+* Installation of the packages **(done)**
 * Update of the packages already installed
 * Remotion of the installed packages **(done)**
 * Installation of the packages with patches automatically **(done)**
 * List the packages available to install **(done)**
-* Shows detailed info about a package **(done)**
-* Supports multiple versions of the same package **(done)**
+* Show detailed info about a package **(done)**
+* Multiple versions of the same package on the tree **(done)**
 * Download auxiliary files (patches, blacklist, dependency list, package
   database and the eclass) from a mirror using wget **(done)**
 * The user can choose with which download manager will fetch these files
 * The user can force the recreation of an ebuild **(done)**
 * The user can force the recreation of the overlay **(done)**
-* Mask a package to be installed, based on the blacklist, provided by the
-  maintainer of `g-octave`_ **(done)**
-* Show the masked packages on the list of packages, with an alert
 * Resolution of the dependencies of packages from the Portage tree, based
   on the dependency list, provided by the maintainer of `g-octave`_ **(done)**
-* Supports the installation of multiple packages (not only the dependencies)
+* Installation of multiple packages at once (not only the dependencies)
 * Handle updates of the eclass and the auxiliary files automatically **(done)**
-* Alert the user that the `g-octave`_ overlay is not appended to the
+* Alert the user if the `g-octave`_ overlay is not appended to the
   PORTDIR_OVERLAY environment variable **(done)**
-* Support to Portage_ **(done)**
-* Support to Paludis_
-* Support to pkgcore_
+* Portage_ is supported **(done)**
+* Paludis_ is supported
+* pkgcore_ is supported
 * Configuration file to the main settings */etc/g-octave.cfg* **(done)**
 * Use colors on the CLI **(done)**
 * The user can disable the use of colors on the CLI **(done)**
-* Logging `g-octave`_ actions
+* Log `g-octave`_ actions to a file
 
 
 To-Do
@@ -165,17 +186,6 @@ Get informations about the package *control*: ::
     # g-octave -i control
     
 The options *verbose*, *ask* and *pretend* are passed to **emerge**.
-
-
-Dependencies
-------------
-
-`g-octave`_ have some basic dependencies:
-
-* Python_ 2
-* Portage_
-* simplejson_
-* pycolors_ (to use colors on the CLI, it's an optional dependency)
 
 
 How can I help?
