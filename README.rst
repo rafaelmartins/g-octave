@@ -128,6 +128,7 @@ To-Do
 
 We have other goals besides implementing the remaining features:
 
+* Remove the unneeded dependency: pycolors
 * Port to Python_ >= 3.0
 * Improve the code comments
 * Improve the error handling
