@@ -182,7 +182,7 @@ def main():
         print portage.output.blue('Url:'), portage.output.white(str(pkg.url))
         sys.exit(0)
 
-    out.einfo('Creating the ebuilds to install: %s' % args[0])
+    out.einfo('Creating the ebuilds to: %s' % args[0])
     
     atom = ebuild.create()
     
@@ -198,10 +198,11 @@ def main():
     emerge.append(atom)
     
     if subprocess.call(emerge) != 0:
-        out.eerror('emerge returned an error.')
+        out.eerror('"emerge" returned an error.')
         sys.exit(1)
     
     if options.unmerge:
+        print
         out.einfo('You may want to remove the dependencies too, using:')
         out.einfo('# emerge -av --depclean')
     
