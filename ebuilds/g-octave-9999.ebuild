@@ -17,6 +17,6 @@ SLOT="0"
 KEYWORDS=""
 IUSE=""
 
-RDEPEND="sys-apps/portage"
+RDEPEND="sys-apps/portage[-python3]"
 
 S="${WORKDIR}/${PN}"
