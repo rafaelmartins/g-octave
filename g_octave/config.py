@@ -54,8 +54,6 @@ class Config(object):
             self.__info = simplejson.load(fp)
             fp.close()
         
-        self.__check_dirs()
-        
 
     def __getattr__(self, attr):
         
@@ -67,19 +65,7 @@ class Config(object):
             return self.__cache['files']
         else:
             raise ConfigException('Invalid option: %s' % attr)
-    
-    
-    def __check_dirs(self):
-        
-        dirs = [
-            self.__config.get(self.__section_name, 'db'),
-            self.__config.get(self.__section_name, 'overlay')
-        ]
-        
-        for dir in dirs:
-            if not os.path.isdir(dir):
-                os.makedirs(dir, 0755)
-    
+
 
 if __name__ == '__main__':
     conf = Config()
