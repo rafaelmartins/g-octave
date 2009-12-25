@@ -58,7 +58,6 @@ Dependencies
 * Python_ 2
 * Portage_
 * simplejson_
-* pycolors_ (to use colors on the CLI, it's an optional dependency)
 
 `g-octave`_ also depends on some files, distributed by the maintainer,
 like the package database (a tarball with the DESCRIPTION file of all
@@ -128,7 +127,7 @@ To-Do
 
 We have other goals besides implementing the remaining features:
 
-* Remove the unneeded dependency: pycolors
+* Remove the unneeded dependency: pycolors **(done)**
 * Port to Python_ >= 3.0
 * Improve the code comments
 * Improve the error handling

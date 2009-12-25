@@ -25,13 +25,7 @@ import optparse
 import portage
 import subprocess
 
-# trying to use colors
-have_colors = True
-try:
-    from colors import light_blue, light_red, white, disable_colors
-except:
-    have_colors = False
-    light_blue = light_red = white = lambda(x): str(x)
+out = portage.output.EOutput()
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
@@ -111,19 +105,18 @@ def main():
         help = 'forces the recreation of the overlay and of the ebuilds'
     )
     
-    if have_colors:
-        parser.add_option(
-            '--no-colors',
-            action = 'store_false',
-            dest = 'colors',
-            default = True,
-            help = 'don\'t use colors on the CLI'
-        )
+    parser.add_option(
+        '--no-colors',
+        action = 'store_false',
+        dest = 'colors',
+        default = True,
+        help = 'don\'t use colors on the CLI'
+    )
     
     options, args = parser.parse_args()
     
-    if have_colors and not options.colors:
-        disable_colors()
+    if not options.colors:
+        portage.output.nocolor()
     
     from g_octave.config import Config
     from g_octave.fetch import check_updates, download_files, check_db_cache
@@ -132,18 +125,13 @@ def main():
     
     # checking if our overlay is correctly added to PORTDIR_OVERLAY
     if conf_prefetch.overlay not in portage.settings['PORTDIR_OVERLAY'].split(' '):
-        print >> sys.stderr, light_red('ERROR:'), white('g-octave overlay is not configured!')
-        print >> sys.stderr, white('You must append your overlay dir to PORTDIR_OVERLAY.')
-        print >> sys.stderr
-        print >> sys.stderr, light_blue('Example:')
-        print >> sys.stderr, white(
-            '# echo \'PORTDIR_OVERLAY="${PORTDIR_OVERLAY} %s"\' >> /etc/make.conf' \
-                % conf_prefetch.overlay
-        )
+        out.eerror('g-octave overlay is not configured!')
+        out.eerror('You must append your overlay dir to PORTDIR_OVERLAY.')
+        out.eerror('Overlay: %s' % conf_prefetch.overlay)
         sys.exit(1)
     
-    if options.verbose:
-        print white('>>> Looking for updates. Some download may be needed.')
+    out.einfo('Looking for updates. Some download may be needed.')
+    print
     
     check_updates()
     download_files()
@@ -158,21 +146,18 @@ def main():
 
     if options.list:
         tree = DescriptionTree()
-        print light_blue('Available packages:\n')
+        print portage.output.blue('Available packages:\n')
         for category in tree.pkg_list:
-            print white('%s:') % category
+            print portage.output.white('%s:') % category
             for pkg in tree.pkg_list[category]:
                 print '\t%s-%s' % (pkg['name'], pkg['version'])
             print
         sys,exit(0)
     elif len(args) == 0:
-        print >> sys.stderr, light_red('Error:'), white("""\
-You need provide an atom "name", "name-version", or the option "--list" """)
+        out.eerror('You need provide a package atom or the option "--list"')
         sys.exit(1)
     elif len(args) > 1:
-        print >> sys.stderr, light_red('Error:'), white("""\
-You tried to install more than one package, but at this moment g-octave
-can install only one package at once and his dependencies.""")
+        out.eerror('At this moment g-octave can install only one package at once')
         sys.exit(1)
     
     # if we're alive yet, we have a package to install! :D
@@ -182,48 +167,43 @@ can install only one package at once and his dependencies.""")
     try:
         ebuild = Ebuild(args[0], options.force or options.force_all)
     except EbuildException:
-        print >> sys.stderr, light_red('Package not found:'), white(args[0])
+        out.eerror('Package not found: %s' % args[0])
         sys.exit(1)
     
     if options.info:
         pkg = ebuild.description()
-        print light_blue('Package:'), white(pkg.name)
-        print light_blue('Version:'), white(pkg.version)
-        print light_blue('Date:'), white(pkg.date)
-        print light_blue('Maintainer:'), white(pkg.maintainer)
-        print light_blue('Description:'), white(pkg.description)
-        print light_blue('Categories:'), white(pkg.categories)
-        print light_blue('License:'), white(pkg.license)
-        print light_blue('Url:'), white(pkg.url)
+        print portage.output.blue('Package:'), portage.output.white(str(pkg.name))
+        print portage.output.blue('Version:'), portage.output.white(str(pkg.version))
+        print portage.output.blue('Date:'), portage.output.white(str(pkg.date))
+        print portage.output.blue('Maintainer:'), portage.output.white(str(pkg.maintainer))
+        print portage.output.blue('Description:'), portage.output.white(str(pkg.description))
+        print portage.output.blue('Categories:'), portage.output.white(str(pkg.categories))
+        print portage.output.blue('License:'), portage.output.white(str(pkg.license))
+        print portage.output.blue('Url:'), portage.output.white(str(pkg.url))
         sys.exit(0)
 
-    if options.verbose:
-        print white('>>> Creating the ebuilds to install:'), light_blue(args[0])
+    out.einfo('Creating the ebuilds to install: %s' % args[0])
     
     atom = ebuild.create()
     
-    if options.verbose:
-        print white('>>> Now we\'ll call emerge to do the rest of the job!')
+    out.einfo('Now we\'ll call emerge to do the rest of the job!')
     
     emerge = ['emerge']
     options.ask and emerge.append('--ask')
     options.verbose and emerge.append('--verbose')
     options.pretend and emerge.append('--pretend')
     options.unmerge and emerge.append('--unmerge')
-    if have_colors:
-        if not options.colors:
-            emerge.append('--color=n')
-    else:
+    if not options.colors:
         emerge.append('--color=n')
     emerge.append(atom)
     
     if subprocess.call(emerge) != 0:
-        print >> sys.stderr, light_red('emerge returned an error.')
+        out.eerror('emerge returned an error.')
         sys.exit(1)
     
     if options.unmerge:
-        print white('\nYou may want to remove the dependencies too, using:')
-        print light_blue('# emerge -av --depclean')
+        out.einfo('You may want to remove the dependencies too, using:')
+        out.einfo('# emerge -av --depclean')
     
     sys.exit(0)
 
@@ -234,35 +214,36 @@ if __name__ == '__main__':
     
     try:
         main()
+        sys.exit(0)
     except ConfigException, error:
-        print >> sys.stderr, light_blue('Config class error'), '-', light_red(error)
+        out.eerror('Config class error - %s' % error)
         sys.exit(1)
     except DescriptionException, error:
-        print >> sys.stderr, light_blue('Description class error'), '-', light_red(error)
+        out.eerror('Description class error - %s' % error)
         sys.exit(1)
     except DescriptionTreeException, error:
-        print >> sys.stderr, light_blue('DescriptionTree class error'), '-', light_red(error)
+        out.eerror('DescriptionTree class error - %s' % error)
         sys.exit(1)
     except EbuildException, error:
-        print >> sys.stderr, light_blue('Ebuild class error'), '-', light_red(error)
+        out.eerror('Ebuild class error - %s' % error)
         sys.exit(1)
     except FetchException, error:
-        print >> sys.stderr, light_blue('Fetch module error'), '-', light_red(error)
+        out.eerror('Fetch module error - %s' % error)
         sys.exit(1)
     except OSError, error:
-        print >> sys.stderr, light_blue('Operating System error'), '-', light_red(error)
-        print >> sys.stderr, white('Try run "g-octave" as root.')
+        out.eerror('Operating System error - %s' % error)
+        out.eerror('Try run "g-octave" as root.')
         sys.exit(1)
     except IOError, error:
-        print >> sys.stderr, light_blue('I/O error'), '-', light_red(error)
-        print >> sys.stderr, white('Try run "g-octave" as root.')
+        out.eerror('I/O error - %s' % error)
+        out.eerror('Try run "g-octave" as root.')
         sys.exit(1)
     except KeyError, error:
-        print >> sys.stderr, light_blue('Key error'), '-', light_red(error)
-        print >> sys.stderr, white('Probably you have more than one overlay configured to use with g-octave')
-        print >> sys.stderr, white('Try remove the oldest and maintain only the overlay actually in use.')
+        out.eerror('Key error - %s' % error)
+        out.eerror('Probably you have more than one overlay configured to use with g-octave')
+        out.eerror('Try remove the oldest and maintain only the overlay actually in use.')
         sys.exit(1)
     except Exception, error:
-        print >> sys.stderr, light_blue('Unknown error'), '-', light_red(error)
-        print >> sys.stderr, white('If you fell that this is a bug, please report to us.')
+        out.eerror('Unknown error - %s' % error)
+        out.eerror('If you fell that this is a bug, please report to us.')
         sys.exit(1)
