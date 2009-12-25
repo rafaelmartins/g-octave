@@ -7,6 +7,7 @@
 .. _pkgcore: http://www.pkgcore.org/
 .. _`Gentoo Linux`: http://www.gentoo.org/
 .. _`issue tracker`: http://bitbucket.org/rafaelmartins/g-octave/issues/
+.. _Mercurial: http://mercurial.selenic.com/
 
 g-octave
 ========
@@ -215,6 +216,17 @@ If you experienced some random errors when installing some package, please
 retry, using the option *--force-all*, and report the issue to us.
 If you don't want to lose all your ebuilds, you can try to use the option
 *--force*, that will recreate only the affected ebuild.
+
+
+Download Page
+-------------
+
+You can get the sources here:
+http://bitbucket.org/rafaelmartins/g-octave/downloads/
+
+or checkout the Mercurial_ repository using: ::
+    
+    $ hg clone https://bitbucket.org/rafaelmartins/g-octave/
 
 
 Authors

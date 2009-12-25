@@ -43,13 +43,13 @@ class Config(object):
         if not fetch_phase:
             
             # Cache (JSON)
-            cache_file = os.path.join(self.__getattr__('db'), 'cache.json')
+            cache_file = os.path.join(__db, 'cache.json')
             fp = open(cache_file)
             self.__cache = json.load(fp)
             fp.close()
             
             # JSON
-            json_file = os.path.join(self.__getattr__('db'), self.__cache['files']['info.json'])
+            json_file = os.path.join(__db, self.__cache['files']['info.json'])
             fp = open(json_file)
             self.__info = json.load(fp)
             fp.close()
