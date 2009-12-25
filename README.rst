@@ -53,7 +53,7 @@ Dependencies
 
 `g-octave`_ have some basic dependencies:
 
-* Python_ 2
+* Python_ 2.6
 * Portage_
 
 `g-octave`_ also depends on some files, distributed by the maintainer,
