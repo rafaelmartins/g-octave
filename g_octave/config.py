@@ -4,7 +4,7 @@
 __all__ = ['Config']
 
 import ConfigParser
-import simplejson
+import json
 import os
 
 from exception import ConfigException
@@ -45,13 +45,13 @@ class Config(object):
             # Cache (JSON)
             cache_file = os.path.join(self.__getattr__('db'), 'cache.json')
             fp = open(cache_file)
-            self.__cache = simplejson.load(fp)
+            self.__cache = json.load(fp)
             fp.close()
             
             # JSON
             json_file = os.path.join(self.__getattr__('db'), self.__cache['files']['info.json'])
             fp = open(json_file)
-            self.__info = simplejson.load(fp)
+            self.__info = json.load(fp)
             fp.close()
         
 

@@ -14,7 +14,7 @@ from exception import FetchException
 
 import urllib2
 import os
-import simplejson
+import json
 import subprocess
 import re
 import shutil
@@ -49,7 +49,7 @@ def check_updates():
 def download_files():
     
     fp = open(conf.db+'/update.json')
-    files = simplejson.load(fp)
+    files = json.load(fp)
     fp.close()
     
     for _file in files['files']:
@@ -81,7 +81,7 @@ def add_file_to_db_cache(_file):
     
     try:
         fp = open(conf.db+'/cache.json')
-        files = simplejson.load(fp)
+        files = json.load(fp)
         fp.close()
     except:
         files = {'files': {}}
@@ -91,7 +91,7 @@ def add_file_to_db_cache(_file):
             files['files'][f] = _file
     
     fp = open(conf.db+'/cache.json', 'w', 0644)
-    simplejson.dump(files, fp)
+    json.dump(files, fp)
     fp.close()
 
 
@@ -99,13 +99,13 @@ def check_db_cache():
     
     try:
         fp = open(conf.db+'/cache.json')
-        cache = simplejson.load(fp)
+        cache = json.load(fp)
         fp.close()
     except:
         cache = {'files': []}
     
     fp = open(conf.db+'/update.json')
-    update = simplejson.load(fp)
+    update = json.load(fp)
     fp.close()
     
     for _file in update['files']:

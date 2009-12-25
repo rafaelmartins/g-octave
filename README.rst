@@ -2,8 +2,6 @@
 .. _`Octave-Forge`: http://octave.sf.net/
 .. _`g-octave`: http://bitbucket.org/rafaelmartins/g-octave/
 .. _Python: http://python.org/
-.. _simplejson: http://pypi.python.org/pypi/simplejson/
-.. _pycolors: http://pypi.python.org/pypi/pycolors/
 .. _Portage: http://www.gentoo.org/proj/en/portage/ 
 .. _Paludis: http://paludis.pioto.org/
 .. _pkgcore: http://www.pkgcore.org/
@@ -57,7 +55,6 @@ Dependencies
 
 * Python_ 2
 * Portage_
-* simplejson_
 
 `g-octave`_ also depends on some files, distributed by the maintainer,
 like the package database (a tarball with the DESCRIPTION file of all
@@ -128,6 +125,7 @@ To-Do
 We have other goals besides implementing the remaining features:
 
 * Remove the unneeded dependency: pycolors **(done)**
+* Remove the unneeded dependency: simplejson **(done)**
 * Port to Python_ >= 3.0
 * Improve the code comments
 * Improve the error handling

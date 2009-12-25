@@ -18,5 +18,5 @@ setup(
     packages = ['g_octave'],
     scripts = ['scripts/g-octave'],
     data_files = [('/etc', ['etc/g-octave.cfg'])],
-    requires = ['simplejson', 'portage']
+    requires = ['portage']
 )

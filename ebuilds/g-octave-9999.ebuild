@@ -4,6 +4,8 @@
 
 EAPI="2"
 
+NEED_PYTHON="2.6"
+
 inherit distutils mercurial
 
 DESCRIPTION="A tool that generates and installs ebuilds for Octave-Forge"
@@ -13,19 +15,8 @@ EHG_REPO_URI="https://bitbucket.org/rafaelmartins/g-octave/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=""
-IUSE="colors"
+IUSE=""
 
-DEPEND="<dev-lang/python-3"
-RDEPEND="${DEPEND}
-	sys-apps/portage
-	dev-python/simplejson
-	colors? ( dev-python/pycolors )"
+RDEPEND="sys-apps/portage"
 
 S="${WORKDIR}/${PN}"
-
-src_prepare() {
-	if ! use colors; then
-		sed -i -e 's/from colors .*/raise/' scripts/g-octave \
-			|| die 'sed failed.'
-	fi
-}
