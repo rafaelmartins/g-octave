@@ -130,11 +130,14 @@ def main():
         out.eerror('Overlay: %s' % conf_prefetch.overlay)
         sys.exit(1)
     
-    out.einfo('Looking for updates. Some download may be needed.')
-    print
+    files = check_updates()
     
-    check_updates()
-    download_files()
+    if len(files) > 0:
+        out.einfo('Updates are available. Downloading ...')
+        print
+        download_files(files)
+        print
+    
     check_db_cache()
 
     conf = Config()
