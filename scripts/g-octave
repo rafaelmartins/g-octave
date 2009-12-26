@@ -215,7 +215,6 @@ if __name__ == '__main__':
     
     try:
         main()
-        sys.exit(0)
     except ConfigException, error:
         out.eerror('Config class error - %s' % error)
         sys.exit(1)
@@ -248,3 +247,5 @@ if __name__ == '__main__':
         out.eerror('Unknown error - %s' % error)
         out.eerror('If you fell that this is a bug, please report to us.')
         sys.exit(1)
+    else:
+        sys.exit(0)
