@@ -166,6 +166,7 @@ def main():
     # if we're alive yet, we have a package to install! :D
     
     create_overlay(options.force_all)
+    print
     
     try:
         ebuild = Ebuild(args[0], options.force or options.force_all)
@@ -184,12 +185,8 @@ def main():
         print portage.output.blue('License:'), portage.output.white(str(pkg.license))
         print portage.output.blue('Url:'), portage.output.white(str(pkg.url))
         sys.exit(0)
-
-    out.einfo('Creating the ebuilds to: %s' % args[0])
     
     atom = ebuild.create()
-    
-    out.einfo('Now we\'ll call emerge to do the rest of the job!')
     
     emerge = ['emerge']
     options.ask and emerge.append('--ask')

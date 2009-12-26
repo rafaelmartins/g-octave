@@ -18,6 +18,9 @@ import portage
 import re
 import shutil
 import imp
+import subprocess
+
+out = portage.output.EOutput()
 
 # validating keywords (based on the keywords from the sci-mathematics/octave package)
 re_keywords = re.compile(r'(~)?(alpha|amd64|hppa|ppc|ppc64|sparc|x86)')
@@ -48,15 +51,40 @@ class Ebuild:
         return self.__desc
 
 
-    def create(self):
+    def create(self, display_info=True):
+        
+        my_ebuild = os.path.join(
+            conf.overlay,
+            'g-octave',
+            '%s' % self.pkgname,
+            '%s-%s.ebuild' % (self.pkgname, self.version)
+        )
+        
+        if not os.path.exists(my_ebuild) or self.__force:
+            
+            if display_info:
+                out.ebegin('Creating ebuild: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
+            
+            try:
+                my_atom = self.__create()
+            except Exception, error:
+                if display_info:
+                    out.eend(1)
+                raise EbuildException(error)
+            else:
+                if display_info:
+                    out.eend(0)
+                self.__resolve_dependencies()
+                return my_atom
+        
+        else:
+            return '=g-octave/%s-%s' % (self.pkgname, self.version)
+
+
+    def __create(self):
         
         ebuild_path = os.path.join(conf.overlay, 'g-octave', self.pkgname)
         ebuild_file = os.path.join(ebuild_path, '%s-%s.ebuild' % (self.pkgname, self.version))
-        
-        my_atom = '=g-octave/%s-%s' % (self.pkgname, self.version)
-        
-        if os.path.exists(ebuild_file) and not self.__force:
-            return my_atom
         
         if not os.path.exists(ebuild_path):
             os.makedirs(ebuild_path, 0755)
@@ -134,17 +162,16 @@ RDEPEND="${DEPEND}
         portage.close_portdbapi_caches()
         imp.reload(portage)
         
-        portage.doebuild(
-            ebuild_file,
-            "manifest",
-            portage.root,
-            portage.config(clone=portage.settings),
-            tree="porttree"
+        proc = subprocess.call(
+            ['ebuild', ebuild_file, 'manifest'],
+            stdout = open(os.devnull, 'w'),
+            stderr = open(os.devnull, 'w'),
         )
         
-        self.__resolve_dependencies()
+        if proc != 0:
+            raise EbuildException('Failed to create Manifest file!')
         
-        return my_atom
+        return '=g-octave/%s-%s' % (self.pkgname, self.version)
         
     
     def __keywords(self, accept_keywords):

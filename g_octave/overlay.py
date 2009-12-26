@@ -21,7 +21,7 @@ def create_overlay(force=False):
     
     if not os.path.exists(os.path.join(conf.overlay, 'profiles', 'repo_name')):
         
-        out.ebegin('Creating the overlay: %s' % conf.overlay)
+        out.ebegin('Creating overlay: %s' % conf.overlay)
         
         try:
             # creating dirs
