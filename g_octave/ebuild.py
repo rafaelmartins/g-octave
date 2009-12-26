@@ -184,7 +184,7 @@ RDEPEND="${DEPEND}
         
         tmp = []
         
-        for patch in os.listdir(conf.db+'/patches'):
+        for patch in os.listdir(os.path.join(conf.db, 'patches')):
             if re.match(r'^([0-9]{3})_%s-%s' % (self.pkgname, self.version), patch):
                 tmp.append(patch)
         

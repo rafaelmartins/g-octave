@@ -17,7 +17,7 @@ class DescriptionTree(object):
         
         self.pkg_list = {}
         
-        self.__db_path = conf.db+'/octave-forge'
+        self.__db_path = os.path.join(conf.db, 'octave-forge')
         
         if not os.path.isdir(self.__db_path):
             raise DescriptionTreeException('Invalid db: %s' % self.__db_path)
