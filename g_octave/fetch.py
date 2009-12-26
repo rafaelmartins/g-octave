@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __all__ = [
+    'need_update',
     'check_updates',
     'download_files',
     'check_db_cache',
@@ -28,14 +29,18 @@ re_files = {
     'patches.tar.gz':         re.compile(r'patches-([0-9]{8})-([0-9]+)\.tar\.gz'),
 }
 
+def need_update():
+    
+    return not os.path.exists(os.path.join(conf.db, 'update.json'))
+
+
 def check_updates():
     
     try:
         update = download_with_urllib2(conf.db_mirror + '/update.json', display_info=False)
     except Exception, error:
         # if we already have a file, that's ok
-        my_file = os.path.join(conf.db, 'update.json')
-        if not os.path.exists(my_file):
+        if need_update():
             raise FetchException(error)
         fp = open(my_file)
         update = fp.read()

@@ -113,15 +113,28 @@ def main():
         help = 'don\'t use colors on the CLI'
     )
     
+    parser.add_option(
+        '--sync',
+        action = 'store_true',
+        dest = 'sync',
+        default = False,
+        help = 'search for updates of the package database, patches and auxiliary files'
+    )
+    
     options, args = parser.parse_args()
     
     if not options.colors:
         portage.output.nocolor()
     
     from g_octave.config import Config
-    from g_octave.fetch import check_updates, download_files, check_db_cache
+    from g_octave.fetch import need_update, check_updates, download_files, check_db_cache
     
     conf_prefetch = Config(True)
+    
+    # checking if we have a package database
+    if need_update() and not options.sync:
+        out.eerror('Please run "g-octave --sync" to download a package database!')
+        sys.exit(1)
     
     # checking if our overlay is correctly added to PORTDIR_OVERLAY
     if conf_prefetch.overlay not in portage.settings['PORTDIR_OVERLAY'].split(' '):
@@ -130,13 +143,22 @@ def main():
         out.eerror('Overlay: %s' % conf_prefetch.overlay)
         sys.exit(1)
     
-    files = check_updates()
-    
-    if len(files) > 0:
-        out.einfo('Updates are available. Downloading ...')
-        print
-        download_files(files)
-        print
+    if options.sync:
+        
+        out.einfo('Searching updates ...')
+        
+        files = check_updates()
+        
+        if len(files) > 0:
+            out.einfo('Updates are available. Downloading ...')
+            print
+            download_files(files)
+            print
+            out.einfo('Done.')
+        else:
+            out.einfo('No updates available.')
+        
+        sys.exit(0)
     
     check_db_cache()
 
@@ -157,7 +179,7 @@ def main():
             print
         sys,exit(0)
     elif len(args) == 0:
-        out.eerror('You need provide a package atom or the option "--list"')
+        out.eerror('You need provide a package atom or "--list" or "--sync"')
         sys.exit(1)
     elif len(args) > 1:
         out.eerror('At this moment g-octave can install only one package at once')
@@ -166,7 +188,6 @@ def main():
     # if we're alive yet, we have a package to install! :D
     
     create_overlay(options.force_all)
-    print
     
     try:
         ebuild = Ebuild(args[0], options.force or options.force_all)

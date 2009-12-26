@@ -175,6 +175,9 @@ CLI options
 *--no-colors*
     don't use colors on the CLI
 
+*--sync*
+    search for updates of the package database, patches and auxiliary files
+
 
 Usage Examples
 --------------
