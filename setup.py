@@ -14,6 +14,16 @@ import g_octave
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
+manpages = {
+    'g-octave.1.rst': 'g-octave.1',
+}
+
+html = {
+    'README.rst': 'g-octave.html',
+}
+
+outputs = [i for i in manpages.values()] + [i for i in html.values()]
+
 def bdoc():
     
     from codecs import open
@@ -26,10 +36,11 @@ def bdoc():
         pass
     
     # creating the man-page
-    print 'building the manpage'
+    print 'building the manpages'
     
-    path_rst = os.path.join(current_dir, 'g-octave.1.rst')
-    path = os.path.join(current_dir, 'g-octave.1')
+    for rst in manpages:
+        path_rst = os.path.join(current_dir, rst)
+        path = os.path.join(current_dir, manpages[rst])
     
     man_rst = open(path_rst, 'r', encoding='utf-8')
     manpage = man_rst.read()
@@ -50,7 +61,7 @@ def bdoc():
             source_path = path_rst,
             destination = man,
             destination_path = path,
-            writer_name='manpage',
+            writer_name = 'manpage',
         )
         man_tmp.close()
         man.close()
@@ -58,10 +69,11 @@ def bdoc():
         raise RuntimeError('Failed to build the manpage')
     
     # creating the README.html
-    print 'building the html doc'
+    print 'building the html docs'
     
-    path_rst = os.path.join(current_dir, 'README.rst')
-    path = os.path.join(current_dir, 'g-octave.html')
+    for rst in html:
+        path_rst = os.path.join(current_dir, rst)
+        path = os.path.join(current_dir, html[rst])
     
     readme_rst =  open(path_rst, 'r', encoding='utf-8')
     readme = open(path, 'w', encoding='utf-8')
@@ -72,7 +84,7 @@ def bdoc():
             source_path = path_rst,
             destination = readme,
             destination_path = path,
-            writer_name='html',
+            writer_name = 'html',
         )
         readme_rst.close()
         readme.close()
@@ -91,7 +103,7 @@ class build(_build):
     
     def run(self):
         _build.run(self)
-        for i in ['g-octave.1', 'g-octave.html']:
+        for i in outputs:
             if os.path.exists(os.path.join(current_dir, i)):
                 return
         bdoc()
@@ -102,7 +114,7 @@ class clean(_clean):
     def run(self):
         _clean.run(self)
         if self.all:
-            for i in ['g-octave.1', 'g-octave.html']:
+            for i in outputs:
                 my_path = os.path.join(current_dir, i)
                 if os.path.exists(my_path):
                     print 'removing %s' % my_path
@@ -110,7 +122,7 @@ class clean(_clean):
 
 
 setup(
-    name='g-octave',
+    name = 'g-octave',
     version = g_octave.__version__,
     license = g_octave.__license__,
     description = g_octave.__description__,
