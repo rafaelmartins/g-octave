@@ -22,7 +22,7 @@ html = {
     'README.rst': 'g-octave.html',
 }
 
-outputs = [i for i in manpages.values()] + [i for i in html.values()]
+outputs = manpages.values() + html.values()
 
 def bdoc():
     
