@@ -26,14 +26,14 @@ outputs = manpages.values() + html.values()
 
 def bdoc():
     
-    from codecs import open
-    from StringIO import StringIO
-    from datetime import date
-    
     try:
         from docutils import core
     except ImportError:
-        pass
+        return
+    
+    from codecs import open
+    from StringIO import StringIO
+    from datetime import date
     
     print 'building the manpages'
     
