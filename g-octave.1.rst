@@ -8,7 +8,7 @@ generate ebuilds to the Octave-Forge packages
 
 :Author: %(author_email)s
 :Date:   %(date)s
-:Copyright: %(copiryght)s
+:Copyright: %(copyright)s
 :Version: %(version)s
 :Manual section: 1
 :Manual group: Portage
