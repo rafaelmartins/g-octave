@@ -35,7 +35,6 @@ def bdoc():
     except ImportError:
         pass
     
-    # creating the man-page
     print 'building the manpages'
     
     for rst in manpages:
@@ -68,7 +67,6 @@ def bdoc():
     except:
         raise RuntimeError('Failed to build the manpage')
     
-    # creating the README.html
     print 'building the html docs'
     
     for rst in html:
