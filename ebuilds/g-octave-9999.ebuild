@@ -4,8 +4,6 @@
 
 EAPI="2"
 
-NEED_PYTHON="2.6"
-
 inherit distutils mercurial
 
 DESCRIPTION="A tool that generates and installs ebuilds for Octave-Forge"
@@ -17,6 +15,16 @@ SLOT="0"
 KEYWORDS=""
 IUSE=""
 
-RDEPEND="sys-apps/portage[-python3]"
+CDEPEND="( >=dev-lang/python-2.6 <dev-lang/python-3 )"
+DEPEND="${CDEPEND}
+	dev-python/docutils"
+RDEPEND="${CDEPEND}
+	|| ( >=sys-apps/portage-2.1.7[-python3] <sys-apps/portage-2.1.7 )"
 
 S="${WORKDIR}/${PN}"
+
+src_install() {
+	distutils_src_install
+	dohtml ${PN}.html
+	doman ${PN}.1
+}

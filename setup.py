@@ -37,7 +37,7 @@ def bdoc():
     
     man_tmp = StringIO(manpage % {
         'author_email': g_octave.__email__,
-        'date': date(2009, 12, 28).strftime('%Y-%m-%d'),
+        'date': date.today().strftime('%Y-%m-%d'),
         'copyright': g_octave.__author__,
         'version': g_octave.__version__,
     })
