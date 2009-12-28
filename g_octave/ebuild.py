@@ -63,17 +63,15 @@ class Ebuild:
         if not os.path.exists(my_ebuild) or self.__force:
             
             if display_info:
-                out.ebegin('Creating ebuild: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
+                out.einfo('Creating ebuild: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
             
             try:
                 my_atom = self.__create()
             except Exception, error:
                 if display_info:
-                    out.eend(1)
+                    out.eerror('Failed to create: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
                 raise EbuildException(error)
             else:
-                if display_info:
-                    out.eend(0)
                 self.__resolve_dependencies()
                 return my_atom
         
@@ -162,11 +160,7 @@ RDEPEND="${DEPEND}
         portage.close_portdbapi_caches()
         imp.reload(portage)
         
-        proc = subprocess.call(
-            ['ebuild', ebuild_file, 'manifest'],
-            stdout = open(os.devnull, 'w'),
-            stderr = open(os.devnull, 'w'),
-        )
+        proc = subprocess.call(['ebuild', ebuild_file, 'manifest'])
         
         if proc != 0:
             raise EbuildException('Failed to create Manifest file!')
