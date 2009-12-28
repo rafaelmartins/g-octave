@@ -131,7 +131,7 @@ We have other goals besides implementing the remaining features:
 * Improve the code comments
 * Improve the error handling
 * Improve the overlay management
-* Write a man page
+* Write a man page **(done)**
 * Convince upstream to distribute the package database
 * Improve the use of `g-octave`_ as a normal user, with "--pretend"
 * Improve the script that generate the package database
