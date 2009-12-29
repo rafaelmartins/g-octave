@@ -17,7 +17,7 @@ IUSE=""
 
 CDEPEND="( >=dev-lang/python-2.6 <dev-lang/python-3 )"
 DEPEND="${CDEPEND}
-	dev-python/docutils"
+	>=dev-python/docutils-0.6"
 RDEPEND="${CDEPEND}
 	|| ( >=sys-apps/portage-2.1.7[-python3] <sys-apps/portage-2.1.7 )"
 
