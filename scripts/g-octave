@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__issue_tracker = 'http://bitbucket.org/rafaelmartins/g-octave/issues/'
+
 import sys
 
 # This block ensures that ^C interrupts are handled quietly.
@@ -226,47 +228,50 @@ def main():
         print
         out.einfo('You may want to remove the dependencies too, using:')
         out.einfo('# emerge -av --depclean')
-    
-    sys.exit(0)
 
 
 if __name__ == '__main__':
     
     from g_octave.exception import *
     
+    return_code = 0
+    
     try:
         main()
     except ConfigException, error:
         out.eerror('Config class error - %s' % error)
-        sys.exit(1)
+        return_code = 1
     except DescriptionException, error:
         out.eerror('Description class error - %s' % error)
-        sys.exit(1)
+        return_code = 1
     except DescriptionTreeException, error:
         out.eerror('DescriptionTree class error - %s' % error)
-        sys.exit(1)
+        return_code = 1
     except EbuildException, error:
         out.eerror('Ebuild class error - %s' % error)
-        sys.exit(1)
+        return_code = 1
     except FetchException, error:
         out.eerror('Fetch module error - %s' % error)
-        sys.exit(1)
+        return_code = 1
     except OSError, error:
         out.eerror('Operating System error - %s' % error)
         out.eerror('Try run "g-octave" as root.')
-        sys.exit(1)
+        return_code = 1
     except IOError, error:
         out.eerror('I/O error - %s' % error)
         out.eerror('Try run "g-octave" as root.')
-        sys.exit(1)
+        return_code = 1
     except KeyError, error:
         out.eerror('Key error - %s' % error)
         out.eerror('Probably you have more than one overlay configured to use with g-octave')
         out.eerror('Try remove the oldest and maintain only the overlay actually in use.')
-        sys.exit(1)
+        return_code = 1
     except Exception, error:
         out.eerror('Unknown error - %s' % error)
-        out.eerror('If you fell that this is a bug, please report to us.')
-        sys.exit(1)
-    else:
-        sys.exit(0)
+        return_code = 1
+    
+    if return_code != 0:
+        out.einfo('If you fell that this is a bug, please report to us.')
+        out.einfo('Issue tracker: $s' % __issue_tracker)
+    
+    sys.exit(return_code)
