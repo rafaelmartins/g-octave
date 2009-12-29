@@ -64,8 +64,8 @@ def bdoc():
         )
         man_tmp.close()
         man.close()
-    except:
-        raise RuntimeError('Failed to build the manpage')
+    except Exception, error:
+        raise RuntimeError('Failed to build the manpage: %s' % error)
     
     print 'building the html docs'
     
@@ -86,8 +86,8 @@ def bdoc():
         )
         readme_rst.close()
         readme.close()
-    except:
-        raise RuntimeError('Failed to build the html doc')
+    except Exception, error:
+        raise RuntimeError('Failed to build the html doc: %s' % error)
 
 
 class sdist(_sdist):
