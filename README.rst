@@ -100,9 +100,6 @@ Below is a list of features implemented or planned to the next releases.
 * List the packages available to install **(done)**
 * Show detailed info about a package **(done)**
 * Multiple versions of the same package on the tree **(done)**
-* Download auxiliary files (patches, blacklist, dependency list, package
-  database and the eclass) from a mirror using wget **(done)**
-* The user can choose with which download manager will fetch these files
 * The user can force the recreation of an ebuild **(done)**
 * The user can force the recreation of the overlay **(done)**
 * Resolution of the dependencies of packages from the Portage tree, based
@@ -134,7 +131,7 @@ We have other goals besides implementing the remaining features:
 * Write a man page **(done)**
 * Convince upstream to distribute the package database
 * Improve the use of `g-octave`_ as a normal user, with "--pretend"
-* Improve the script that generate the package database
+* Improve the script that generates the package database
 * Improve the details available on the packages list
 * Write a testsuite
 * more...
