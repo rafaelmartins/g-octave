@@ -136,6 +136,7 @@ We have other goals besides implementing the remaining features:
 * Improve the use of `g-octave`_ as a normal user, with "--pretend"
 * Improve the script that generate the package database
 * Improve the details available on the packages list
+* Write a testsuite
 * more...
 
 
@@ -208,8 +209,8 @@ The users can help testing and reporting bugs in our `issue tracker`_.
 If you can help programming in Python_, please take a look at our missing
 features and at the To-Do list. :)
 
-`g-octave`_ ebuilds are available here:
-http://overlay.rafaelmartins.eng.br/
+`g-octave`_ ebuilds are available on the mercurial repository, or here:
+http://gitorious.org/gentoo-br/rafaelmartins/ (overlay)
 
 
 Warning
