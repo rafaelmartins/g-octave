@@ -99,7 +99,7 @@ Below is a list of features implemented or planned to the next releases.
 * Installation of the packages with patches automatically **(done)**
 * List the packages available to install **(done)**
 * Show detailed info about a package **(done)**
-* Multiple versions of the same package on the tree **(done)**
+* Supports multiple versions of the same package on the tree **(done)**
 * The user can force the recreation of an ebuild **(done)**
 * The user can force the recreation of the overlay **(done)**
 * Resolution of the dependencies of packages from the Portage tree, based
@@ -213,7 +213,7 @@ http://gitorious.org/gentoo-br/rafaelmartins/ (overlay)
 Warning
 -------
 
-If you experienced some random errors when installing some package, please
+If you experienced some random errors when installing packages, please
 retry, using the option *--force-all*, and report the issue to us.
 If you don't want to lose all your ebuilds, you can try to use the option
 *--force*, that will recreate only the affected ebuild.
