@@ -42,7 +42,7 @@ def check_updates():
         # if we already have a file, that's ok
         if need_update():
             raise FetchException(error)
-        fp = open(my_file)
+        fp = open(os.path.join(conf.db, 'update.json'))
         update = fp.read()
         fp.close()
     else:

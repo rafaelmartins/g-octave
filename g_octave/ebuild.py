@@ -162,7 +162,7 @@ RDEPEND="${DEPEND}
         
         proc = subprocess.call(['ebuild', ebuild_file, 'manifest'])
         
-        if proc != 0:
+        if proc != os.EX_OK:
             raise EbuildException('Failed to create Manifest file!')
         
         return '=g-octave/%s-%s' % (self.pkgname, self.version)

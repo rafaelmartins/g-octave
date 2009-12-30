@@ -133,17 +133,17 @@ def main():
     
     conf_prefetch = Config(True)
     
-    # checking if we have a package database
-    if need_update() and not options.sync:
-        out.eerror('Please run "g-octave --sync" to download a package database!')
-        sys.exit(1)
-    
     # checking if our overlay is correctly added to PORTDIR_OVERLAY
     if conf_prefetch.overlay not in portage.settings['PORTDIR_OVERLAY'].split(' '):
         out.eerror('g-octave overlay is not configured!')
         out.eerror('You must append your overlay dir to PORTDIR_OVERLAY.')
         out.eerror('Overlay: %s' % conf_prefetch.overlay)
-        sys.exit(1)
+        return os.EX_CONFIG
+    
+    # checking if we have a package database
+    if need_update() and not options.sync:
+        out.eerror('Please run "g-octave --sync" to download a package database!')
+        return os.EX_USAGE
     
     if options.sync:
         
@@ -160,7 +160,7 @@ def main():
         else:
             out.einfo('No updates available.')
         
-        sys.exit(0)
+        return os.EX_OK
     
     check_db_cache()
 
@@ -179,13 +179,13 @@ def main():
             for pkg in tree.pkg_list[category]:
                 print '\t%s-%s' % (pkg['name'], pkg['version'])
             print
-        sys,exit(0)
+        return os.EX_OK
     elif len(args) == 0:
         out.eerror('You need provide a package atom or "--list" or "--sync"')
-        sys.exit(1)
+        return os.EX_USAGE
     elif len(args) > 1:
         out.eerror('At this moment g-octave can install only one package at once')
-        sys.exit(1)
+        return os.EX_USAGE
     
     # if we're alive yet, we have a package to install! :D
     
@@ -195,7 +195,7 @@ def main():
         ebuild = Ebuild(args[0], options.force or options.force_all)
     except EbuildException:
         out.eerror('Package not found: %s' % args[0])
-        sys.exit(1)
+        return os.EX_DATAERR
     
     if options.info:
         pkg = ebuild.description()
@@ -207,7 +207,7 @@ def main():
         print portage.output.blue('Categories:'), portage.output.white(str(pkg.categories))
         print portage.output.blue('License:'), portage.output.white(str(pkg.license))
         print portage.output.blue('Url:'), portage.output.white(str(pkg.url))
-        sys.exit(0)
+        return os.EX_OK
     
     atom = ebuild.create()
     
@@ -220,58 +220,62 @@ def main():
         emerge.append('--color=n')
     emerge.append(atom)
     
-    if subprocess.call(emerge) != 0:
+    emerge_ret = subprocess.call(emerge)
+    
+    if emerge_ret != os.EX_OK:
         out.eerror('"emerge" returned an error.')
-        sys.exit(1)
+        sys.exit(emerge_ret)
     
     if options.unmerge:
         print
         out.einfo('You may want to remove the dependencies too, using:')
         out.einfo('# emerge -av --depclean')
+    
+    return os.EX_OK
 
 
 if __name__ == '__main__':
     
     from g_octave.exception import *
     
-    return_code = 0
+    return_code = os.EX_OK
     
     try:
-        main()
+        return_code = main()
     except ConfigException, error:
         out.eerror('Config class error - %s' % error)
-        return_code = 1
+        return_code = os.EX_CONFIG
     except DescriptionException, error:
         out.eerror('Description class error - %s' % error)
-        return_code = 1
+        return_code = os.EX_SOFTWARE
     except DescriptionTreeException, error:
         out.eerror('DescriptionTree class error - %s' % error)
-        return_code = 1
+        return_code = os.EX_SOFTWARE
     except EbuildException, error:
         out.eerror('Ebuild class error - %s' % error)
-        return_code = 1
+        return_code = os.EX_SOFTWARE
     except FetchException, error:
         out.eerror('Fetch module error - %s' % error)
-        return_code = 1
+        return_code = os.EX_SOFTWARE
     except OSError, error:
         out.eerror('Operating System error - %s' % error)
         out.eerror('Try run "g-octave" as root.')
-        return_code = 1
+        return_code = os.EX_OSERR
     except IOError, error:
         out.eerror('I/O error - %s' % error)
         out.eerror('Try run "g-octave" as root.')
-        return_code = 1
+        return_code = os.EX_IOERR
     except KeyError, error:
         out.eerror('Key error - %s' % error)
         out.eerror('Probably you have more than one overlay configured to use with g-octave')
         out.eerror('Try remove the oldest and maintain only the overlay actually in use.')
-        return_code = 1
+        return_code = os.EX_SOFTWARE
     except Exception, error:
         out.eerror('Unknown error - %s' % error)
-        return_code = 1
+        return_code = os.EX_SOFTWARE
     
-    if return_code != 0:
+    if return_code not in [os.EX_OK, os.EX_CONFIG, os.EX_USAGE, os.EX_DATAERR]:
         out.einfo('If you fell that this is a bug, please report to us.')
-        out.einfo('Issue tracker: $s' % __issue_tracker)
+        out.einfo('Issue tracker: %s' % __issue_tracker)
     
     sys.exit(return_code)
