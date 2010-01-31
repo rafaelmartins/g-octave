@@ -157,9 +157,6 @@ RDEPEND="${DEPEND}
         fp.write(ebuild % vars)
         fp.close()
         
-        portage.close_portdbapi_caches()
-        imp.reload(portage)
-        
         proc = subprocess.call(['ebuild', ebuild_file, 'manifest'])
         
         if proc != os.EX_OK:
