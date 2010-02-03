@@ -1,6 +1,6 @@
 .. _`GNU Octave`: http://octave.org/
 .. _`Octave-Forge`: http://octave.sf.net/
-.. _`g-octave`: http://bitbucket.org/rafaelmartins/g-octave/
+.. _`g-octave`: http://g-octave.rafaelmartins.eng.br/
 .. _Python: http://python.org/
 .. _Portage: http://www.gentoo.org/proj/en/portage/ 
 .. _Paludis: http://paludis.pioto.org/
@@ -207,7 +207,7 @@ If you can help programming in Python_, please take a look at our missing
 features and at the To-Do list. :)
 
 `g-octave`_ ebuilds are available on the mercurial repository, or here:
-http://gitorious.org/gentoo-br/rafaelmartins/ (overlay)
+http://overlay.rafaelmartins.eng.br/ (overlay)
 
 
 Warning
@@ -223,11 +223,11 @@ Download Page
 -------------
 
 You can get the sources here:
-http://bitbucket.org/rafaelmartins/g-octave/downloads/
+http://g-octave.rafaelmartins.eng.br/wiki/DownloadSources
 
 or checkout the Mercurial_ repository using: ::
     
-    $ hg clone https://bitbucket.org/rafaelmartins/g-octave/
+    $ hg clone http://hg.rafaelmartins.eng.br/g-octave/
 
 
 Authors

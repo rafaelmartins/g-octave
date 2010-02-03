@@ -1,4 +1,4 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -7,8 +7,8 @@ EAPI="2"
 inherit distutils
 
 DESCRIPTION="A tool that generates and installs ebuilds for Octave-Forge"
-HOMEPAGE="http://bitbucket.org/rafaelmartins/g-octave/"
-SRC_URI="http://bitbucket.org/rafaelmartins/${PN}/downloads/${P}.tar.gz"
+HOMEPAGE="http://g-octave.rafaelmartins.eng.br/"
+SRC_URI="http://files.rafaelmartins.eng.br/distfiles/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"

@@ -1,4 +1,4 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -7,8 +7,8 @@ EAPI="2"
 inherit distutils mercurial
 
 DESCRIPTION="A tool that generates and installs ebuilds for Octave-Forge"
-HOMEPAGE="http://bitbucket.org/rafaelmartins/g-octave/"
-EHG_REPO_URI="https://bitbucket.org/rafaelmartins/g-octave/"
+HOMEPAGE="http://g-octave.rafaelmartins.eng.br/"
+EHG_REPO_URI="http://hg.rafaelmartins.eng.br/g-octave/"
 
 LICENSE="GPL-2"
 SLOT="0"

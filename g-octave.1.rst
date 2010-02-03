@@ -53,11 +53,11 @@ OPTIONS
 SEE ALSO
 ========
 
-* http://bitbucket.org/rafaelmartins/g-octave/
+* http://g-octave.rafaelmartins.eng.br/
 * http://rafaelmartins.eng.br/en-us/projects/g-octave/
 
 
 BUGS
 ====
 
-* http://bitbucket.org/rafaelmartins/g-octave/issues/
+* http://g-octave.rafaelmartins.eng.br/report
