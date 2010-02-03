@@ -91,9 +91,3 @@ class DescriptionTree(object):
                 maxstr = version
         
         return maxstr
-        
-
-
-if __name__ == '__main__':
-    a = DescriptionTree()
-    print a.latest_version('parallel')

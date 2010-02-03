@@ -59,7 +59,3 @@ def __create_file(_file, content):
     fp.close()
     
     type(content) == file and content.close()
-
-
-if __name__ == '__main__':
-    create_overlay(True)

@@ -157,7 +157,3 @@ def extract(gz_file, display_info=True):
         else:
             if display_info:
                 out.eend(0)
-
-
-if __name__ == '__main__':
-    download_files(check_updates())

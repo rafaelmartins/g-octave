@@ -134,8 +134,3 @@ class Description(object):
             return self.__desc[name]
         
         return None
-
-
-if __name__ == '__main__':
-    a = Description('/development/contrib/octave-forge-20090607/main/zenity-0.5.7/DESCRIPTION')
-    print a.depends

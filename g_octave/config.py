@@ -65,8 +65,3 @@ class Config(object):
             return self.__cache['files']
         else:
             raise ConfigException('Invalid option: %s' % attr)
-
-
-if __name__ == '__main__':
-    conf = Config()
-    print conf.pm_options

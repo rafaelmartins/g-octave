@@ -17,7 +17,6 @@ import os
 import portage
 import re
 import shutil
-import imp
 import subprocess
 
 out = portage.output.EOutput()
@@ -242,11 +241,3 @@ RDEPEND="${DEPEND}
         # creating the ebuilds for the dependencies, recursivelly
         for ebuild in to_install:
             Ebuild(ebuild).create()
-
-
-if __name__ == '__main__':
-    a = Ebuild('vrml', True)
-    a.create()
-    
-    #a = re_keywords.match('x86')
-    #print a.groups()
