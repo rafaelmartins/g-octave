@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __all__ = [
-    'Ebuild'
+    'Ebuild',
     're_keywords',
 ]
 
