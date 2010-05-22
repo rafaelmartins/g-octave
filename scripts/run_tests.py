@@ -32,7 +32,7 @@ for f in os.listdir(tests_dir):
     if not f.endswith('.py'):
         continue
     try:
-        my_test = __import__(f[:len('.py')])
+        my_test = __import__(f[:-len('.py')])
     except ImportError:
         continue
     
