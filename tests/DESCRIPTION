@@ -1,0 +1,20 @@
+Name: package name
+Version: 0.0.1
+Date: 2009-01-01
+Author: Author Name
+Maintainer: Maintainer Name
+Title: Package Title
+Description: Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+ sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+ ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+ in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+ sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+ mollit anim id est laborum.
+Categories: Category1,Category2, Category3
+Url: http://example.org
+SystemRequirements: pkg1 ( >= 4.3.2), pkg2 (<1.2.3 ), pkg3
+BuildRequires: pkg4 (>1.0.0)
+Depends: Octave ( >= 3.0.0 )
+Autoload: NO
+License: GPL version 3 or later

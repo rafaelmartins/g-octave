@@ -17,9 +17,6 @@ import os
 # octave-forge DESCRIPTION's dependencies atoms
 re_depends = re.compile(r'([a-zA-Z]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
 
-# gentoo-like atoms, to use with emerge/whatever package manager
-re_atom = re.compile(r'^([><]?=?)([a-zA-Z\-/]+)(-(.*))?$')
-
 # we'll use atoms like 'control-1.0.11' to g-octave packages
 re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
 
@@ -32,9 +29,8 @@ class Description(object):
         if not os.path.exists(file):
             raise DescriptionException('File not found: %s' % file)
         
-        fp = open(file)
-        myfile = fp.readlines()
-        fp.close()
+        with open(file) as fp:
+            myfile = fp.readlines()
         
         kw = ''
         
