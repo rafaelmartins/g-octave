@@ -24,7 +24,7 @@ tests_dir = os.path.join(root_dir, 'tests')
 
 # adding the tests directory to the top of the PYTHONPATH
 sys.path = [root_dir, tests_dir] + sys.path
-print sys.path
+
 suites = []
 
 # getting the test suites from the python modules (files that ends whit .py)
