@@ -21,10 +21,12 @@ tests_dir = os.path.join(
     '..', 'tests'
 )
 
+# adding the tests directory to the top of the PYTHONPATH
 sys.path.insert(0, tests_dir)
 
 suites = []
 
+# getting the test suites from the python modules (files that ends whit .py)
 for f in os.listdir(tests_dir):
     if not f.endswith('.py'):
         continue
@@ -32,11 +34,18 @@ for f in os.listdir(tests_dir):
         my_test = __import__(f[:len('.py')])
     except ImportError:
         continue
+    
+    # all the python modules MUST have a 'suite' method, that returns the
+    # test suite of the module
     suites.append(my_test.suite())
 
+# unifying all the test suites in only one
 suites = unittest.TestSuite(suites)
 
+# creating the Test Runner object
 test_runner = unittest.TextTestRunner(descriptions=2, verbosity=2)
+
+# running the tests
 result = test_runner.run(suites)
 
 if result.failures or result.errors:
