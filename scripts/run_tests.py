@@ -16,14 +16,15 @@ import os
 import sys
 import unittest
 
-tests_dir = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    '..', 'tests'
-)
+root_dir = os.path.realpath(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '..'
+))
+
+tests_dir = os.path.join(root_dir, 'tests')
 
 # adding the tests directory to the top of the PYTHONPATH
-sys.path.insert(0, tests_dir)
-
+sys.path = [root_dir, tests_dir] + sys.path
+print sys.path
 suites = []
 
 # getting the test suites from the python modules (files that ends whit .py)
