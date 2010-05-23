@@ -155,7 +155,7 @@ class Description(object):
                 
                 # as octave is already in the portage tree, the atom is
                 # predefined.
-                if name == 'octave':
+                if name.lower() == 'octave':
                     atom += 'sci-mathematics/octave'
                 
                 # the octave-forge packages will be put inside a "fake"
@@ -199,7 +199,7 @@ class Description(object):
                 version = re_match.group(4)
                 
                 # we need only the octave-forge packages, nor octave
-                if name != 'octave':
+                if name.lower() != 'octave':
                     depends_list.append((name, comparator, version))
         
         return depends_list

@@ -170,10 +170,30 @@ class TestDescription(unittest.TestCase):
                 pkgtpl
             )
 
+    def test_attributes(self):
+        self.assertEqual(self.desc.name, 'package name')
+        self.assertEqual(self.desc.version, '0.0.1')
+        self.assertEqual(self.desc.date, '2009-01-01')
+        self.assertEqual(self.desc.author, 'Author Name')
+        self.assertEqual(self.desc.maintainer, 'Maintainer Name')
+        self.assertEqual(self.desc.title, 'Package Title')
+        self.assertEqual(self.desc.description, 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+        self.assertEqual(self.desc.categories, 'Category1,Category2, Category3')
+        self.assertEqual(self.desc.url, 'http://example.org')
+        
+        # the requirements can't be tested :(
+        self.assertEqual(self.desc.systemrequirements, [])
+        self.assertEqual(self.desc.buildrequires, [])
+        
+        self.assertEqual(self.desc.depends, ['>=sci-mathematics/octave-3.0.0'])
+        self.assertEqual(self.desc.autoload, 'NO')
+        self.assertEqual(self.desc.license, 'GPL version 3 or later')
+
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(TestDescription('test_re_depends'))
     suite.addTest(TestDescription('test_re_pkg_atom'))
+    suite.addTest(TestDescription('test_attributes'))
     return suite
 
