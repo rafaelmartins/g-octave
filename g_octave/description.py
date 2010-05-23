@@ -205,6 +205,10 @@ class Description(object):
                 # we need only the octave-forge packages, nor octave
                 if name.lower() != 'octave':
                     depends_list.append((name, comparator, version))
+            
+            # invalid dependency atom
+            else:
+                raise DescriptionException('Invalid dependency atom: %s' % depend)
         
         return depends_list
     
