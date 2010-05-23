@@ -90,6 +90,10 @@ class Description(object):
                     if len(line) == 0:
                         continue
                     
+                    # comments (started with '#')
+                    if line[0] == '#':
+                        continue
+                    
                     # line continuations starts with a single space
                     if line[0] != ' ':
                         continue
