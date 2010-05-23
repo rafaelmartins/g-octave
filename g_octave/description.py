@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+    description.py
+    ~~~~~~~~~~~~~~
+    
+    This module implements a Python object with the content of a given
+    DESCRIPTION file.
+    
+    DESCRIPTION files are basically key/value files with multi-line support.
+    The separator is a ':'.
+    
+    :copyright: (c) 2009-2010 by Rafael Goncalves Martins
+    :license: GPL-2, see LICENSE for more details.
+"""
+
 __all__ = [
     'Description',
     're_depends',
@@ -8,11 +22,11 @@ __all__ = [
     're_pkg_atom'
 ]
 
-from config import Config
-conf = Config()
-
 import re
 import os
+
+from config import Config
+conf = Config()
 
 # octave-forge DESCRIPTION's dependencies atoms
 re_depends = re.compile(r'([a-zA-Z]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
@@ -29,104 +43,196 @@ class Description(object):
         if not os.path.exists(file):
             raise DescriptionException('File not found: %s' % file)
         
-        with open(file) as fp:
-            myfile = fp.readlines()
+        # dictionary with the parsed content of the DESCRIPTION file
+        self._desc = dict()
         
-        kw = ''
+        # current key
+        key = None
         
-        self.__desc = {}
-        
-        for i in myfile:
-            line = i.split(':')
-            if len(line) < 2:
-                if i[0].isspace() and kw != '':
-                    self.__desc[kw] += ' ' + i.strip()
-            else:
-                kw = line[0].strip().lower()
-                value = ':'.join(line[1:]).strip()
-                if self.__desc.has_key(kw):
-                    if kw == 'depends' or kw == 'systemrequirements' or kw == 'buildrequires':
-                        self.__desc[kw] += ', ' + value
+        with open(file, 'r') as fp:
+            for line in fp:
+                line_splited = line.split(':')
+                
+                # 'key: value' found?
+                if len(line_splited) >= 2:
+                    
+                    # by default we have a key before the first ':'
+                    key = line_splited[0].strip().lower()
+                    
+                    # all the stuff after the first ':' is the value
+                    # ':' included.
+                    value = ':'.join(line_splited[1:]).strip()
+                    
+                    # the key already exists?
+                    if key in self._desc:
+                        
+                        # it's one of the dependencies?
+                        if key in ('depends', 'systemrequirements', 'buildrequires'):
+                            
+                            # use ', ' to separate the values
+                            self._desc[key] += ', '
+                        
+                        else:
+                            
+                            # use a single space to separate the values
+                            self._desc[key] += ' '
+                    
+                    # key didn't exists yet. initializing...
                     else:
-                        self.__desc[kw] += ' ' + value
+                        self._desc[key] = ''
+                    
+                    self._desc[key] += value
+                
+                # it's not a 'key: value', so it's probably a continuation
+                # of the previous line.
                 else:
-                    self.__desc[kw] = value
+                    
+                    # empty line
+                    if len(line) == 0:
+                        continue
+                    
+                    # line continuations starts with a single space
+                    if line[0] != ' ':
+                        continue
+                    
+                    # the first line can't be a continuation, obviously :)
+                    if key is None:
+                        continue
+                    
+                    # our line already have a single space at the start.
+                    # we only needs strip spaces at the end of the line
+                    self._desc[key] += line.rstrip()
         
-        self_depends = []
+        # add the 'self_depends' key
+        self._desc['self_depends'] = list()
         
-        for i in self.__desc:
-            if i == 'depends':
-                depends = self.__desc[i]
-                self.__desc[i] = self.__depends(depends)
-                self_depends = self.__self_depends(depends)
-            if i == 'systemrequirements' or i == 'buildrequires':
-                self.__desc[i] = self.__requirements(self.__desc[i])
+        # parse the dependencies
+        for key in self._desc:
             
-        self.__desc['self_depends'] = self_depends
+            # depends
+            if key == 'depends':
+                depends = self._desc[key]
+                self._desc[key] = self._parse_depends(depends)
+                self._desc['self_depends'] = self._parse_self_depends(depends)
+            
+            # requirements
+            if key in ('systemrequirements', 'buildrequires'):
+                self._desc[key] = self._parse_requirements(self._desc[key])
+
     
-    
-    def __depends(self, long_atom):
+    def _parse_depends(self, depends):
+        """returns a list with gentoo atoms for the 'depends' (the other
+        octave-forge packages or the octave itself)
+        """
         
-        tmp = []
+        # the list that will be returned
+        depends_list = list()
         
-        for atom in long_atom.split(','):
+        for depend in depends.split(','):
             
-            r = re_depends.match(atom.strip())
+            # use the 're_depends' regular expression to filter the
+            # package name, the version an the comparator
+            re_match = re_depends.match(depend.strip())
             
-            if r != None:
+            # the depend is valid?
+            if re_match is not None:
                 
-                myatom = ''
+                # initialize the atom string empty
+                atom = ''
                 
-                if r.group(3) != None:
-                    myatom += str(r.group(3)) == '==' and '=' or str(r.group(3))
+                # extract the needed values
+                name = re_match.group(1)
+                comparator = re_match.group(3)
+                version = re_match.group(4)
                 
-                if r.group(1).lower() == 'octave':
-                    myatom += 'sci-mathematics/octave'
+                # we have a comparator and a version?
+                if comparator is not None and version is not None:
+                    
+                    # special case: '==' for octave forge is '=' for gentoo
+                    if comparator == '==':
+                        atom += '='
+                    else:
+                        atom += comparator
+                
+                # as octave is already in the portage tree, the atom is
+                # predefined.
+                if name == 'octave':
+                    atom += 'sci-mathematics/octave'
+                
+                # the octave-forge packages will be put inside a "fake"
+                # category: g-octave
                 else:
-                    myatom += 'g-octave/%s' % r.group(1)
+                    atom += 'g-octave/' + str(name)
                 
-                if r.group(4) != None:
-                    myatom += '-%s' % r.group(4)
+                # append the version to the atom, if needed
+                if comparator is not None and version is not None:
+                    atom += '-' + str(version)
                 
-                tmp.append(myatom)
+                depends_list.append(atom)
+            
+            # invalid dependency atom
+            else:
+                raise DescriptionException('Invalid dependency atom: %s' % depend)
         
-        return tmp
+        return depends_list
     
     
-    def __self_depends(self, long_atom):
+    def _parse_self_depends(self, depends):
+        """returns a list of tuples (name, comparator, version) for the
+        other octave-forge packages.
+        """
         
-        tmp = []
+        # the list that will be returned
+        depends_list = list()
         
-        for atom in long_atom.split(','):
+        for depend in depends.split(','):
             
-            r = re_depends.match(atom.strip())
+            # use the 're_depends' regular expression to filter the
+            # package name, the version an the comparator
+            re_match = re_depends.match(depend.strip())
             
-            if r != None:
-                if r.group(1).lower() != 'octave':
-                    tmp.append((r.group(1), r.group(3), r.group(4)))
+            # the depend is valid?
+            if re_match is not None:
+                
+                # extract the needed values
+                name = re_match.group(1)
+                comparator = re_match.group(3)
+                version = re_match.group(4)
+                
+                # we need only the octave-forge packages, nor octave
+                if name != 'octave':
+                    depends_list.append((name, comparator, version))
         
-        return tmp
+        return depends_list
     
     
-    def __requirements(self, long_atom):
+    def _parse_requirements(self, requirements):
+        """returns a list with gentoo atoms for the 'requirements' (the
+        dependencies that aren't octave-forge packages nor octave itself),
+        based on a external list of dependencies.
+        """
         
-        tmp = []
+        # the list that will be returned
+        requirements_list = list()
         
-        for atom in long_atom.split(','):
-            atom = atom.strip()
+        for requirement in [i.strip() for i in requirements.split(',')]:
             
-            if conf.dependencies.has_key(atom):
-                dep = conf.dependencies[atom]
-            
-                if dep != '':
-                    tmp.append(dep)
+            # check if the requirement is on the external file with the
+            # dependencies that aren't octave-forge packages nor octave
+            # itself.
+            if requirement in conf.dependencies:
+                req = conf.dependencies[requirement]
+                
+                # if is a valid value, append to the list
+                if req != '':
+                    requirements_list.append(req)
         
-        return tmp
+        return requirements_list
 
     
     def __getattr__(self, name):
+        """method that overloads the object atributes, returning the needed
+        atribute based on the dict with the previously parsed content.
+        """
         
-        if self.__desc.has_key(name):
-            return self.__desc[name]
-        
-        return None
+        return self._desc.get(name, None)
