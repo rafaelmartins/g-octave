@@ -18,7 +18,6 @@
 __all__ = [
     'Description',
     're_depends',
-    're_atom',
     're_pkg_atom'
 ]
 
