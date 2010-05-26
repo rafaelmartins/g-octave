@@ -1,9 +1,11 @@
+# This is a comment
 Name: package name
 Version: 0.0.1
 Date: 2009-01-01
-Author: Author Name
+Author: Author Name: testing ':'s in the value.
 Maintainer: Maintainer Name
 Title: Package Title
+# This is another comment
 Description: Lorem ipsum dolor sit amet, consectetur adipisicing elit,
  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi

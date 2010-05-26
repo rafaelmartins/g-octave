@@ -171,17 +171,20 @@ class TestDescription(unittest.TestCase):
             )
 
     def test_attributes(self):
+        # TODO: split this method to improve the error reporting
+        # TODO: figure out how to test the comments
         self.assertEqual(self.desc.name, 'package name')
         self.assertEqual(self.desc.version, '0.0.1')
         self.assertEqual(self.desc.date, '2009-01-01')
-        self.assertEqual(self.desc.author, 'Author Name')
+        self.assertEqual(self.desc.author, 'Author Name: testing \':\'s in the value.')
         self.assertEqual(self.desc.maintainer, 'Maintainer Name')
         self.assertEqual(self.desc.title, 'Package Title')
         self.assertEqual(self.desc.description, 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
         self.assertEqual(self.desc.categories, 'Category1,Category2, Category3')
         self.assertEqual(self.desc.url, 'http://example.org')
         
-        # the requirements can't be tested :(
+        # the requirements can't be tested because the test system can't
+        # check the non-octave packages yet.
         self.assertEqual(self.desc.systemrequirements, [])
         self.assertEqual(self.desc.buildrequires, [])
         
