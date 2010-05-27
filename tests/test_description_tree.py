@@ -13,8 +13,8 @@
 
 import os
 import shutil
-import tempfile
 import unittest
+import utils
 
 from g_octave import description, description_tree
 
@@ -30,19 +30,7 @@ class TestDescriptionTree(unittest.TestCase):
     ]
        
     def setUp(self):
-        description_file = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'DESCRIPTION'
-        )
-        
-        # creating a temporary DESCRIPTION's tree
-        self._tree_dir = tempfile.mkdtemp()
-        for cat, pkg, ver in self._packages:
-            temp_path = os.path.join(self._tree_dir, cat, pkg+'-'+ver)
-            os.makedirs(temp_path)
-            shutil.copy(
-                description_file,
-                os.path.join(temp_path, 'DESCRIPTION')
-            )
+        self._tree_dir = utils.create_description_tree(self._packages)
         self._tree = description_tree.DescriptionTree(self._tree_dir)
     
     def test_temptree(self):
