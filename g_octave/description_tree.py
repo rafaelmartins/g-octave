@@ -1,6 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+    description_tree.py
+    ~~~~~~~~~~~~~~~~~~~
+    
+    This module implements a Python object with the content of a directory
+    tree with DESCRIPTION files. The object contains *g_octave.Description*
+    objects for each DESCRIPTION file.
+    
+    :copyright: (c) 2009-2010 by Rafael Goncalves Martins
+    :license: GPL-2, see LICENSE for more details.
+"""
+
 __all__ = ['DescriptionTree']
 
 from config import Config
@@ -13,17 +25,19 @@ import os
 
 class DescriptionTree(object):
     
-    def __init__(self):
+    def __init__(self, db_path=None):
         
         self.pkg_list = {}
         
-        self.__db_path = os.path.join(conf.db, 'octave-forge')
+        # external db_path used by tests
+        self._db_path = db_path is not None and db_path or \
+            os.path.join(conf.db, 'octave-forge')
         
-        if not os.path.isdir(self.__db_path):
-            raise DescriptionTreeException('Invalid db: %s' % self.__db_path)
+        if not os.path.isdir(self._db_path):
+            raise DescriptionTreeException('Invalid db: %s' % self._db_path)
         
         for cat in [i.strip() for i in conf.categories.split(',')]:
-            catdir = os.path.join(self.__db_path, cat)
+            catdir = os.path.join(self._db_path, cat)
             if os.path.isdir(catdir):
                 self.pkg_list[cat] = []
                 pkgs = os.listdir(catdir)
@@ -51,7 +65,7 @@ class DescriptionTree(object):
             for pkg in self.pkg_list[cat]:
                 if pkg['name'] == name and pkg['version'] == version:
                     pkgfile = os.path.join(
-                        self.__db_path,
+                        self._db_path,
                         cat,
                         '%s-%s' % (pkg['name'], pkg['version']),
                         'DESCRIPTION'
