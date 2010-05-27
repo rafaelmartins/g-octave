@@ -21,12 +21,14 @@ class Config(object):
     __section_name = 'main'
 
 
-    def __init__(self, fetch_phase=False):
+    def __init__(self, fetch_phase=False, config_file=None, create_dirs=True):
         
         # Config Parser
         self.__config = ConfigParser.ConfigParser(self.__defaults)
         
-        if os.path.exists('../etc/g-octave.cfg.devel'):
+        if config_file is not None:
+            self.__config_file = config_file
+        elif os.path.exists('../etc/g-octave.cfg.devel'):
             self.__config_file = '../etc/g-octave.cfg.devel'
         else:
             self.__config_file = '/etc/g-octave.cfg'
@@ -37,7 +39,7 @@ class Config(object):
         __overlay = self.__config.get(self.__section_name, 'overlay')
         
         for dir in [__db, __overlay]:
-            if not os.path.exists(dir):
+            if not os.path.exists(dir) and create_dirs:
                 os.makedirs(dir, 0755)
         
         if not fetch_phase:
