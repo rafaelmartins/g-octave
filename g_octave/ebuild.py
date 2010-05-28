@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+    ebuild.py
+    ~~~~~~~~~
+    
+    This module implements a Python class responsible to create the ebuilds
+    for the octave-forge packages and track the dependencies correctly.
+    
+    :copyright: (c) 2009-2010 by Rafael Goncalves Martins
+    :license: GPL-2, see LICENSE for more details.
+"""
+
 __all__ = [
     'Ebuild',
     're_keywords',

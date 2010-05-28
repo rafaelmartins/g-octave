@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+    config.py
+    ~~~~~~~~~
+    
+    This module implements a Python object to handle the configuration
+    of g-octave.
+    
+    :copyright: (c) 2009-2010 by Rafael Goncalves Martins
+    :license: GPL-2, see LICENSE for more details.
+"""
+
 __all__ = ['Config']
 
 import ConfigParser
@@ -11,59 +22,59 @@ from exception import ConfigException
 
 class Config(object):
     
-    __defaults = {
+    _defaults = {
         'db': '/var/cache/g-octave',
         'overlay': '/usr/local/portage/g-octave',
         'categories': 'main,extra,language',
         'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
     }
 
-    __section_name = 'main'
+    _section_name = 'main'
 
 
     def __init__(self, fetch_phase=False, config_file=None, create_dirs=True):
         
         # Config Parser
-        self.__config = ConfigParser.ConfigParser(self.__defaults)
+        self._config = ConfigParser.ConfigParser(self._defaults)
+        
+        self._fetch_phase = fetch_phase
         
         if config_file is not None:
-            self.__config_file = config_file
+            self._config_file = config_file
         elif os.path.exists('../etc/g-octave.cfg.devel'):
-            self.__config_file = '../etc/g-octave.cfg.devel'
+            self._config_file = '../etc/g-octave.cfg.devel'
         else:
-            self.__config_file = '/etc/g-octave.cfg'
+            self._config_file = '/etc/g-octave.cfg'
         
-        self.__config.read(self.__config_file)
+        self._config.read(self._config_file)
         
-        __db = self.__config.get(self.__section_name, 'db')
-        __overlay = self.__config.get(self.__section_name, 'overlay')
+        _db = self._config.get(self._section_name, 'db')
+        _overlay = self._config.get(self._section_name, 'overlay')
         
-        for dir in [__db, __overlay]:
+        for dir in [_db, _overlay]:
             if not os.path.exists(dir) and create_dirs:
                 os.makedirs(dir, 0755)
         
         if not fetch_phase:
             
             # Cache (JSON)
-            cache_file = os.path.join(__db, 'cache.json')
-            fp = open(cache_file)
-            self.__cache = json.load(fp)
-            fp.close()
+            cache_file = os.path.join(_db, 'cache.json')
+            with open(cache_file) as fp:
+                self._cache = json.load(fp)
             
             # JSON
-            json_file = os.path.join(__db, self.__cache['files']['info.json'])
-            fp = open(json_file)
-            self.__info = json.load(fp)
-            fp.close()
+            json_file = os.path.join(_db, self._cache['files']['info.json'])
+            with open(json_file) as fp:
+                self._info = json.load(fp)
         
 
     def __getattr__(self, attr):
         
-        if self.__defaults.has_key(attr):
-            return self.__config.get(self.__section_name, attr)
-        elif self.__info.has_key(attr):
-            return self.__info[attr]
-        elif attr == 'cache':
-            return self.__cache['files']
+        if attr in self._defaults:
+            return self._config.get(self._section_name, attr)
+        elif not self._fetch_phase and attr in self._info:
+            return self._info[attr]
+        elif not self._fetch_phase and attr == 'cache':
+            return self._cache['files']
         else:
             raise ConfigException('Invalid option: %s' % attr)
