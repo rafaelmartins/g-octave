@@ -29,7 +29,7 @@ suites = []
 
 # getting the test suites from the python modules (files that ends whit .py)
 for f in os.listdir(tests_dir):
-    if not f.endswith('.py'):
+    if not f.endswith('.py') or not f.startswith('test_'):
         continue
     try:
         my_test = __import__(f[:-len('.py')])
