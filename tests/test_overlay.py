@@ -48,7 +48,16 @@ class TestOverlay(unittest.TestCase):
         )
 
     def test_overlay(self):
-        overlay.create_overlay(conf = self._config, quiet = True) 
+        overlay.create_overlay(conf = self._config, quiet = True)
+        files = {
+            os.path.join(self._overlay, 'eclass', 'octave-forge.eclass'): '',
+            os.path.join(self._overlay, 'profiles', 'repo_name'): 'g-octave',
+            os.path.join(self._overlay, 'profiles', 'categories'): 'g-octave',
+        }
+        for _file in files:
+            self.assertTrue(os.path.exists(_file))
+            with open(_file) as fp:
+                self.assertEqual(fp.read(), files[_file])
 
     def tearDown(self):
         shutil.rmtree(self._dir)

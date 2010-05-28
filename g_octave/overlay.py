@@ -20,6 +20,7 @@ import shutil
 import portage.output
 
 from config import Config
+from exception import ConfigException
 
 out = portage.output.EOutput()
 
@@ -48,14 +49,20 @@ def create_overlay(force=False, conf=None, quiet=False):
             files = {
                 os.path.join(conf.overlay, 'profiles', 'repo_name'): 'g-octave',
                 os.path.join(conf.overlay, 'profiles', 'categories'): 'g-octave',
-                os.path.join(conf.overlay, 'eclass', 'octave-forge.eclass'):
-                    open(os.path.join(conf.db, conf.cache['octave-forge.eclass'])),
             }
+            
+            # stuff to run tests :(
+            aux = os.path.join(conf.overlay, 'eclass', 'octave-forge.eclass')
+            try:
+                files[aux] = open(os.path.join(conf.db, conf.cache['octave-forge.eclass']))
+            except ConfigException:
+                files[aux] = ''
+            
             for _file in files:
                 if not os.path.exists(_file) or force:
                     with open(_file, 'w', 0644) as fp:
                         content = files[_file]
-                        if isinstanceof(content, file):
+                        if isinstance(content, file):
                             content = content.read()
                         fp.write(content)
         except Exception, error:
