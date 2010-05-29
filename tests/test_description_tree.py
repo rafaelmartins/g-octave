@@ -21,32 +21,18 @@ from g_octave import description, description_tree
 
 class TestDescriptionTree(unittest.TestCase):
     
-    _packages = [
-        ('main', 'pkg1', '1.0'),
-        ('main', 'pkg2', '0.1'),
-        ('main', 'pkg2', '0.2'),
-        ('extra', 'pkg1', '1.1'),
-        ('language', 'lang', '0.1'),
-    ]
-       
     def setUp(self):
-        self._tree_dir = utils.create_description_tree(self._packages)
-        self._tree = description_tree.DescriptionTree(self._tree_dir)
-    
-    def test_temptree(self):
-        for cat, pkg, ver in self._packages:
-            temp_file = os.path.join(
-                self._tree_dir,
-                cat, pkg+'-'+ver,
-                'DESCRIPTION'
-            )
-            self.assertTrue(os.path.exists(temp_file))
+        conf, self._config_file, self._tempdir = utils.create_env()
+        self._tree = description_tree.DescriptionTree(conf = conf)
     
     def test_package_versions(self):
         versions = {
-            'pkg1': ['1.0', '1.1'],
-            'pkg2': ['0.1', '0.2'],
-            'lang': ['0.1'],
+            'main1': ['0.0.1'],
+            'main2': ['0.0.1', '0.0.2'],
+            'extra1': ['0.0.1'],
+            'extra2': ['0.0.1', '0.0.2'],
+            'language1': ['0.0.1'],
+            'language2': ['0.0.1', '0.0.2'],
         }
         for pkg in versions:
             ver = self._tree.package_versions(pkg)
@@ -56,9 +42,12 @@ class TestDescriptionTree(unittest.TestCase):
     
     def test_latest_version(self):
         versions = {
-            'pkg1': '1.1',
-            'pkg2': '0.2',
-            'lang': '0.1',
+            'main1': '0.0.1',
+            'main2': '0.0.2',
+            'extra1': '0.0.1',
+            'extra2': '0.0.2',
+            'language1': '0.0.1',
+            'language2': '0.0.2',
         }
         for pkg in versions:
             self.assertEqual(
@@ -87,7 +76,18 @@ class TestDescriptionTree(unittest.TestCase):
             self.assertEqual(self._tree.version_compare(ver), latest)
     
     def test_description_files(self):
-        for cat, pkg, ver in self._packages:
+        packages = [
+            ('main', 'main1', '0.0.1'),
+            ('main', 'main2', '0.0.1'),
+            ('main', 'main2', '0.0.2'),
+            ('extra', 'extra1', '0.0.1'),
+            ('extra', 'extra2', '0.0.1'),
+            ('extra', 'extra2', '0.0.2'),
+            ('language', 'language1', '0.0.1'),
+            ('language', 'language2', '0.0.1'),
+            ('language', 'language2', '0.0.2'),
+        ]
+        for cat, pkg, ver in packages:
             self.assertTrue(
                 isinstance(
                     self._tree[pkg+'-'+ver],
@@ -97,12 +97,11 @@ class TestDescriptionTree(unittest.TestCase):
     
     def tearDown(self):
         # removing the temp tree
-        shutil.rmtree(self._tree_dir)
+        utils.clean_env(self._config_file, self._tempdir)
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(TestDescriptionTree('test_temptree'))
     suite.addTest(TestDescriptionTree('test_package_versions'))
     suite.addTest(TestDescriptionTree('test_latest_version'))
     suite.addTest(TestDescriptionTree('test_version_compare'))

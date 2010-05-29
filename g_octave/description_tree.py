@@ -15,23 +15,22 @@
 
 __all__ = ['DescriptionTree']
 
-from config import Config
-conf = Config()
-
-from description import *
-from exception import DescriptionTreeException
-
 import os
+
+from config import Config
+from description import *
+from exception import ConfigException, DescriptionTreeException
 
 class DescriptionTree(object):
     
-    def __init__(self, db_path=None):
+    def __init__(self, conf=None):
         
         self.pkg_list = {}
         
-        # external db_path used by tests
-        self._db_path = db_path is not None and db_path or \
-            os.path.join(conf.db, 'octave-forge')
+        if conf is None:
+            conf = Config()
+        
+        self._db_path = os.path.join(conf.db, 'octave-forge')
         
         if not os.path.isdir(self._db_path):
             raise DescriptionTreeException('Invalid db: %s' % self._db_path)
@@ -45,7 +44,12 @@ class DescriptionTree(object):
                     mypkg = re_pkg_atom.match(pkg)
                     if mypkg == None:
                         raise DescriptionTreeException('Invalid Atom: %s' % mypkg)
-                    if mypkg.group(1) not in conf.blacklist:
+                    try:
+                        blacklist = conf.blacklist
+                    except ConfigException:
+                        # blacklist isn't mandatory
+                        blacklist = []
+                    if mypkg.group(1) not in blacklist:
                         self.pkg_list[cat].append({
                             'name': mypkg.group(1),
                             'version': mypkg.group(2),
