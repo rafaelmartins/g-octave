@@ -18,8 +18,6 @@ __all__ = [
 ]
 
 from config import Config
-conf = Config()
-
 from description import *
 from description_tree import *
 from exception import EbuildException
@@ -33,14 +31,18 @@ import subprocess
 out = portage.output.EOutput()
 
 # validating keywords (based on the keywords from the sci-mathematics/octave package)
-re_keywords = re.compile(r'(~)?(alpha|amd64|hppa|ppc|ppc64|sparc|x86)')
+re_keywords = re.compile(r'(~)?(alpha|amd64|hppa|ppc64|ppc|sparc|x86)')
 
 class Ebuild:
     
-    def __init__(self, pkg_atom, force=False):
+    def __init__(self, pkg_atom, force=False, conf=None):
         
         self.__force = force
-        self.__dbtree = DescriptionTree()
+        
+        if conf is None:
+            conf = Config()
+        
+        self.__dbtree = DescriptionTree(conf = conf)
         
         atom = re_pkg_atom.match(pkg_atom)
         if atom == None:
