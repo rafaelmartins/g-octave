@@ -22,7 +22,7 @@ class TestDescription(unittest.TestCase):
     def setUp(self):
         self.desc = description.Description(
             os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), 'DESCRIPTION'
+                os.path.dirname(os.path.abspath(__file__)), 'files', 'DESCRIPTION'
             )
         )
     

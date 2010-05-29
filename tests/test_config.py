@@ -25,14 +25,14 @@ class TestConfig(unittest.TestCase):
         
         # object with the config file empty, should use the default values
         self._empty_cfg = config.Config(
-            config_file = os.path.join(current_dir, 'g-octave_empty.cfg'),
+            config_file = os.path.join(current_dir, 'files', 'g-octave_empty.cfg'),
             create_dirs = False,
             fetch_phase = True
         )
         
         # object with an example config file
         self._cfg = config.Config(
-            config_file = os.path.join(current_dir, 'g-octave.cfg'),
+            config_file = os.path.join(current_dir, 'files', 'g-octave.cfg'),
             create_dirs = False,
             fetch_phase = True
         )
