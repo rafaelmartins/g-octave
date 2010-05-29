@@ -1,0 +1,16 @@
+# This is a comment
+Name: Extra 1
+Version: 0.0.1
+Date: 2010-10-10
+Author: Extra 1 Author
+Maintainer: Extra 1 Maintainer
+Title: Extra 1 Title
+# This is another comment
+Description: This is the Extra 1 description
+Categories: Category1,Category2
+Url: http://extra1.org
+SystemRequirements: pkg1 ( >= 4.3.2 ), pkg2 ( <1.2.3 ), pkg3
+BuildRequires: pkg4 ( >1.0.0 )
+Depends: Octave ( >= 3.2.0 )
+Autoload: NO
+License: GPL version 3 or later

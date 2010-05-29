@@ -1,0 +1,16 @@
+# This is a comment
+Name: Main 1
+Version: 0.0.1
+Date: 2010-10-10
+Author: Main 1 Author
+Maintainer: Main 1 Maintainer
+Title: Main 1 Title
+# This is another comment
+Description: This is the Main 1 description
+Categories: Category1,Category2
+Url: http://main1.org
+SystemRequirements: pkg1 ( >= 4.3.2 ), pkg2 ( <1.2.3 ), pkg3
+BuildRequires: pkg4 ( >1.0.0 )
+Depends: Octave ( >= 3.0.0 )
+Autoload: NO
+License: GPL version 3 or later

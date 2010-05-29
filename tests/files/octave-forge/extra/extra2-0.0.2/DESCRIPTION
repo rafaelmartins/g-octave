@@ -1,0 +1,16 @@
+# This is a comment
+Name: Extra 2
+Version: 0.0.2
+Date: 2010-10-20
+Author: Extra 2 Author
+Maintainer: Extra 2 Maintainer
+Title: Extra 2 Title
+# This is another comment
+Description: This is the Extra 2 description
+Categories: Category3,Category4
+Url: http://extra2.org
+SystemRequirements: pkg5 ( >= 4.3.2 ), pkg6 ( <1.2.3 ), pkg7
+BuildRequires: pkg8 ( >1.0.0 )
+Depends: Octave ( >= 3.2.0 )
+Autoload: NO
+License: GPL version 3 or later

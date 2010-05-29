@@ -1,0 +1,12 @@
+{
+    "dependencies": {
+        "pkg1": "sci-mathematics/pkg1",
+        "pkg2": "sci-mathematics/pkg2",
+        "pkg3": "sci-mathematics/pkg3",
+        "pkg4": "sci-mathematics/pkg4",
+        "pkg5": "sci-mathematics/pkg5",
+        "pkg6": "sci-mathematics/pkg6",
+        "pkg7": "sci-mathematics/pkg7",
+        "pkg8": "sci-mathematics/pkg8"
+    }
+}
