@@ -28,7 +28,7 @@ from config import Config
 from exception import ConfigException
 
 # octave-forge DESCRIPTION's dependencies atoms
-re_depends = re.compile(r'([a-zA-Z0-9]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
+re_depends = re.compile(r'([a-zA-Z0-9-]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
 
 # we'll use atoms like 'control-1.0.11' to g-octave packages
 re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
