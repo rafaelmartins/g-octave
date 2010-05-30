@@ -25,10 +25,10 @@ import re
 import os
 
 from config import Config
-conf = Config()
+from exception import ConfigException
 
 # octave-forge DESCRIPTION's dependencies atoms
-re_depends = re.compile(r'([a-zA-Z]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
+re_depends = re.compile(r'([a-zA-Z0-9]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
 
 # we'll use atoms like 'control-1.0.11' to g-octave packages
 re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
@@ -37,7 +37,11 @@ from exception import DescriptionException
 
 class Description(object):
     
-    def __init__(self, file):
+    def __init__(self, file, conf=None):
+        
+        if conf is None:
+            conf = Config()
+        self._config = conf
         
         if not os.path.exists(file):
             raise DescriptionException('File not found: %s' % file)
@@ -120,7 +124,7 @@ class Description(object):
             
             # requirements
             if key in ('systemrequirements', 'buildrequires'):
-                self._desc[key] = self._parse_requirements(self._desc[key])
+                self._desc[key] = self._parse_depends(self._desc[key])
 
     
     def _parse_depends(self, depends):
@@ -157,10 +161,18 @@ class Description(object):
                     else:
                         atom += comparator
                 
+                try:
+                    conf_dependencies = self._config.dependencies
+                except ConfigException:
+                    conf_dependencies = {}
+                
                 # as octave is already in the portage tree, the atom is
                 # predefined.
                 if name.lower() == 'octave':
                     atom += 'sci-mathematics/octave'
+                
+                elif name in conf_dependencies:
+                    atom += conf_dependencies[name]
                 
                 # the octave-forge packages will be put inside a "fake"
                 # category: g-octave
@@ -227,13 +239,12 @@ class Description(object):
             # check if the requirement is on the external file with the
             # dependencies that aren't octave-forge packages nor octave
             # itself.
-            if requirement in conf.dependencies:
-                req = conf.dependencies[requirement]
+            if requirement in self._config.dependencies:
+                req = self._config.dependencies[requirement]
                 
                 # if is a valid value, append to the list
                 if req != '':
                     requirements_list.append(req)
-        
         return requirements_list
 
     

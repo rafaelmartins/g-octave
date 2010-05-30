@@ -42,7 +42,9 @@ class Ebuild:
         if conf is None:
             conf = Config()
         
-        self.__dbtree = DescriptionTree(conf = conf)
+        self._config = conf
+        
+        self.__dbtree = DescriptionTree(conf = self._config)
         
         atom = re_pkg_atom.match(pkg_atom)
         if atom == None:
@@ -63,10 +65,10 @@ class Ebuild:
         return self.__desc
 
 
-    def create(self, display_info=True):
+    def create(self, display_info=True, accept_keywords=None, manifest=True):
         
         my_ebuild = os.path.join(
-            conf.overlay,
+            self._config.overlay,
             'g-octave',
             '%s' % self.pkgname,
             '%s-%s.ebuild' % (self.pkgname, self.version)
@@ -78,7 +80,7 @@ class Ebuild:
                 out.einfo('Creating ebuild: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
             
             try:
-                my_atom = self.__create()
+                my_atom = self.__create(accept_keywords, manifest)
             except Exception, error:
                 if display_info:
                     out.eerror('Failed to create: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
@@ -91,9 +93,9 @@ class Ebuild:
             return '=g-octave/%s-%s' % (self.pkgname, self.version)
 
 
-    def __create(self):
+    def __create(self, accept_keywords=None, manifest=True):
         
-        ebuild_path = os.path.join(conf.overlay, 'g-octave', self.pkgname)
+        ebuild_path = os.path.join(self._config.overlay, 'g-octave', self.pkgname)
         ebuild_file = os.path.join(ebuild_path, '%s-%s.ebuild' % (self.pkgname, self.version))
         
         if not os.path.exists(ebuild_path):
@@ -129,11 +131,14 @@ RDEPEND="${DEPEND}
         description = len(self.__desc.description) > 70 and \
             self.__desc.description[:70]+'...' or self.__desc.description
         
+        if accept_keywords is None:
+            accept_keywords = portage.settings['ACCEPT_KEYWORDS']
+        
         vars = {
             'eutils': '',
             'description': description,
             'url': self.__desc.url,
-            'keywords': self.__keywords(portage.settings['ACCEPT_KEYWORDS']),
+            'keywords': self.__keywords(accept_keywords),
             'depend': '',
             'rdepend': '',
         }
@@ -152,8 +157,8 @@ RDEPEND="${DEPEND}
             
             # WOW, we have patches :(
             
-            patchesdir = os.path.join(conf.db, 'patches')
-            filesdir = os.path.join(conf.overlay, 'g-octave', self.pkgname, 'files')
+            patchesdir = os.path.join(self._config.db, 'patches')
+            filesdir = os.path.join(self._config.overlay, 'g-octave', self.pkgname, 'files')
             if not os.path.exists(filesdir):
                 os.makedirs(filesdir, 0755)
             
@@ -169,10 +174,11 @@ RDEPEND="${DEPEND}
         fp.write(ebuild % vars)
         fp.close()
         
-        proc = subprocess.call(['ebuild', ebuild_file, 'manifest'])
-        
-        if proc != os.EX_OK:
-            raise EbuildException('Failed to create Manifest file!')
+        if manifest:
+            proc = subprocess.call(['ebuild', ebuild_file, 'manifest'])
+            
+            if proc != os.EX_OK:
+                raise EbuildException('Failed to create Manifest file!')
         
         return '=g-octave/%s-%s' % (self.pkgname, self.version)
         
@@ -214,7 +220,7 @@ RDEPEND="${DEPEND}
         
         tmp = []
         
-        for patch in os.listdir(os.path.join(conf.db, 'patches')):
+        for patch in os.listdir(os.path.join(self._config.db, 'patches')):
             if re.match(r'^([0-9]{3})_%s-%s' % (self.pkgname, self.version), patch):
                 tmp.append(patch)
         

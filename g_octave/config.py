@@ -55,6 +55,9 @@ class Config(object):
             if not os.path.exists(dir) and create_dirs:
                 os.makedirs(dir, 0755)
         
+        self._cache = {}
+        self._info = {}
+        
         if not fetch_phase:
             
             # Cache (JSON)
@@ -72,9 +75,9 @@ class Config(object):
         
         if attr in self._defaults:
             return self._config.get(self._section_name, attr)
-        elif not self._fetch_phase and attr in self._info:
+        elif attr in self._info:
             return self._info[attr]
-        elif not self._fetch_phase and attr == 'cache':
+        elif attr == 'cache' and 'files' in self._cache:
             return self._cache['files']
         else:
             raise ConfigException('Invalid option: %s' % attr)

@@ -29,6 +29,7 @@ class DescriptionTree(object):
         
         if conf is None:
             conf = Config()
+        self._config = conf
         
         self._db_path = os.path.join(conf.db, 'octave-forge')
         
@@ -74,7 +75,7 @@ class DescriptionTree(object):
                         '%s-%s' % (pkg['name'], pkg['version']),
                         'DESCRIPTION'
                     )
-                    return Description(pkgfile)
+                    return Description(pkgfile, conf = self._config)
         
         return None
     
