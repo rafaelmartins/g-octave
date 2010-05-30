@@ -18,7 +18,7 @@ import tempfile
 
 from g_octave import config
 
-def create_env():
+def create_env(json_files=False):
     """returns a tuple with the *g_octave.config* object and the path of
     the temporary config and directory
     """
@@ -38,7 +38,7 @@ def create_env():
         cp.write(fp)
     
     conf = config.Config(
-        fetch_phase = True,
+        fetch_phase = not json_files,
         config_file = config_file,
         create_dirs = True
     )

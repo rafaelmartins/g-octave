@@ -183,10 +183,12 @@ class TestDescription(unittest.TestCase):
         self.assertEqual(self.desc.categories, 'Category1,Category2, Category3')
         self.assertEqual(self.desc.url, 'http://example.org')
         
-        # the requirements can't be tested because the test system can't
-        # check the non-octave packages yet.
-        self.assertEqual(self.desc.systemrequirements, [])
-        self.assertEqual(self.desc.buildrequires, [])
+        self.assertEqual(self.desc.systemrequirements, [
+            '>=g-octave/pkg1-4.3.2',
+            '<g-octave/pkg2-1.2.3',
+            'g-octave/pkg3'
+        ])
+        self.assertEqual(self.desc.buildrequires, ['>g-octave/pkg4-1.0.0'])
         
         self.assertEqual(self.desc.depends, ['>=sci-mathematics/octave-3.0.0'])
         self.assertEqual(self.desc.autoload, 'NO')

@@ -11,16 +11,18 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import os
 import unittest
 import utils
 
-from g_octave import ebuild
+from g_octave import ebuild, overlay
 
 
 class TestEbuild(unittest.TestCase):
     
     def setUp(self):
-        self._config, self._config_file, self._dir = utils.create_env()
+        self._config, self._config_file, self._dir = utils.create_env(json_files=True)
+        overlay.create_overlay(conf = self._config, quiet = True)
     
     def test_re_keywords(self):
         keywords = [
@@ -47,6 +49,45 @@ class TestEbuild(unittest.TestCase):
                 kwtpl
             )
     
+    def test_generated_ebuilds(self):
+        ebuilds = [
+            ('main1', '0.0.1'),
+            ('main2', '0.0.1'),
+            ('extra1', '0.0.1'),
+            ('extra2', '0.0.1'),
+            ('language1', '0.0.1'),
+            ('language2', '0.0.1'),
+        ]
+        for pkgname, pkgver in ebuilds:
+            _ebuild = ebuild.Ebuild(
+                pkgname + '-' + pkgver,
+                conf = self._config,
+            )
+            _ebuild.create(
+                accept_keywords = 'amd64 ~amd64 x86 ~x86',
+                manifest = False,
+                display_info = False
+            )
+            created_ebuild_file = os.path.join(
+                self._config.overlay,
+                'g-octave', pkgname,
+                pkgname + '-' + pkgver + '.ebuild'
+            )
+            original_ebuild_file = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                'files', 'ebuilds',
+                pkgname + '-' + pkgver + '.ebuild'
+            )
+            
+            # compare ebuilds, line by line
+            with open(created_ebuild_file) as fp:
+                created_ebuild = fp.readlines()
+            with open(original_ebuild_file) as fp:
+                original_ebuild = fp.readlines()
+            self.assertEqual(len(created_ebuild), len(original_ebuild))
+            for i in range(len(created_ebuild)):
+                self.assertEqual(created_ebuild[i], original_ebuild[i])            
+    
     def tearDown(self):
         utils.clean_env(self._config_file, self._dir)
     
@@ -54,4 +95,5 @@ class TestEbuild(unittest.TestCase):
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(TestEbuild('test_re_keywords'))
+    suite.addTest(TestEbuild('test_generated_ebuilds'))
     return suite
