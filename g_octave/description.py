@@ -223,29 +223,6 @@ class Description(object):
                 raise DescriptionException('Invalid dependency atom: %s' % depend)
         
         return depends_list
-    
-    
-    def _parse_requirements(self, requirements):
-        """returns a list with gentoo atoms for the 'requirements' (the
-        dependencies that aren't octave-forge packages nor octave itself),
-        based on a external list of dependencies.
-        """
-        
-        # the list that will be returned
-        requirements_list = list()
-        
-        for requirement in [i.strip() for i in requirements.split(',')]:
-            
-            # check if the requirement is on the external file with the
-            # dependencies that aren't octave-forge packages nor octave
-            # itself.
-            if requirement in self._config.dependencies:
-                req = self._config.dependencies[requirement]
-                
-                # if is a valid value, append to the list
-                if req != '':
-                    requirements_list.append(req)
-        return requirements_list
 
     
     def __getattr__(self, name):
