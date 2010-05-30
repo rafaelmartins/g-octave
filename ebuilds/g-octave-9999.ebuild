@@ -13,7 +13,7 @@ EHG_REPO_URI="http://hg.rafaelmartins.eng.br/g-octave/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=""
-IUSE=""
+IUSE="test"
 
 CDEPEND="( >=dev-lang/python-2.6 <dev-lang/python-3 )"
 DEPEND="${CDEPEND}
@@ -27,4 +27,8 @@ src_install() {
 	distutils_src_install
 	dohtml ${PN}.html
 	doman ${PN}.1
+}
+
+src_test() {
+	PYTHONPATH=. scripts/run_tests.py || die "test failed."
 }
