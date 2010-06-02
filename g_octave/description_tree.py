@@ -110,3 +110,14 @@ class DescriptionTree(object):
                 maxstr = version
         
         return maxstr
+
+    
+    def packages(self):
+        
+        packages = []
+        
+        for cat in self.pkg_list:
+            for pkg in self.pkg_list[cat]:
+                packages.append(pkg['name'])
+        
+        return packages
