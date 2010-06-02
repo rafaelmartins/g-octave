@@ -65,7 +65,7 @@ class Ebuild:
         return self.__desc
 
 
-    def create(self, display_info=True, accept_keywords=None, manifest=True):
+    def create(self, display_info=True, accept_keywords=None, manifest=True, nodeps=False):
         
         my_ebuild = os.path.join(
             self._config.overlay,
@@ -86,7 +86,8 @@ class Ebuild:
                     out.eerror('Failed to create: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
                 raise EbuildException(error)
             else:
-                self.__resolve_dependencies()
+                if not nodeps:
+                    self.__resolve_dependencies()
                 return my_atom
         
         else:

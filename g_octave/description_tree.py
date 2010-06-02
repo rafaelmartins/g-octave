@@ -118,6 +118,6 @@ class DescriptionTree(object):
         
         for cat in self.pkg_list:
             for pkg in self.pkg_list[cat]:
-                packages.append(pkg['name'])
+                packages.append(pkg['name'] + '-' + pkg['version'])
         
         return packages
