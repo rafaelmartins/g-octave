@@ -12,6 +12,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+TRAC_URL="http://g-octave.rafaelmartins.eng.br/"
+
 import sys
 import os
 
@@ -35,14 +37,17 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
     sys.path.insert(0, os.path.join(current_dir, '..'))
 
+import csv
 import subprocess
+import urllib
+import urllib2
 
 from g_octave import config, description_tree, ebuild, fetch, overlay
 
 def build_package(pkgatom):
     proc = subprocess.call([
         'emerge',
-        '--nodeps',
+        #'--nodeps',
         '--nospinner',
         '--verbose',
         '--oneshot',
@@ -58,15 +63,40 @@ def remove_packages(pkglist):
     proc = subprocess.call([
         'emerge',
         '--unmerge',
-        pkglist
-    ])
+    ] + pkglist)
     return proc == os.EX_OK
     
 
 def bug_report(pkgatom):
-    pass
-
-
+    
+    def get_trac_bugs(pkgatom):
+        query_params = [
+            ('format', 'csv'),
+            ('component', 'ebuilds'),
+            ('summary', '~' + pkgatom),
+            ('col', [
+                'id',
+                'summary',
+                'status',
+            ])
+        ]
+        query = 'query?' + urllib.urlencode(query_params, True)
+        results = []
+        try:
+            fp = csv.reader(urllib2.urlopen(TRAC_URL + query))
+            result = list(fp)
+            keys = result[0]
+            for i in range(1, len(result)):
+                tmp = {}
+                for j in range(len(keys)):
+                    tmp[keys[j]] = result[i][j]
+                results.append(tmp)
+            return results
+        except:
+            sys.exit('Failed to get the bugs list from trac: ' + TRAC_URL)
+    
+    print get_trac_bugs(pkgatom)
+        
 def main(argv):
     fetch.check_db_cache()
     conf = config.Config()
@@ -97,4 +127,5 @@ def main(argv):
     
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    #sys.exit(main(sys.argv))
+    bug_report('g-octave/image-1.0.0')
