@@ -11,107 +11,95 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import cookielib
 import csv
+import pycurl
 import re
 import sys
-import urllib
-import urllib2
+import StringIO
 
+class TracError(Exception):
+    pass
 
 class Trac(object):
     
     url = 'http://g-octave.rafaelmartins.eng.br/'
     
     def __init__(self, user, passwd):
+        self.curl = pycurl.Curl()
+        self.curl.setopt(pycurl.COOKIEFILE, '/tmp/curl_cookie.txt')
+        self.curl.setopt(pycurl.COOKIEJAR, '/tmp/curl_cookie.txt')
+        self.curl.setopt(pycurl.FOLLOWLOCATION, 1)
         self.user = user
-        cj = cookielib.FileCookieJar('cookie.txt')
-        cj.load('cookie.txt')
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-        self.token = self._get_token()
-        params = {
-            'user': user,
-            'password': passwd,
-            '__FORM_TOKEN': self.token,
-        }
-        try:
-            fp = self.opener.open(self.url + 'login', urllib.urlencode(params))
-            html = fp.read()
-        except:
-            sys.exit('Failed to send authentication data.')
-        else:
-            if re.search(r'Invalid username or password', html) is not None:
-                sys.exit('Invalid username or password.')
+        self.token, autenticated = self._get_token()
+        if not autenticated:
+            code, html = self.request(
+                self.url + 'login', [
+                    ('user', user),
+                    ('password', passwd),
+                    ('__FORM_TOKEN', self.token),
+                ]
+            )
+            if code != 200 or not self.user_autenticated(html):
+                raise TracError('Autentication failed!')
+        
+    
+    def user_autenticated(self, html):
+        return html.find('<a href="/logout">') != -1
 
     
     def _get_token(self):
-        try:
-            fp = self.opener.open(self.url + 'login')
-            html = fp.read()
-        except:
-            sys.exit('Failed to get FORM_TOKEN.')
+        code, html = self.request(self.url + 'query')
+        match = re.search(r'__FORM_TOKEN"[^>]+value="([^"]+)"', html)
+        if match != None:
+            return match.group(1), self.user_autenticated(html)
         else:
-            match = re.search(r'__FORM_TOKEN"[^>]+value="([^"]+)"', html)
-            if match != None:
-                return match.group(1)
-            else:
-                sys.exit('Failed to parse FORM_TOKEN.')
-    
+            sraise TracError('Failed to parse FORM_TOKEN.')
+        
     
     def create_ticket(self, summary, description):
-        params = {
-            '__FORM_TOKEN': self.token,
-            'field_component': 'ebuilds',
-            'field_priority': 'minor',
-            'field_reporter': self.user,
-            'field_type': 'defect',
-            'field_summary': summary,
-            'field_description': description,
-            'field_owner': 'rafaelmartins', # hardcoded :(
-        }
-        try:
-            fp = self.opener.open(self.url + 'newticket', urllib.urlencode(params))
-            html = fp.read()
-        except:
-            sys.exit('Failed to send ticket data.')
-        else:
-            match = re.search(r'#([0-9]+) \(%s\)' % summary, html)
-            if match is not None:
-                return int(match.group(1))
+        code, html = self.request(
+            self.url + 'newticket', [
+                ('__FORM_TOKEN', self.token),
+                ('field_component', 'ebuilds'),
+                ('field_priority', 'minor'),
+                ('field_reporter', self.user),
+                ('field_type', 'defect'),
+                ('field_summary', summary),
+                ('field_description', description),
+                ('field_owner', 'rafaelmartins'),
+            ]
+        )
+        match = re.search(r'#([0-9]+) \(%s\)' % summary, html)
+        if code != 200 or match is None:
+            raise TracError('Failed to create a new ticket.')
+        return int(match.group(1))
     
     
-    def attach_file(self, id, description, file):
-        params = {
-            '__FORM_TOKEN': self.token,
-            'id': id,
-            'action': 'new',
-            'realm': 'ticket',
-            'description': description,
-            'attachment': open(file, 'rb')
-        }
-        try:
-            req = urllib2.Request(
-                self.url + 'attachment/ticket/' + str(id) + '/',
-                urllib.urlencode(params), {}
-            )
-            fp = self.opener.open(req)
-            html = fp.read()
-        except:
-            sys.exit('Failed to send attachment data.')
-        else:
-            print html
-            #match = re.search(r'#([0-9]+) \(%s\)' % summary, html)
-            #if match is not None:
-            #    return int(match.group(1))
-        finally:
-            fp.close()
+    def attach_file(self, id, description, filename):
+        code, html = self.request(
+            self.url + 'attachment/ticket/' + str(id) + '/', [
+                ('attachment', (pycurl.FORM_FILE, filename)),
+                ('__FORM_TOKEN', self.token),
+                ('id', str(id)),
+                ('action', 'new'),
+                ('realm', 'ticket'),
+                ('description', description),
+            ],
+            upload = True
+        )
+        if code != 200:
+            raise TracError('Failed to send the attachment.')
+        match = re.search(r'"/attachment/ticket/%i/([^"]+)"' % id, html)
+        if match is None:
+            raise TracError('Failed to find the attachment link.')
+        return match.group(1)
     
     
-    def list_tickets(self, pkgatom):
+    def list_tickets(self, summary):
         params = [
             ('format', 'csv'),
             ('component', 'ebuilds'),
-            ('summary', '~' + pkgatom),
+            ('summary', '~' + summary),
             ('col', [
                 'id',
                 'summary',
@@ -119,18 +107,36 @@ class Trac(object):
             ])
         ]
         results = []
+        code, html = self.request(
+            self.url + 'query?' + urllib.urlencode(params, True),
+            return_file = True
+        )
+        if code != 200:
+            sys.exit('Failed to request the list of tickets.')
+        fp = csv.reader(StringIO.StringIO(html))
+        result = list(fp)
+        keys = result[0]
+        for i in range(1, len(result)):
+            tmp = {}
+            for j in range(len(keys)):
+                tmp[keys[j]] = result[i][j]
+            results.append(tmp)
+        return results
+
+    
+    def request(self, url, params=None, upload=False):
+        self.curl.setopt(pycurl.URL, url)
+        if params is not None:
+            self.curl.setopt(pycurl.POST, 1)
+            self.curl.setopt(pycurl.HTTPPOST, params)
+        if upload:
+            self.curl.setopt(pycurl.HTTPHEADER, ['Expect:'])
+        buffer = StringIO.StringIO()
+        self.curl.setopt(pycurl.WRITEFUNCTION, buffer.write)
         try:
-            fp = csv.reader(self.opener.open(self.url + 'query?' + 
-                urllib.urlencode(params, True)))
-            result = list(fp)
-            keys = result[0]
-            for i in range(1, len(result)):
-                tmp = {}
-                for j in range(len(keys)):
-                    tmp[keys[j]] = result[i][j]
-                results.append(tmp)
-            return results
-        except:
-            sys.exit('Failed to get the ticket list.')
+            self.curl.perform()
+        except pycurl.error, err:
+            raise TracError('HTTP request failed: %s' % err)
+        return self.curl.getinfo(pycurl.HTTP_CODE), buffer.getvalue()
 
 
