@@ -53,7 +53,7 @@ class Trac(object):
         if match != None:
             return match.group(1), self.user_autenticated(html)
         else:
-            sraise TracError('Failed to parse FORM_TOKEN.')
+            raise TracError('Failed to parse FORM_TOKEN.')
         
     
     def create_ticket(self, summary, description):
