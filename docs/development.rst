@@ -9,8 +9,8 @@ Development
 Running the test suites
 -----------------------
 
-You can run the tests suites using the script *run_tests.py* that can be
-found in the directory *scripts* in the `source tarballs`_ (since 0.1) or
+You can run the tests suites using the script ``run_tests.py`` that can be
+found in the directory ``scripts`` in the `source tarballs`_ (since 0.1) or
 in the `Mercurial repository`_
 
 .. _`source tarballs`: http://files.rafaelmartins.eng.br/distfiles/g-octave/

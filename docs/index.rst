@@ -33,5 +33,5 @@ Contents
    :maxdepth: 2
 
    userguide
-   tinderbox
    development
+   tinderbox
