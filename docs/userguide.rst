@@ -20,15 +20,15 @@ After you have the overlay installed, you can install the package, using: ::
 We have 2 ebuilds, one for the latest stable release (for ``~x86`` and ``~amd64``)
 and one live ebuild, that installs g-Octave from the mercurial repository
 (without keywords). If you want to use the live ebuild, you need to unmask
-this ebuild, adding this to ``/etc/portage/package.keywords``::
+this ebuild, adding the line below to ``/etc/portage/package.keywords``::
 
     app-portage/g-octave **
 
 The live ebuild is only recommended for who want to help testing new
 features, or for developers.
 
-Stable users (with x86 or amd64) that wants to test the latest release
-will need to unmask the ebuild too, adding this to
+Stable users (with ``x86`` or ``amd64``) that wants to test the latest
+release will need to unmask the ebuild too, adding this to
 /etc/portage/package.keywords (e.g. for ``x86``)::
 
     app-portage/g-octave ~x86
