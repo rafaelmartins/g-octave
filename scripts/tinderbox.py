@@ -42,22 +42,26 @@ import urllib
 import urllib2
 
 from g_octave import config, description_tree, ebuild, fetch, overlay
-from g_octave.tinderbox.trac import Trac
+from g_octave.tinderbox.trac import Trac, TracError
 
 trac = None
+out = portage.output.EOutput()
 
 def build_package(pkgatom):
+    out.ebegin('Building package: %s' % pkgatom)
     proc = subprocess.call([
         'emerge',
         #'--nodeps',
         '--nospinner',
         '--verbose',
         '--oneshot',
-        pkgatom
+        '=g-octave/%s' % pkgatom
     ])
     if proc != os.EX_OK:
+        out.eend(1)
         bug_report(pkgatom)
         return False
+    out.eend(0)
     return True
 
 
@@ -71,19 +75,34 @@ def remove_packages(pkglist):
 
 def bug_report(pkgatom):
     
+    out.einfo('Reporting a bug for the package: %s' % pkgatom)
     bug_id = None
     
     # already have a ticket for this package?
-    for row in trac.list_tickets('=g-octave/'+ pkgatom + ' fails to build. #tinderbox'):
-        bug_id = row['id']
+    out.ebegin('Checking if already exists a ticket for this package')
+    try:
+        for row in trac.list_tickets('=g-octave/'+ pkgatom + ' fails to build. #tinderbox'):
+            bug_id = row['id']
+    except TracError, err:
+        out.eend(1)
+        print >> sys.stderr, err
+    else:
+        out.eend(0)
     
     # if not exists a ticket, create one
     if bug_id is None:
-        bug_id = trac.create_ticket(
-            '=g-octave/'+ pkgatom + ' fails to build. #tinderbox',
-            'This is ticket was created by tinderbox.\nLook at the attachments.'
-        )
-        bug_id = int(bug_id)
+        out.ebegin('Creating a new ticket')
+        try:
+            bug_id = trac.create_ticket(
+                '=g-octave/'+ pkgatom + ' fails to build. #tinderbox',
+                'This is ticket was created by tinderbox.\nLook at the attachments.'
+            )
+            bug_id = int(bug_id)
+        except TracError, err:
+            out.eend(1)
+            print >> sys.stderr, err
+        else:
+            out.eend(0)
     
     # attach the build.log and the environment
     tmpdir = os.path.join(
@@ -98,7 +117,14 @@ def bug_report(pkgatom):
         # curl hates utf-8
         f_ = str(os.path.join(tmpdir, f))
         if os.path.exists(f_):
-            trac.attach_file(bug_id, '%s file.' % f, f_)
+            out.ebegin('Attaching file %s to #%i' % (f, int(bug_id)))
+            try:
+                trac.attach_file(bug_id, '%s file.' % f, f_)
+            except TracError, err:
+                out.eend(1)
+                print >> sys.stderr, err
+            else:
+                out.eend(0)
         else:
             print >> sys.stderr, f_ + ' don\'t exists!'
 
@@ -109,15 +135,24 @@ def main(argv):
     fetch.check_db_cache()
     conf = config.Config()
     
-    trac = Trac(conf.trac_user, conf.trac_passwd)
+    out.ebegin('Trac - user autentication')
+    try:
+        trac = Trac(conf.trac_user, conf.trac_passwd)
+    except TracError, err:
+        out.eend(1)
+        print >> sys.stderr, err
+    else:
+        out.eend(0)
     
     # creating the overlay
     overlay.create_overlay()
     
     desc_tree = description_tree.DescriptionTree()
+    packages = desc_tree.packages()
+    out.einfo('Number of octave-forge packages: %i' % len(packages))
     
     # creating the ebuilds for all the packages
-    for pkgatom in desc_tree.packages():
+    for pkgatom in packages:
         e = ebuild.Ebuild(pkgatom)
         try:
             e.create(nodeps=True)

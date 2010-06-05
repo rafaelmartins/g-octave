@@ -125,7 +125,6 @@ class Trac(object):
 
     
     def request(self, url, params=None, upload=False):
-        print params
         self.curl.setopt(pycurl.URL, url)
         if params is not None:
             self.curl.setopt(pycurl.POST, 1)
