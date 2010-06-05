@@ -128,7 +128,7 @@ setup(
     author = g_octave.__author__,
     author_email = g_octave.__email__,
     url = g_octave.__url__,
-    packages = ['g_octave'],
+    packages = ['g_octave', 'g_octave.tinderbox'],
     scripts = ['scripts/g-octave'],
     data_files = [('/etc', ['etc/g-octave.cfg'])],
     requires = ['portage'],

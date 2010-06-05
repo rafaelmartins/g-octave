@@ -4,3 +4,9 @@ include MANIFEST.in
 include etc/g-octave.cfg
 include g-octave.1
 include g-octave.html
+include scripts/*
+recursive-include docs *
+recursive-include tests *
+prune docs/_build/
+include docs/_build/.keep
+exclude tests/*.pyc
