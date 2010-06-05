@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__issue_tracker = 'http://bitbucket.org/rafaelmartins/g-octave/issues/'
+"""
+    g-octave
+    ~~~~~~~~
+    
+    Main script of g-Octave.
+    
+    :copyright: (c) 2009-2010 by Rafael Goncalves Martins
+    :license: GPL-2, see LICENSE for more details.
+"""
+
+__issue_tracker = 'http://g-octave.rafaelmartins.eng.br/report'
 
 import sys
 

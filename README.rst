@@ -6,7 +6,7 @@
 .. _Paludis: http://paludis.pioto.org/
 .. _pkgcore: http://www.pkgcore.org/
 .. _`Gentoo Linux`: http://www.gentoo.org/
-.. _`issue tracker`: http://bitbucket.org/rafaelmartins/g-octave/issues/
+.. _`issue tracker`: http://g-octave.rafaelmartins.eng.br/report
 .. _Mercurial: http://mercurial.selenic.com/
 
 g-octave
@@ -133,7 +133,7 @@ We have other goals besides implementing the remaining features:
 * Improve the use of `g-octave`_ as a normal user, with "--pretend"
 * Improve the script that generates the package database
 * Improve the details available on the packages list
-* Write a testsuite
+* Write a testsuite **(done)**
 * more...
 
 
