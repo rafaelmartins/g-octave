@@ -32,7 +32,7 @@ You may also need some files from ``/etc/portage``
 Mounting filesystems/directories
 --------------------------------
 
-You should mount your current ``/usr/portage`` inside the chroot. ::
+You should mount your current ``/usr/portage`` inside the chroot dir::
 
     # mkdir /home/user/g-octave/usr/portage
     # mount -o bind /usr/portage /home/user/g-octave/usr/portage
@@ -63,13 +63,22 @@ Updating the packages and installing the dependencies
     # emerge av mercurial pycurl
 
 
-Cloning the g-octave repository
--------------------------------
+Getting the source code
+-----------------------
 
-::
+Using the Mercurial repository::
     
     # cd
     # hg clone http://hg.rafaelmartins.eng.br/g-octave/
+    # cd g-octave
+
+
+Using the source tarball::
+    
+    # cd
+    # wget http://files.rafaelmartins.eng.br/distfiles/g-octave/g-octave-0.1.tar.gz
+    # tar xvzf g-octave-0.1.tar.gz
+    # cd g-octave-0.1
 
 
 Configuring g-Octave
@@ -77,7 +86,6 @@ Configuring g-Octave
 
 ::
 
-    # cd g-octave
     # cp etc/g-octave.cfg /etc
 
 You should edit the file ``/etc/g-octave.cfg`` and append the lines below
