@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+    fetch.py
+    ~~~~~~~~
+    
+    This module implements a Python class responsible to fetch and update
+    the package database and the auxiliary files.
+    
+    :copyright: (c) 2009-2010 by Rafael Goncalves Martins
+    :license: GPL-2, see LICENSE for more details.
+"""
+
 __all__ = [
     'need_update',
     'check_updates',
@@ -42,13 +53,11 @@ def check_updates():
         # if we already have a file, that's ok
         if need_update():
             raise FetchException(error)
-        fp = open(os.path.join(conf.db, 'update.json'))
-        update = fp.read()
-        fp.close()
+        with open(os.path.join(conf.db, 'update.json')) as fp:
+            update = fp.read()
     else:
-        fp = open(os.path.join(conf.db, 'update.json'), 'w', 0644)
-        fp.write(update)
-        fp.close()
+        with open(os.path.join(conf.db, 'update.json'), 'w', 0644) as fp:
+            fp.write(update)
     
     updated_files = json.loads(update)
     
@@ -82,9 +91,8 @@ def download_with_urllib2(url, dest=None, display_info=True):
         if dest != None:
             if not os.path.exists(dest):
                 os.makedirs(dest, 0755)
-            fp = open(os.path.join(dest, my_file), 'w', 0644)
-            fp.write(file_content)
-            fp.close()
+            with open(os.path.join(dest, my_file), 'w', 0644) as fp:
+                fp.write(file_content)
         else:
             if display_info:
                 out.eend(0)
@@ -103,9 +111,8 @@ def add_file_to_db_cache(_file):
     my_file = os.path.join(conf.db, 'cache.json')
     
     try:
-        fp = open(my_file)
-        files = json.load(fp)
-        fp.close()
+        with open(my_file) as fp:
+            files = json.load(fp)
     except:
         files = {'files': {}}
     
@@ -113,23 +120,20 @@ def add_file_to_db_cache(_file):
         if re_files[f].match(_file) != None:
             files['files'][f] = _file
     
-    fp = open(my_file, 'w', 0644)
-    json.dump(files, fp)
-    fp.close()
+    with open(my_file, 'w', 0644) as fp:
+        json.dump(files, fp)
 
 
 def check_db_cache():
     
     try:
-        fp = open(os.path.join(conf.db, 'cache.json'))
-        cache = json.load(fp)
-        fp.close()
+        with open(os.path.join(conf.db, 'cache.json')) as fp:
+            cache = json.load(fp)
     except:
         cache = {'files': []}
     
-    fp = open(os.path.join(conf.db, 'update.json'))
-    update = json.load(fp)
-    fp.close()
+    with open(os.path.join(conf.db, 'update.json')) as fp:
+        update = json.load(fp)
     
     for _file in update['files']:
         if _file not in cache['files'].values():
