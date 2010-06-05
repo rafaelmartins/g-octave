@@ -8,12 +8,12 @@ inherit distutils
 
 DESCRIPTION="A tool that generates and installs ebuilds for Octave-Forge"
 HOMEPAGE="http://g-octave.rafaelmartins.eng.br/"
-SRC_URI="http://files.rafaelmartins.eng.br/distfiles/${P}.tar.gz"
+SRC_URI="http://files.rafaelmartins.eng.br/distfiles/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE=""
+IUSE="test"
 
 DEPEND="( >=dev-lang/python-2.6 <dev-lang/python-3 )"
 RDEPEND="${DEPEND}
@@ -23,4 +23,8 @@ src_install() {
 	distutils_src_install
 	dohtml ${PN}.html
 	doman ${PN}.1
+}
+
+src_test() {
+	PYTHONPATH=. scripts/run_tests.py || die "test failed."
 }
