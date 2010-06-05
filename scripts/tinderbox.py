@@ -12,8 +12,6 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-TRAC_URL="http://g-octave.rafaelmartins.eng.br/"
-
 import sys
 import os
 
@@ -38,11 +36,15 @@ if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
     sys.path.insert(0, os.path.join(current_dir, '..'))
 
 import csv
+import portage
 import subprocess
 import urllib
 import urllib2
 
 from g_octave import config, description_tree, ebuild, fetch, overlay
+from g_octave.tinderbox.trac import Trac
+
+trac = None
 
 def build_package(pkgatom):
     proc = subprocess.call([
@@ -69,37 +71,45 @@ def remove_packages(pkglist):
 
 def bug_report(pkgatom):
     
-    def get_trac_bugs(pkgatom):
-        query_params = [
-            ('format', 'csv'),
-            ('component', 'ebuilds'),
-            ('summary', '~' + pkgatom),
-            ('col', [
-                'id',
-                'summary',
-                'status',
-            ])
-        ]
-        query = 'query?' + urllib.urlencode(query_params, True)
-        results = []
-        try:
-            fp = csv.reader(urllib2.urlopen(TRAC_URL + query))
-            result = list(fp)
-            keys = result[0]
-            for i in range(1, len(result)):
-                tmp = {}
-                for j in range(len(keys)):
-                    tmp[keys[j]] = result[i][j]
-                results.append(tmp)
-            return results
-        except:
-            sys.exit('Failed to get the bugs list from trac: ' + TRAC_URL)
+    bug_id = None
     
-    print get_trac_bugs(pkgatom)
+    # already have a ticket for this package?
+    for row in trac.list_tickets('=g-octave/'+ pkgatom + ' fails to build. #tinderbox'):
+        bug_id = row['id']
+    
+    # if not exists a ticket, create one
+    if bug_id is None:
+        bug_id = trac.create_ticket(
+            '=g-octave/'+ pkgatom + ' fails to build. #tinderbox',
+            'This is ticket was created by tinderbox.\nLook at the attachments.'
+        )
+        bug_id = int(bug_id)
+    
+    # attach the build.log and the environment
+    tmpdir = os.path.join(
+        portage.settings['PORTAGE_TMPDIR'],
+        'portage',
+        'g-octave',
+        pkgatom,
+        'temp'
+    )
+    
+    for f in ['build.log', 'environment']:
+        # curl hates utf-8
+        f_ = str(os.path.join(tmpdir, f))
+        if os.path.exists(f_):
+            trac.attach_file(bug_id, '%s file.' % f, f_)
+        else:
+            print >> sys.stderr, f_ + ' don\'t exists!'
+
         
 def main(argv):
+    global trac
+    
     fetch.check_db_cache()
     conf = config.Config()
+    
+    trac = Trac(conf.trac_user, conf.trac_passwd)
     
     # creating the overlay
     overlay.create_overlay()
@@ -118,7 +128,7 @@ def main(argv):
     
     try:
         for pkgatom in desc_tree.packages():
-            if build_package('=g-octave/'+pkgatom):
+            if build_package(pkgatom):
                 installed_packages.append('=g-octave/'+pkgatom)
     except:
         pass
@@ -127,5 +137,4 @@ def main(argv):
     
 
 if __name__ == '__main__':
-    #sys.exit(main(sys.argv))
-    bug_report('g-octave/image-1.0.0')
+    sys.exit(main(sys.argv))

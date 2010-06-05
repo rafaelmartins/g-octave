@@ -27,6 +27,8 @@ class Config(object):
         'overlay': '/usr/local/portage/g-octave',
         'categories': 'main,extra,language',
         'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
+        'trac_user': '',
+        'trac_passwd': '',
     }
 
     _section_name = 'main'

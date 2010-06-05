@@ -16,6 +16,7 @@ import pycurl
 import re
 import sys
 import StringIO
+import urllib
 
 class TracError(Exception):
     pass
@@ -89,7 +90,7 @@ class Trac(object):
         )
         if code != 200:
             raise TracError('Failed to send the attachment.')
-        match = re.search(r'"/attachment/ticket/%i/([^"]+)"' % id, html)
+        match = re.search(r'"/attachment/ticket/%i/([^"]+)"' % int(id), html)
         if match is None:
             raise TracError('Failed to find the attachment link.')
         return match.group(1)
@@ -109,7 +110,6 @@ class Trac(object):
         results = []
         code, html = self.request(
             self.url + 'query?' + urllib.urlencode(params, True),
-            return_file = True
         )
         if code != 200:
             sys.exit('Failed to request the list of tickets.')
@@ -125,6 +125,7 @@ class Trac(object):
 
     
     def request(self, url, params=None, upload=False):
+        print params
         self.curl.setopt(pycurl.URL, url)
         if params is not None:
             self.curl.setopt(pycurl.POST, 1)
