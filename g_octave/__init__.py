@@ -32,4 +32,4 @@ __url__ = 'http://g-octave.rafaelmartins.eng.br/'
 __copyright__ = '(c) 2009-2010 %s' % __author__
 __license__ = 'GPLv2'
 
-__version__ = '0.1_rc3'
+__version__ = '0.1'
