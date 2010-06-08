@@ -27,7 +27,7 @@ from config import Config
 from exception import ConfigException
 
 # octave-forge DESCRIPTION's dependencies atoms
-re_depends = re.compile(r'([a-zA-Z0-9-]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
+re_depends = re.compile(r'^([a-zA-Z0-9-]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
 
 # we'll use atoms like 'control-1.0.11' to g-octave packages
 re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
@@ -36,7 +36,7 @@ from exception import DescriptionException
 
 class Description(object):
     
-    def __init__(self, file, conf=None):
+    def __init__(self, file, conf=None, parse_sysreq=True):
         
         if conf is None:
             conf = Config()
@@ -122,7 +122,7 @@ class Description(object):
                 self._desc['self_depends'] = self._parse_self_depends(depends)
             
             # requirements
-            if key in ('systemrequirements', 'buildrequires'):
+            if key in ('systemrequirements', 'buildrequires') and parse_sysreq:
                 self._desc[key] = self._parse_depends(self._desc[key])
 
     

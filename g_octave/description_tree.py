@@ -22,8 +22,9 @@ from exception import ConfigException, DescriptionTreeException
 
 class DescriptionTree(object):
     
-    def __init__(self, conf=None):
+    def __init__(self, conf=None, parse_sysreq=True):
         
+        self._parse_sysreq = parse_sysreq
         self.pkg_list = {}
         
         if conf is None:
@@ -49,7 +50,7 @@ class DescriptionTree(object):
                     except ConfigException:
                         # blacklist isn't mandatory
                         blacklist = []
-                    if mypkg.group(1) not in blacklist:
+                    if mypkg.group(1) not in blacklist or not parse_sysreq:
                         self.pkg_list[cat].append({
                             'name': mypkg.group(1),
                             'version': mypkg.group(2),
@@ -74,7 +75,11 @@ class DescriptionTree(object):
                         '%s-%s' % (pkg['name'], pkg['version']),
                         'DESCRIPTION'
                     )
-                    return Description(pkgfile, conf = self._config)
+                    return Description(
+                        pkgfile,
+                        conf = self._config,
+                        parse_sysreq = self._parse_sysreq
+                    )
         
         return None
     
