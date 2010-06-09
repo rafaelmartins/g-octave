@@ -16,6 +16,10 @@
 import json
 import sys
 import os
+import portage
+
+from _emerge.actions import load_emerge_config
+from _emerge.search import search
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
@@ -24,6 +28,16 @@ if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
 from g_octave import description, description_tree, exception
 
 def main(argv):
+    
+    if len(argv) <= 1:
+        print >> sys.stderr, 'one argument required: the json file.'
+        return 1
+    
+    # init portage stuff
+    settings, trees, mtimedb = load_emerge_config()
+    root_config = trees[settings['ROOT']]['root_config']
+    s = search(root_config, False, False, False, False, False)
+    
     desc_tree = description_tree.DescriptionTree(parse_sysreq = False)
     
     dependencies = []
@@ -46,14 +60,45 @@ def main(argv):
         for dep in deps:
             match = description.re_depends.match(dep)
             if match is not None:
-                dependencies.append(match.group(1))
+                my_match = match.group(1).split('-')[0]
+                if my_match not in dependencies:
+                    dependencies.append(my_match)
     
     json_dict = dict(dependencies=dict())
     
-    for dep in dependencies:
-        json_dict['dependencies'][dep] = ''
+    try:
+        with open(argv[1], 'r') as fp:
+            json_dict = json.load(fp)
+    except:
+        pass
     
-    json.dump(json_dict, sys.stdout, sort_keys=True, indent=4)
+    for dep in dependencies:
+        s.execute(dep)
+        print dep
+        temp = []
+        for i in range(len(s.matches['pkg'])):
+            print '    %i: %s' % (i, s.matches['pkg'][i][0])
+            temp.append(s.matches['pkg'][i][0])
+        
+        if dep in json_dict['dependencies']:
+            select = raw_input('Select a package [%s]: ' % \
+                json_dict['dependencies'][dep])
+        else:
+            select = raw_input('Select a package: ')
+        try:
+            json_dict['dependencies'][dep] = temp[int(select)]
+        except:
+            if select != '' or dep not in json_dict['dependencies']:
+                json_dict['dependencies'][dep] = select
+        print 'Selected: %s' % json_dict['dependencies'][dep]
+        print 
+    
+    try:
+        with open(argv[1], 'w') as fp:
+            json.dump(json_dict, fp, sort_keys=True, indent=4)
+    except:
+        print >> sys.stderr, 'failed to save the json file.'
+        return 1
     
     return 0
 
