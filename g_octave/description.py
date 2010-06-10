@@ -190,7 +190,7 @@ class Description(object):
             else:
                 raise DescriptionException('Invalid dependency atom: %s' % depend)
 
-        return depends_list
+        return list(set(depends_list))
 
 
     def _parse_self_depends(self, depends):
