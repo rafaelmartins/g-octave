@@ -173,6 +173,9 @@ class Description(object):
                 elif name in conf_dependencies:
                     atom += conf_dependencies[name]
                 
+                elif name == '':
+					continue
+                
                 # the octave-forge packages will be put inside a "fake"
                 # category: g-octave
                 else:

@@ -57,12 +57,14 @@ def main(argv):
         if desc.buildrequires is not None:
             deps += [i.strip() for i in desc.buildrequires.split(',')]
         
+        dep_aux = []
         for dep in deps:
             match = description.re_depends.match(dep)
             if match is not None:
                 my_match = match.group(1).split('-')[0]
-                if my_match not in dependencies:
-                    dependencies.append(my_match)
+                if my_match not in dep_aux:
+                    dependencies.append((match.group(1), my_match))
+                    dep_aux.append(my_match)
     
     json_dict = dict(dependencies=dict())
     
@@ -72,25 +74,25 @@ def main(argv):
     except:
         pass
     
-    for dep in dependencies:
+    for dep_name, dep in dependencies:
         s.execute(dep)
-        print dep
+        print dep_name
         temp = []
         for i in range(len(s.matches['pkg'])):
             print '    %i: %s' % (i, s.matches['pkg'][i][0])
             temp.append(s.matches['pkg'][i][0])
         
-        if dep in json_dict['dependencies']:
+        if dep_name in json_dict['dependencies']:
             select = raw_input('Select a package [%s]: ' % \
-                json_dict['dependencies'][dep])
+                json_dict['dependencies'][dep_name])
         else:
             select = raw_input('Select a package: ')
         try:
-            json_dict['dependencies'][dep] = temp[int(select)]
+            json_dict['dependencies'][dep_name] = temp[int(select)]
         except:
-            if select != '' or dep not in json_dict['dependencies']:
-                json_dict['dependencies'][dep] = select
-        print 'Selected: %s' % json_dict['dependencies'][dep]
+            if select != '' or dep_name not in json_dict['dependencies']:
+                json_dict['dependencies'][dep_name] = select
+        print 'Selected: %s' % json_dict['dependencies'][dep_name]
         print 
     
     try:
