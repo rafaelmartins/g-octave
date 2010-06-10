@@ -60,7 +60,7 @@ Updating the packages and installing the dependencies
 ::
 
     # emerge -avuDN system
-    # emerge av mercurial pycurl
+    # emerge -av mercurial pycurl
 
 
 Getting the source code
@@ -76,9 +76,9 @@ Using the Mercurial repository::
 Using the source tarball::
     
     # cd
-    # wget http://files.rafaelmartins.eng.br/distfiles/g-octave/g-octave-0.1.tar.gz
-    # tar xvzf g-octave-0.1.tar.gz
-    # cd g-octave-0.1
+    # wget http://files.rafaelmartins.eng.br/distfiles/g-octave/g-octave-<VERSION>.tar.gz
+    # tar xvzf g-octave-<VERSION>.tar.gz
+    # cd g-octave-<VERSION>
 
 
 Configuring g-Octave
