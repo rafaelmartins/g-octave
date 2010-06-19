@@ -18,6 +18,9 @@ import subprocess
 import sys
 import urllib2
 
+import revisions
+
+from g_octave import config
 
 class SvnClient:
     
@@ -25,13 +28,31 @@ class SvnClient:
     categories = ['main', 'extra', 'language', 'nonfree']
     exclude = ['CONTENTS', 'INDEX', 'Makefile', 'base']
     
-    def __init__(self, verbose=False):
+    def __init__(self, create_revisions=True, verbose=False):
+        conf = config.Config()
+        json_file = os.path.join(conf.db, 'revisions.json')
         self._verbose = verbose
         self._client = pysvn.Client()
+        self._revisions = revisions.Revisions(json_file)
         self.packages = {}
+        if create_revisions and not os.path.exists(json_file):
+            self.update_revisions()
+        else:
+            self.packages = self._revisions.get()
+
+    def update_revisions(self):
+        updated = []
         for category in self.categories:
             self.packages[category] = self._list_packages(category)
-    
+        for category in self.packages:
+            for package in self.packages[category]:
+                old_revision = self._revisions.get(category, package)
+                current_revision = self.packages[category][package]
+                if current_revision is None or current_revision > old_revision:
+                    self._revisions.set(category, package, current_revision)
+                    updated.append((category, package))
+        return updated
+
     def _list_packages(self, category):
         try:
             if self._verbose:
@@ -42,18 +63,18 @@ class SvnClient:
             )
         except pysvn.ClientError, err:
             print >> sys.stderr, 'Error: ' + str(err)
-        tmp_list = []
+        tmp = {}
         for props, lock in pkg_list:
             filename = props.repos_path.split('/')[-1]
             if filename not in self.exclude and filename != category:
-                tmp_list.append(filename)
-        return tmp_list
+                tmp[filename] = props.created_rev.number
+        return tmp
 
     def create_description_tree(self, dest, categories=['main', 'extra', 'language']):
         for category in categories:
             if category not in self.categories:
                 continue
-            for pkg in self.packages[category]:
+            for pkg, revision in self.packages[category]:
                 current_dir = os.path.join(dest, category, pkg)
                 os.makedirs(current_dir)
                 try:
@@ -66,7 +87,6 @@ class SvnClient:
                         shutil.copyfileobj(fp, fp_)
                 except urllib2.URLError:
                     pass
-            
 
     def checkout_package(self, category, name, dest, stable=True):
         if stable:
@@ -88,8 +108,3 @@ class SvnClient:
         except pysvn.ClientError, err:
             return False
         return True
-
-    def create_tarball(self, category, name):
-        tmpdir = '/tmp/tmp-' + name
-        self.checkout_package(category, name, tmpdir)
-        shutil.copytree(tmpdir, '/tmp/'+name)

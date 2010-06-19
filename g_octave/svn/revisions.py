@@ -35,20 +35,28 @@ class Revisions(object):
             return False
         return True
             
-    def __getitem__(self, key):
+    def get(self, category=None, package=None):
         revisions = self._load_json()
-        if key in revisions:
-            return revisions[key]
+        if category is None:
+            return revisions        
+        if category in revisions:
+            if package is None:
+                return revisions[category]
+            if package in revisions[category]:
+                return revisions[category][package]
         return None
     
-    def __setitem__(self, key, value):
+    def set(self, category, package, value):
         revisions = self._load_json()
-        revisions[key] = value
+        if category not in revisions:
+            revisions[category] = {}
+        revisions[category][package] = value
         if not self._dump_json(revisions):
             raise RuntimeError('Failed to save JSON file.')
+        
 
 if __name__ == '__main__':
     a = Revisions('/tmp/file.json')
-    a['fuuuu'] = 1234
-    print a['fuuuu']
+    a.set('main', 'fuuuu', 1234)
+    print a.get()
             
