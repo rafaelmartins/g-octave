@@ -28,6 +28,7 @@ class Config(object):
         'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
         'trac_user': '',
         'trac_passwd': '',
+        'pkg_cache': '',
     }
 
     _section_name = 'main'

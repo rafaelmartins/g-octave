@@ -36,15 +36,15 @@ def main(argv):
     temp_dir = tempfile.mkdtemp()
     checkout_dir = os.path.join(temp_dir, 'checkout')
     db_dir = os.path.join(temp_dir, 'db')
-    
+    error = []
     for category, pkg in svn.update_revisions():
         cur_checkout_dir = os.path.join(checkout_dir, pkg)
         os.makedirs(cur_checkout_dir)
-        while 1:
-            print 'Checking out the package: %s/%s' % (category, pkg)
-            if svn.checkout_package(category, pkg, cur_checkout_dir, stable=True):
-                break
-            print 'An error was ocurred. Retrying ...'
+        print 'Checking out the package: %s/%s' % (category, pkg)
+        if not svn.checkout_package(category, pkg, cur_checkout_dir, stable=True):
+            error.append('%s/%s' % (category, pkg))
+            print 'An error was ocurred ...'
+            continue
         
         # copying DESCRIPTION file for the package database
         cur_db_dir = os.path.join(db_dir, category, pkg)
@@ -60,9 +60,11 @@ def main(argv):
         shutil.move(cur_checkout_dir, new_checkout)
         utils.create_tarball(
             new_checkout,
-            '%s-%s.tar.bz2' % (pkg, desc.version),
+            '%s/%s-%s.tar.bz2' % (conf.pkg_cache, pkg, desc.version),
             '%s-%s' % (pkg, desc.version)
         )
+    if len(error) > 0:
+        print 'Errors: %s' % ', '.join(error)
             
 
 if __name__ == '__main__':

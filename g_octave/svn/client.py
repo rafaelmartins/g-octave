@@ -16,10 +16,12 @@ import pysvn
 import shutil
 import subprocess
 import sys
+import tempfile
 import urllib2
 
-import revisions
+from contextlib import closing
 
+import revisions
 from g_octave import config
 
 class SvnClient:
@@ -42,6 +44,7 @@ class SvnClient:
 
     def update_revisions(self):
         updated = []
+        temp = tempfile.mkstemp()[1]
         for category in self.categories:
             self.packages[category] = self._list_packages(category)
         for category in self.packages:
@@ -107,4 +110,22 @@ class SvnClient:
             )
         except pysvn.ClientError, err:
             return False
+        makefile = os.path.join(dest, 'Makefile')
+        configure = os.path.join(dest, 'configure')
+        autogen = os.path.join(dest, 'src', 'autogen.sh')
+        self.download_file('packages/package_Makefile.in', os.path.join(dest, 'Makefile'))
+        self.download_file('packages/package_configure.in', configure)
+        os.chmod(configure, 0755)
+        if os.path.exists(autogen):
+            os.chmod(autogen, 0755)
+            if subprocess.call(
+                'cd %s && ./autogen.sh' % os.path.dirname(autogen),
+                shell=True
+            ) != os.EX_OK:
+                return False
         return True
+    
+    def download_file(self, src, dest):
+        with closing(urllib2.urlopen(self.url + '/' + src)) as fp:
+            with open(dest, 'wb') as fp_:
+                fp_.write(fp.read()) 
