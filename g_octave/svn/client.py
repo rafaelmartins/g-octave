@@ -16,7 +16,6 @@ import pysvn
 import shutil
 import subprocess
 import sys
-import tempfile
 import urllib2
 
 from contextlib import closing
@@ -31,8 +30,8 @@ class SvnClient:
     exclude = ['CONTENTS', 'INDEX', 'Makefile', 'base']
     
     def __init__(self, create_revisions=True, verbose=False):
-        conf = config.Config()
-        json_file = os.path.join(conf.db, 'revisions.json')
+        self.conf = config.Config()
+        json_file = os.path.join(self.conf.db, 'revisions.json')
         self._verbose = verbose
         self._client = pysvn.Client()
         self._revisions = revisions.Revisions(json_file)
@@ -44,14 +43,22 @@ class SvnClient:
 
     def update_revisions(self):
         updated = []
-        temp = tempfile.mkstemp()[1]
+        pkg_cache_dir = self.conf.pkg_cache
+        try:
+            pkg_cache = os.listdir(pkg_cache_dir)
+        except:
+            raise RuntimeError('Failed to list packages from the pkg_cache')
         for category in self.categories:
             self.packages[category] = self._list_packages(category)
         for category in self.packages:
             for package in self.packages[category]:
                 old_revision = self._revisions.get(category, package)
                 current_revision = self.packages[category][package]
-                if current_revision is None or current_revision > old_revision:
+                tarball_exist = False
+                for package_c in pkg_cache:
+                    if package_c.startswith(package):
+                        tarball_exist = True
+                if current_revision is None or current_revision > old_revision or not tarball_exist:
                     self._revisions.set(category, package, current_revision)
                     updated.append((category, package))
         return updated
@@ -94,22 +101,16 @@ class SvnClient:
     def checkout_package(self, category, name, dest, stable=True):
         if stable:
             # get DESCRIPTION revision
-            try:
-                info = self._client.info2(
-                    self.url + '/' + category + '/' + name + '/DESCRIPTION'
-                )
-            except pysvn.ClientError, err:
-                return False
-            revision = info[0][1].last_changed_rev
-        try:
-            self._client.checkout(
-                self.url + '/' + category + '/' + name + '/',
-                dest,
-                revision = stable and revision or \
-                    pysvn.Revision(pysvn.opt_revision_kind.head)
+            info = self._client.info2(
+                self.url + '/' + category + '/' + name + '/DESCRIPTION'
             )
-        except pysvn.ClientError, err:
-            return False
+            revision = info[0][1].last_changed_rev
+        self._client.checkout(
+            self.url + '/' + category + '/' + name + '/',
+            dest,
+            revision = stable and revision or \
+                pysvn.Revision(pysvn.opt_revision_kind.head)
+        )
         makefile = os.path.join(dest, 'Makefile')
         configure = os.path.join(dest, 'configure')
         autogen = os.path.join(dest, 'src', 'autogen.sh')
@@ -122,8 +123,7 @@ class SvnClient:
                 'cd %s && ./autogen.sh' % os.path.dirname(autogen),
                 shell=True
             ) != os.EX_OK:
-                return False
-        return True
+                raise RuntimeError('Failed to run autogen.sh')
     
     def download_file(self, src, dest):
         with closing(urllib2.urlopen(self.url + '/' + src)) as fp:

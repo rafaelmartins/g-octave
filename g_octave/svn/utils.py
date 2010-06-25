@@ -13,10 +13,11 @@
 import sys
 import tarfile
 
+from contextlib import closing
+
 def create_tarball(src_dir, tarball_file, arcname):
     try:
-        tar = tarfile.open(tarball_file, 'w:bz2')
-        tar.add(src_dir, arcname=arcname, recursive=True, exclude=lambda x: '.svn' in x)
-        tar.close()
+        with closing(tarfile.open(tarball_file, 'w:gz')) as tar:
+            tar.add(src_dir, arcname=arcname, recursive=True, exclude=lambda x: '.svn' in x)
     except tarfile.TarError, err:
         print >> sys.stderr, 'Failed to create the tarball: %s' % err
