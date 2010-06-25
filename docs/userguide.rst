@@ -116,11 +116,11 @@ packages:
 
 You can get some information about the package using this command: ::
 
-    # emerge --info packagename
+    # g-octave --info packagename
 
 or ::
     
-    # emerge -i packagename
+    # g-octave -i packagename
 
 
 Uninstalling packages
@@ -128,10 +128,10 @@ Uninstalling packages
 
 You can uninstall packages using this command: ::
 
-    # emerge --unmerge packagename
+    # g-octave --unmerge packagename
 
 or ::
     
-    # emerge -C packagename-version
+    # g-octave -C packagename-version
 
 The options ``--ask`` and ``--verbose`` are also supported.
