@@ -108,7 +108,7 @@ class Ebuild:
 
 EAPI="3"
 
-inherit octave-forge%(eutils)s
+inherit g-octave%(eutils)s
 
 DESCRIPTION="%(description)s"
 HOMEPAGE="%(url)s"

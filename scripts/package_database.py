@@ -29,6 +29,9 @@ from g_octave import config
 from g_octave.svn import revisions, utils
 
 def main(argv):
+    if len(argv) < 2:
+        print >> sys.stderr, 'You should provide the name of the generated tarball'
+        return 1
     conf = config.Config()
     json_file = os.path.join(conf.db, 'revisions.json')
     db = revisions.Revisions(json_file).get()
@@ -54,6 +57,7 @@ def main(argv):
         raise RuntimeError('An error was ocurred: %s' % err)
     finally:
         shutil.rmtree(temp_dir)
+    return 0
 
 
 if __name__ == '__main__':
