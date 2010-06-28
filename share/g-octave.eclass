@@ -4,36 +4,35 @@
 
 #
 # Original Author: Rafael G. Martins <rafael@rafaelmartins.eng.br>
-# Purpose: Build Octave-Forge packages automatically using the new-style package
-# manager
+# Purpose: g-octave helper eclass.
 #
 
-HOMEPAGE="http://octave.sourceforge.net/"
+# @ECLASS-VARIABLE: G_OCTAVE_CAT
+# @DESCRIPTION:
+# the octave-forge category of the package.
+G_OCTAVE_CAT="${G_OCTAVE_CAT:-main}"
+
+
+if [[ ${PV} = 9999* ]]; then
+	inherit subversion autotools
+	ESVN_REPO_URI="https://octave.svn.sourceforge.net/svnroot/octave/trunk/"
+	ESVN_PROJECT="octave-forge/${G_OCTAVE_CAT}/${PN}"
+	SRC_URI="${ESVN_REPO_URI}/octave-forge/packages/package_Makefile.in
+		${ESVN_REPO_URI}/octave-forge/packages/package_configure.in"
+else
+	SRC_URI="http://g-octave.rafaelmartins.eng.br/distfiles/octave-forge/${P}.tar.gz"
+fi
+
+
+HOMEPAGE="http://g-octave.rafaelmartins.eng.br/"
 SLOT="0"
 LICENSE="GPL-2"
 DESCRIPTION="Based on the ${ECLASS} eclass"
-
-# check for octave needed version
-if [[ -n "${NEED_OCTAVE}" ]]; then
-	OCT_ATOM=">=sci-mathematics/octave-${NEED_OCTAVE}"
-else
-	OCT_ATOM="sci-mathematics/octave"
-fi
 
 # defining some paths
 OCT_ROOT="/usr/share/octave"
 OCT_PKGDIR="${OCT_ROOT}/packages"
 OCT_BIN="$(type -p octave)"
-
-# fixing dependencies
-DEPEND="${DEPEND} ${OCT_ATOM}"
-RDEPEND="${RDEPEND} ${OCT_ATOM}"
-
-# our packages begin with "octave-forge-". we need to remove this
-# to get the raw ${P}
-OCT_P=${P#octave-forge-}
-
-S="${WORKDIR}/${OCT_P}"
 
 EXPORT_FUNCTIONS src_install pkg_postinst pkg_prerm pkg_postrm
 
