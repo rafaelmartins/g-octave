@@ -15,10 +15,10 @@ G_OCTAVE_CAT="${G_OCTAVE_CAT:-main}"
 
 if [[ ${PV} = 9999* ]]; then
 	inherit subversion autotools
-	ESVN_REPO_URI="https://octave.svn.sourceforge.net/svnroot/octave/trunk/"
-	ESVN_PROJECT="octave-forge/${G_OCTAVE_CAT}/${PN}"
-	SRC_URI="${ESVN_REPO_URI}/octave-forge/packages/package_Makefile.in
-		${ESVN_REPO_URI}/octave-forge/packages/package_configure.in"
+	REPO_URI="https://octave.svn.sourceforge.net/svnroot/octave/trunk/octave-forge"
+	ESVN_REPO_URI="${REPO_URI}/${G_OCTAVE_CAT}/${PN}"
+	SRC_URI="${REPO_URI}/packages/package_Makefile.in -> g-octave_Makefile
+		${REPO_URI}/packages/package_configure.in -> g-octave_configure"
 else
 	SRC_URI="http://g-octave.rafaelmartins.eng.br/distfiles/octave-forge/${P}.tar.gz"
 fi
@@ -34,10 +34,21 @@ OCT_ROOT="/usr/share/octave"
 OCT_PKGDIR="${OCT_ROOT}/packages"
 OCT_BIN="$(type -p octave)"
 
-EXPORT_FUNCTIONS src_install pkg_postinst pkg_prerm pkg_postrm
+if [[ ${PV} = 9999* ]]; then
+	EXPORT_FUNCTIONS src_prepare src_install pkg_postinst pkg_prerm pkg_postrm
+else
+	EXPORT_FUNCTIONS src_install pkg_postinst pkg_prerm pkg_postrm
+fi
 
-dist_admin() {
-	echo ${OCT_PKGDIR}/${OCT_P}/packinfo/dist_admin
+g-octave_src_prepare() {
+	subversion_src_prepare
+	for filename in Makefile configure; do
+		cp "${DISTDIR}/g-octave_${filename}" "${S}/$filename"
+		chmod 0755 "${S}/$filename"
+	done
+	if [[ ${PV} = 9999* ]] && [ -e "${S}"/src/autogen.sh ]; then
+		cd "${S}"/src && ./autogen.sh || die 'failed to run autogen.sh'
+	fi
 }
 
 g-octave_src_install() {
@@ -50,16 +61,33 @@ g-octave_src_install() {
 
 g-octave_pkg_postinst() {
 	einfo "Registering ${CATEGORY}/${PF} on the Octave package database."
-	$(dist_admin) install &> /dev/null || die 'failed to register the package.'
+	${OCT_BIN} -H -q --no-site-file --eval "pkg('rebuild');" \
+		|| die 'failed to register the package.'
 }
 
 g-octave_pkg_prerm() {
 	einfo 'Running on_uninstall routines to prepare the package to remove.'
-	$(dist_admin) &> /dev/null || die 'failed to prepare to uninstall.'
+	local pkgdir=$(
+		${OCT_BIN} -H -q --no-site-file --eval "
+			pkg('rebuild');
+			l = pkg('list');
+			disp(l{cellfun(@(x)strcmp(x.name,'control'),l)}.dir);
+		"
+	)
+	rm -f "${pkgdir}"/packinfo/on_uninstall.m
+	if [ -e "${pkgdir}"/packinfo/on_uninstall.m.orig ]; then
+		mv "$pkgdir"/packinfo/on_uninstall.m{.orig,}
+		cd "$pkgdir"/packinfo
+		${OCT_BIN} -H -q --no-site-file --eval "
+			l = pkg('list');
+			on_uninstall(l{cellfun(@(x)strcmp(x.name,'${PN}'), l)});
+		" &> /dev/null || die 'failed to remove the package'
+	fi
 }
 
 g-octave_pkg_postrm() {
 	einfo 'Rebuilding the Octave package database.'
 	[ -d ${OCT_PKGDIR} ] || mkdir -p ${OCT_PKGDIR}
-	${OCT_BIN} -H --silent --eval 'pkg rebuild' &> /dev/null
+	${OCT_BIN} -H --silent --eval 'pkg rebuild' \
+		&> /dev/null || die 'failed to rebuild the package database'
 }

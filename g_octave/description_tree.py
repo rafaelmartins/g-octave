@@ -36,6 +36,7 @@ class DescriptionTree(object):
         if not os.path.isdir(self._db_path):
             raise DescriptionTreeException('Invalid db: %s' % self._db_path)
         
+        self.categories = {}
         for cat in [i.strip() for i in conf.categories.split(',')]:
             catdir = os.path.join(self._db_path, cat)
             if os.path.isdir(catdir):
@@ -51,6 +52,7 @@ class DescriptionTree(object):
                         # blacklist isn't mandatory
                         blacklist = []
                     if mypkg.group(1) not in blacklist or not parse_sysreq:
+                        self.categories[mypkg.group(1)] = cat
                         self.pkg_list[cat].append({
                             'name': mypkg.group(1),
                             'version': mypkg.group(2),

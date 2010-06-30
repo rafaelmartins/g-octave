@@ -50,13 +50,21 @@ def create_overlay(force=False, conf=None, quiet=False):
                 os.path.join(conf.overlay, 'profiles', 'categories'): 'g-octave',
             }
             
-            # stuff to run tests :(
-            aux = os.path.join(conf.overlay, 'eclass', 'octave-forge.eclass')
-            try:
-                files[aux] = open(os.path.join(conf.db, conf.cache['octave-forge.eclass']))
-            except ConfigException:
-                files[aux] = ''
-            
+            # symlinking g-octave eclass
+            local_eclass = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                '..', 'share', 'g-octave.eclass'
+            )
+            global_eclass = os.path.join('usr', 'share', 'g-octave', 'g-octave.eclass')
+            overlay_eclass = os.path.join(conf.overlay, 'eclass', 'g-octave.eclass')
+            if os.path.exists(local_eclass):
+                os.symlink(local_eclass, overlay_eclass)
+            elif os.path.exists(global_eclass):
+                os.symlink(global_eclass, overlay_eclass)
+            else:
+                if not quiet:
+                    out.eend(1)
+                sys.exit(1)
             for _file in files:
                 if not os.path.exists(_file) or force:
                     with open(_file, 'w', 0644) as fp:

@@ -112,12 +112,13 @@ inherit g-octave%(eutils)s
 
 DESCRIPTION="%(description)s"
 HOMEPAGE="%(url)s"
-SRC_URI="mirror://sourceforge/octave/${OCT_P}.tar.gz"
 
 LICENSE="|| ( GPL-2 GPL-3 LGPL BSD GFDL )"
 SLOT="0"
 KEYWORDS="%(keywords)s"
 IUSE=""
+
+G_OCTAVE_CAT="%(category)s"
 
 # it's annoying have to see the download of packages from the official
 # mirrors fail with a 404 error.
@@ -134,11 +135,14 @@ RDEPEND="${DEPEND}
         if accept_keywords is None:
             accept_keywords = portage.settings['ACCEPT_KEYWORDS']
         
+        category = self.__dbtree.categories.get(self.pkgname, '')
+        
         vars = {
             'eutils': '',
             'description': description,
             'url': self.__desc.url,
             'keywords': self.__keywords(accept_keywords),
+            'category': category,
             'depend': '',
             'rdepend': '',
         }
