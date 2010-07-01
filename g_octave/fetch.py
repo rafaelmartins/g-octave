@@ -35,9 +35,9 @@ import portage.output
 out = portage.output.EOutput()
 
 re_files = {
-    'info.json':              re.compile(r'info-([0-9]{8})-([0-9]+)\.json'),
-    'octave-forge.db.tar.gz': re.compile(r'octave-forge-([0-9]{8})\.db\.tar\.gz'),
-    'patches.tar.gz':         re.compile(r'patches-([0-9]{8})-([0-9]+)\.tar\.gz'),
+    'info.json':              re.compile(r'info-([0-9]{10})-([0-9]+)\.json'),
+    'octave-forge.db.tar.gz': re.compile(r'octave-forge-([0-9]{10})\.db\.tar\.gz'),
+    'patches.tar.gz':         re.compile(r'patches-([0-9]{10})-([0-9]+)\.tar\.gz'),
 }
 
 def need_update():
