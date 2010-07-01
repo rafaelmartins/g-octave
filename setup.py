@@ -132,7 +132,7 @@ setup(
     scripts = ['scripts/g-octave'],
     data_files = [
         ('/etc', ['etc/g-octave.cfg']),
-        ('/usr/share', ['share/g-octave.eclass']),
+        ('/usr/share/g-octave', ['share/g-octave.eclass']),
     ],
     requires = ['portage'],
     cmdclass = {
