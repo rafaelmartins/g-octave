@@ -55,7 +55,7 @@ def create_overlay(force=False, conf=None, quiet=False):
                 os.path.dirname(os.path.abspath(__file__)),
                 '..', 'share', 'g-octave.eclass'
             )
-            global_eclass = os.path.join('usr', 'share', 'g-octave', 'g-octave.eclass')
+            global_eclass = os.path.join(sys.prefix, 'share', 'g-octave', 'g-octave.eclass')
             overlay_eclass = os.path.join(conf.overlay, 'eclass', 'g-octave.eclass')
             if os.path.exists(local_eclass):
                 os.symlink(local_eclass, overlay_eclass)
