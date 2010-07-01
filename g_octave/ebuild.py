@@ -20,7 +20,12 @@ from config import Config
 from description import *
 from description_tree import *
 from exception import EbuildException
-from svn.description import SvnDescription
+
+has_svn = True
+try:
+    from svn.description import SvnDescription
+except:
+    has_svn = False
 
 from portage.versions import vercmp
 
@@ -56,7 +61,7 @@ class Ebuild:
         else:
             self.pkgname = atom.group(1)
             self.version = atom.group(2)
-            if self.version == '9999':
+            if has_svn and self.version == '9999':
                 self.svn_version = True
         
         if self.svn_version:
