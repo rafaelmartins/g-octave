@@ -7,6 +7,8 @@
     This module implements a Python class responsible to fetch and update
     the package database and the auxiliary files.
     
+    Used only by the live version of g-octave.
+    
     :copyright: (c) 2009-2010 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -34,7 +36,6 @@ out = portage.output.EOutput()
 
 re_files = {
     'info.json':              re.compile(r'info-([0-9]{8})-([0-9]+)\.json'),
-    'octave-forge.eclass':    re.compile(r'octave-forge-([0-9]+)\.eclass'),
     'octave-forge.db.tar.gz': re.compile(r'octave-forge-([0-9]{8})\.db\.tar\.gz'),
     'patches.tar.gz':         re.compile(r'patches-([0-9]{8})-([0-9]+)\.tar\.gz'),
 }
