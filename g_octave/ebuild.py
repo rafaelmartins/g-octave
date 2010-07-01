@@ -240,9 +240,14 @@ RDEPEND="${DEPEND}
 
     def __search_patches(self):
         
+        patches_dir = os.path.join(self._config.db, 'patches')
+        
+        if not os.path.exists(patches_dir):
+            return []
+        
         tmp = []
         
-        for patch in os.listdir(os.path.join(self._config.db, 'patches')):
+        for patch in os.listdir(patches_dir):
             if re.match(r'^([0-9]{3})_%s-%s' % (self.pkgname, self.version), patch):
                 tmp.append(patch)
         
