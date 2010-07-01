@@ -4,11 +4,12 @@
 
 EAPI="3"
 
-inherit octave-forge
+G_OCTAVE_CAT="language"
+
+inherit g-octave
 
 DESCRIPTION="This is the Language 2 description"
 HOMEPAGE="http://language2.org"
-SRC_URI="mirror://sourceforge/octave/${OCT_P}.tar.gz"
 
 LICENSE="|| ( GPL-2 GPL-3 LGPL BSD GFDL )"
 SLOT="0"
@@ -20,8 +21,8 @@ IUSE=""
 RESTRICT="mirror"
 
 DEPEND=">sci-mathematics/pkg8-1.0.0
-	>=sci-mathematics/pkg5-4.3.2
+	sci-mathematics/pkg7
 	<sci-mathematics/pkg6-1.2.3
-	sci-mathematics/pkg7"
+	>=sci-mathematics/pkg5-4.3.2"
 RDEPEND="${DEPEND}
 	>=sci-mathematics/octave-3.2.0"

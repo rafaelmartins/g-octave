@@ -26,7 +26,6 @@ class TestOverlay(unittest.TestCase):
     def test_overlay(self):
         overlay.create_overlay(conf = self._config, quiet = True)
         files = {
-            os.path.join(self._config.overlay, 'eclass', 'octave-forge.eclass'): '',
             os.path.join(self._config.overlay, 'profiles', 'repo_name'): 'g-octave',
             os.path.join(self._config.overlay, 'profiles', 'categories'): 'g-octave',
         }
@@ -34,6 +33,9 @@ class TestOverlay(unittest.TestCase):
             self.assertTrue(os.path.exists(_file))
             with open(_file) as fp:
                 self.assertEqual(fp.read(), files[_file])
+        self.assertTrue(os.path.islink(
+            os.path.join(self._config.overlay, 'eclass', 'g-octave.eclass')
+        ))
 
     def tearDown(self):
         utils.clean_env(self._config_file, self._dir)
