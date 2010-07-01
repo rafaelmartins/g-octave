@@ -12,3 +12,5 @@ prune docs/_build/
 include docs/_build/.keep
 exclude g_octave/tinderbox/*.pyc
 exclude tests/*.pyc
+exclude g_octave/client.py
+

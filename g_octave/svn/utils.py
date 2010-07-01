@@ -16,8 +16,12 @@ import tarfile
 from contextlib import closing
 
 def create_tarball(src_dir, tarball_file, arcname):
+    
+    def exclude(filename):
+        return ('.svn' in filename) or ('autom4te.cache' in filename)
+    
     try:
         with closing(tarfile.open(tarball_file, 'w:gz')) as tar:
-            tar.add(src_dir, arcname=arcname, recursive=True, exclude=lambda x: '.svn' in x)
+            tar.add(src_dir, arcname=arcname, recursive=True, exclude=exclude)
     except tarfile.TarError, err:
         print >> sys.stderr, 'Failed to create the tarball: %s' % err

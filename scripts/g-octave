@@ -139,7 +139,12 @@ def main():
         portage.output.nocolor()
     
     from g_octave.config import Config
-    from g_octave.fetch import need_update, check_updates, download_files, check_db_cache
+    
+    has_fetch = True
+    try:
+        from g_octave.fetch import need_update, check_updates, download_files, check_db_cache
+    except ImportError:
+        has_fetch = False
     
     conf_prefetch = Config(True)
     
@@ -150,29 +155,30 @@ def main():
         out.eerror('Overlay: %s' % conf_prefetch.overlay)
         return os.EX_CONFIG
     
-    # checking if we have a package database
-    if need_update() and not options.sync:
-        out.eerror('Please run "g-octave --sync" to download a package database!')
-        return os.EX_USAGE
-    
-    if options.sync:
+    if has_fetch:
+        # checking if we have a package database
+        if need_update() and not options.sync:
+            out.eerror('Please run "g-octave --sync" to download a package database!')
+            return os.EX_USAGE
         
-        out.einfo('Searching updates ...')
+        if options.sync:
+            
+            out.einfo('Searching updates ...')
+            
+            files = check_updates()
+            
+            if len(files) > 0:
+                out.einfo('Updates are available. Downloading ...')
+                print
+                download_files(files)
+                print
+                out.einfo('Done.')
+            else:
+                out.einfo('No updates available.')
+            
+            return os.EX_OK
         
-        files = check_updates()
-        
-        if len(files) > 0:
-            out.einfo('Updates are available. Downloading ...')
-            print
-            download_files(files)
-            print
-            out.einfo('Done.')
-        else:
-            out.einfo('No updates available.')
-        
-        return os.EX_OK
-    
-    check_db_cache()
+        check_db_cache()
 
     conf = Config()
 
