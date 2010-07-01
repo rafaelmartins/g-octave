@@ -20,6 +20,9 @@ from config import Config
 from description import *
 from description_tree import *
 from exception import EbuildException
+from svn.description import SvnDescription
+
+from portage.versions import vercmp
 
 import os
 import portage
@@ -44,6 +47,7 @@ class Ebuild:
         self._config = conf
         
         self.__dbtree = DescriptionTree(conf = self._config)
+        self.svn_version = False
         
         atom = re_pkg_atom.match(pkg_atom)
         if atom == None:
@@ -52,8 +56,17 @@ class Ebuild:
         else:
             self.pkgname = atom.group(1)
             self.version = atom.group(2)
+            if self.version == '9999':
+                self.svn_version = True
         
-        self.__desc = self.__dbtree['%s-%s' % (self.pkgname, self.version)]
+        if self.svn_version:
+            category = self.__dbtree.categories.get(self.pkgname, None)
+            if category is not None:
+                self.__desc = SvnDescription(category, self.pkgname)
+            else:
+                raise EbuildException('Failed to find the octave-forge category of this package.')
+        else:
+            self.__desc = self.__dbtree['%s-%s' % (self.pkgname, self.version)]
         
         if self.__desc == None:
             raise EbuildException('Package not found: %s' % pkg_atom)
@@ -108,6 +121,8 @@ class Ebuild:
 
 EAPI="3"
 
+G_OCTAVE_CAT="%(category)s"
+
 inherit g-octave%(eutils)s
 
 DESCRIPTION="%(description)s"
@@ -117,8 +132,6 @@ LICENSE="|| ( GPL-2 GPL-3 LGPL BSD GFDL )"
 SLOT="0"
 KEYWORDS="%(keywords)s"
 IUSE=""
-
-G_OCTAVE_CAT="%(category)s"
 
 # it's annoying have to see the download of packages from the official
 # mirrors fail with a 404 error.
@@ -250,10 +263,8 @@ RDEPEND="${DEPEND}
             allowed_versions = []
             
             for _version in versions:
-                _tp_version = tuple(_version.split('.'))
-                tp_version = tuple(version.split('.'))
-                
-                if eval('%s %s %s' % (_tp_version, comp, tp_version)):
+                comparation = vercmp(_version, version)
+                if eval('%s %s 0' % (comparation, comp)):
                     allowed_versions.append(_version)
                 
             to_install.append('%s-%s' % (pkg, self.__dbtree.version_compare(allowed_versions)))

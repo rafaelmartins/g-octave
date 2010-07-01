@@ -11,10 +11,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import ConfigParser
 import os
-import shutil
-import tempfile
 import unittest
 import utils
 
