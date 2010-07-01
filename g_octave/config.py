@@ -25,7 +25,7 @@ class Config(object):
         'db': '/var/cache/g-octave',
         'overlay': '/usr/local/portage/g-octave',
         'categories': 'main,extra,language',
-        'db_mirror': 'http://files.rafaelmartins.eng.br/octave-forge',
+        'db_mirror': 'http://g-octave.rafaelmartins.eng.br/distfiles/db/',
         'trac_user': '',
         'trac_passwd': '',
         'pkg_cache': '',
