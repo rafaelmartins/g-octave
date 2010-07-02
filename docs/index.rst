@@ -7,7 +7,7 @@ Welcome to g-Octave's documentation!
 ====================================
 
 :Author: Rafael Goncalves Martins
-:Source code: http://hg.rafaelmartins.eng.br/g-octave/
+:Source code: http://g-octave.rafaelmartins.eng.br/hg/
 :Bug tracker: http://g-octave.rafaelmartins.eng.br/
 :Version: |release|
 

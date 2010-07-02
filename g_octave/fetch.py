@@ -130,10 +130,18 @@ def check_db_cache():
         with open(os.path.join(conf.db, 'cache.json')) as fp:
             cache = json.load(fp)
     except:
-        cache = {'files': []}
+        cache = {'files': {}}
     
-    with open(os.path.join(conf.db, 'update.json')) as fp:
-        update = json.load(fp)
+    try:
+        with open(os.path.join(conf.db, 'update.json')) as fp:
+            update = json.load(fp)
+    except:
+        my_cache = os.listdir(conf.db)
+        update = {'files': []}
+        for f in my_cache:
+            for s in ['patches-', 'info-', 'octave-forge-']:
+                if f.startswith(s) and f not in update['files']:
+                    update['files'].append(f)
     
     for _file in update['files']:
         if _file not in cache['files'].values():

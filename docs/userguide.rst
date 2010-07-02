@@ -9,9 +9,11 @@ Installing g-Octave
 -------------------
 
 The ebuilds for g-Octave will be available on the Portage tree as soon
-as possible. For now, they can be found on my overlay:
+as possible. For now, they can be found on the Gentoo ``science`` overlay.
+To install it with ``layman`` and ``git`` installed, type::
 
-http://overlay.rafaelmartins.eng.br/
+    # layman -a science
+
 
 After you have the overlay installed, you can install the package, using: ::
     
@@ -35,16 +37,16 @@ release will need to unmask the ebuild too, adding this to
 
 The source code of g-Octave can be found in this Mercurial repository:
 
-http://hg.rafaelmartins.eng.br/g-octave/
+http://g-octave.rafaelmartins.eng.br/hg/
 
 You can clone the mercurial repository using this command (with Mercurial
 installed, of course)::
     
-    $ hg clone http://hg.rafaelmartins.eng.br/g-octave/
+    $ hg clone http://g-octave.rafaelmartins.eng.br/hg/ g-octave
 
 The release tarballs can be found here:
 
-http://files.rafaelmartins.eng.br/distfiles/g-octave/
+http://g-octave.rafaelmartins.eng.br/distfiles/releases/
 
 
 Configuring g-Octave
@@ -106,8 +108,8 @@ For example: ::
     
     # g-octave control-1.0.11
 
-g-octave command tool supports some options for the installation of
-packages:
+``g-octave`` command-line tool supports some options for the installation
+of packages:
     
 ``-a`` or ``--ask``
     Ask before install the package
@@ -121,6 +123,25 @@ You can get some information about the package using this command: ::
 or ::
     
     # g-octave -i packagename
+
+
+Installing packages from the octave-forge SVN repository
+--------------------------------------------------------
+
+If you want to test some new feature, or to use the new version of the
+packages ever, you'll like to install your packages directly from the
+SVN repository.
+
+To install a package from SVN, type::
+    
+    # g-octave packagename-9999
+
+All the common g-octave options for install packages are allowed, and
+the special version ``9999`` says to g-octave that you want to use the
+SVN version.
+
+In order to be able to install packages from svn you need to install
+g-octave with the USE flag ``svn`` enabled.
 
 
 Uninstalling packages

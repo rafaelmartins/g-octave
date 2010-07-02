@@ -48,13 +48,14 @@ OPTIONS
 --force-all         forces the recreation of the overlay and of the ebuilds
 --no-colors         don't use colors on the CLI
 --sync              search for updates of the package database, patches and auxiliary files
+--config            return a value from the configuration file (/etc/g-octave.cfg)
 
 
 SEE ALSO
 ========
 
 * http://g-octave.rafaelmartins.eng.br/
-* http://rafaelmartins.eng.br/en-us/projects/g-octave/
+* http://g-octave.rafaelmartins.eng.br/hg
 
 
 BUGS

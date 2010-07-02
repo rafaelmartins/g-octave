@@ -41,7 +41,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(self._empty_cfg.db, '/var/cache/g-octave')
         self.assertEqual(self._empty_cfg.overlay, '/usr/local/portage/g-octave')
         self.assertEqual(self._empty_cfg.categories, 'main,extra,language')
-        self.assertEqual(self._empty_cfg.db_mirror, 'http://files.rafaelmartins.eng.br/octave-forge')
+        self.assertEqual(self._empty_cfg.db_mirror, 'http://g-octave.rafaelmartins.eng.br/distfiles/db/')
     
     def test_config_attributes(self):
         self.assertEqual(self._cfg.db, '/path/to/the/db')

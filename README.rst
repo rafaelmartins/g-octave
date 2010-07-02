@@ -56,6 +56,7 @@ Dependencies
 
 * Python_ 2.6
 * Portage_
+* PySVN (optional)
 
 `g-octave`_ also depends on some files, distributed by the maintainer,
 like the package database (a tarball with the DESCRIPTION file of all
@@ -71,7 +72,7 @@ or that a new patch is added. All these files are automatically fetched
 by `g-octave`_
 
 At this time, these files are here:
-http://files.rafaelmartins.eng.br/octave-forge/
+http://g-octave.rafaelmartins.eng.br/distfiles/db/
 
 
 Settings
@@ -115,6 +116,7 @@ Below is a list of features implemented or planned to the next releases.
 * Use colors on the CLI **(done)**
 * The user can disable the use of colors on the CLI **(done)**
 * Log `g-octave`_ actions to a file
+* Can install packages from the octave-forge SVN repository.
 
 
 To-Do
@@ -131,7 +133,7 @@ We have other goals besides implementing the remaining features:
 * Write a man page **(done)**
 * Convince upstream to distribute the package database
 * Improve the use of `g-octave`_ as a normal user, with "--pretend"
-* Improve the script that generates the package database
+* Improve the script that generates the package database **(done)**
 * Improve the details available on the packages list
 * Write a testsuite **(done)**
 * more...
@@ -176,6 +178,9 @@ CLI options
 *--sync*
     search for updates of the package database, patches and auxiliary files
 
+*--config"
+    return a value from the configuration file (/etc/g-octave.cfg)
+
 
 Usage Examples
 --------------
@@ -195,6 +200,10 @@ Remove the package *control*: ::
 Get informations about the package *control*: ::
 
     # g-octave -i control
+
+To install the package *control* from the octave-forge SVN repository: ::
+    
+    # g-octave control-9999
     
 The options *verbose*, *ask* and *pretend* are passed to **emerge**.
 
@@ -206,8 +215,8 @@ The users can help testing and reporting bugs in our `issue tracker`_.
 If you can help programming in Python_, please take a look at our missing
 features and at the To-Do list. :)
 
-`g-octave`_ ebuilds are available on the mercurial repository, or here:
-http://overlay.rafaelmartins.eng.br/ (overlay)
+`g-octave`_ ebuilds are available on the mercurial repository, or the
+Gentoo science overlay
 
 
 Warning
@@ -216,7 +225,7 @@ Warning
 If you experienced some random errors when installing packages, please
 retry, using the option *--force-all*, and report the issue to us.
 If you don't want to lose all your ebuilds, you can try to use the option
-*--force*, that will recreate only the affected ebuild.
+*--force*, that will re-create only the affected ebuild.
 
 
 Download Page
@@ -227,7 +236,7 @@ http://g-octave.rafaelmartins.eng.br/wiki/DownloadSources
 
 or checkout the Mercurial_ repository using: ::
     
-    $ hg clone http://hg.rafaelmartins.eng.br/g-octave/
+    $ hg clone http://g-octave.rafaelmartins.eng.br/hg/
 
 
 Authors
