@@ -13,6 +13,7 @@
 
 import os
 import pysvn
+import re
 import shutil
 import subprocess
 import sys
@@ -56,7 +57,7 @@ class SvnClient:
                 current_revision = self.packages[category][package]
                 tarball_exist = False
                 for package_c in pkg_cache:
-                    if package_c.startswith(package):
+                    if re.match(r'%s\-[0-9\.]+' % package, package_c) is not None:
                         tarball_exist = True
                 if current_revision is None or current_revision > old_revision or not tarball_exist:
                     self._revisions.set(category, package, current_revision)
