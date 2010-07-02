@@ -133,6 +133,14 @@ def main():
         help = 'search for updates of the package database, patches and auxiliary files'
     )
     
+    parser.add_option(
+        '--config',
+        action = 'store_true',
+        dest = 'config',
+        default = False,
+        help = 'return a value from the configuration file (/etc/g-octave.cfg)'
+    )
+    
     options, args = parser.parse_args()
     
     if not options.colors:
@@ -181,7 +189,14 @@ def main():
         check_db_cache()
 
     conf = Config()
-
+    
+    if options.config:
+        try:
+            print conf.__getattr__(args[0])
+        except:
+            return os.EX_DATAERR
+        return os.EX_OK
+    
     from g_octave.description import Description
     from g_octave.description_tree import DescriptionTree
     from g_octave.ebuild import Ebuild, EbuildException
