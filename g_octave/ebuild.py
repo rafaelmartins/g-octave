@@ -278,8 +278,8 @@ RDEPEND="${DEPEND}
                     allowed_versions.append(_version)
                 
             to_install.append('%s-%s' % (pkg, self.__dbtree.version_compare(allowed_versions)))
-        
-            if len(to_install) == 0:
+            
+            if len(allowed_versions) == 0:
                 raise EbuildException('Can\'t resolve a dependency: %s' % pkg)
         
         # creating the ebuilds for the dependencies, recursivelly

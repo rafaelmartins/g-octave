@@ -189,7 +189,11 @@ def main():
                 out.einfo('No updates available.')
             
             return os.EX_OK
-        
+    else:
+        if options.sync:
+            out.eerror('"--sync" not available, please install g-octave-9999 if you want this.')
+            return os.EX_USAGE
+    
     check_db_cache()
     
     conf = Config()
