@@ -29,6 +29,8 @@ class Config(object):
         'trac_user': '',
         'trac_passwd': '',
         'pkg_cache': '',
+        'log_level': '',
+        'log_file': '/var/log/g-octave.log',
     }
 
     _section_name = 'main'
@@ -41,10 +43,14 @@ class Config(object):
         
         self._fetch_phase = fetch_phase
         
+        my_config = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            '..', 'etc', 'g-octave.cfg.devel'
+        )
         if config_file is not None:
             self._config_file = config_file
-        elif os.path.exists('../etc/g-octave.cfg.devel'):
-            self._config_file = '../etc/g-octave.cfg.devel'
+        elif os.path.exists(my_config):
+            self._config_file = my_config
         else:
             self._config_file = '/etc/g-octave.cfg'
         
