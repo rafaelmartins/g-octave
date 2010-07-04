@@ -72,7 +72,7 @@ g-octave_pkg_prerm() {
 		${OCT_BIN} -H -q --no-site-file --eval "
 			pkg('rebuild');
 			l = pkg('list');
-			disp(l{cellfun(@(x)strcmp(x.name,'control'),l)}.dir);
+			disp(l{cellfun(@(x)strcmp(x.name,'${PN}'),l)}.dir);
 		"
 	)
 	rm -f "${pkgdir}"/packinfo/on_uninstall.m
