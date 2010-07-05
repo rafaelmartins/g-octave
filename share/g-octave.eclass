@@ -20,7 +20,7 @@ if [[ ${PV} = 9999* ]]; then
 	SRC_URI="${REPO_URI}/packages/package_Makefile.in -> g-octave_Makefile
 		${REPO_URI}/packages/package_configure.in -> g-octave_configure"
 else
-	SRC_URI="http://g-octave.rafaelmartins.eng.br/distfiles/octave-forge/${P}.tar.gz"
+	SRC_URI="http://soc.dev.gentoo.org/~rafaelmartins/g-octave/distfiles/octave-forge/${P}.tar.gz"
 fi
 
 
