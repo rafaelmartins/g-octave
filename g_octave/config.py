@@ -31,10 +31,11 @@ class Config(object):
         'pkg_cache': '',
         'log_level': '',
         'log_file': '/var/log/g-octave.log',
+        'package_manager': 'emerge',
     }
 
     _section_name = 'main'
-
+    _env_namespace = 'GOCTAVE_'
 
     def __init__(self, fetch_phase=False, config_file=None, create_dirs=True):
         
@@ -56,8 +57,8 @@ class Config(object):
         
         self._config.read(self._config_file)
         
-        _db = self._config.get(self._section_name, 'db')
-        _overlay = self._config.get(self._section_name, 'overlay')
+        _db = self._getattr('db')
+        _overlay = self._getattr('overlay')
         
         for dir in [_db, _overlay]:
             if not os.path.exists(dir) and create_dirs:
@@ -82,10 +83,21 @@ class Config(object):
     def __getattr__(self, attr):
         
         if attr in self._defaults:
-            return self._config.get(self._section_name, attr)
+            return self._getattr(attr)
         elif attr in self._info:
             return self._info[attr]
         elif attr == 'cache' and 'files' in self._cache:
             return self._cache['files']
         else:
             raise ConfigException('Invalid option: %s' % attr)
+    
+    
+    def _getattr(self, attr):
+        from_env = os.environ.get(self._env_namespace + attr.upper(), None)
+        if from_env is None:
+            return self._config.get(self._section_name, attr)
+        return from_env
+    
+    
+    def overlay_bootstrap(self):
+        pass
