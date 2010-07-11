@@ -160,11 +160,15 @@ def main():
             return os.EX_DATAERR
         return os.EX_OK
     
+    from g_octave.package_manager import Portage, Pkgcore
+    
+    if conf_prefetch.package_manager == 'portage':
+        pkg_manager = Portage(options.ask, options.verbose, options.pretend, not options.colors)
+    elif conf_prefetch.package_manager == 'pkgcore':
+        pkg_manager = Pkgcore(options.ask, options.verbose, options.pretend, not options.colors)
+    
     # checking if our overlay is correctly added to PORTDIR_OVERLAY
-    if conf_prefetch.overlay not in portage.settings['PORTDIR_OVERLAY'].split(' '):
-        out.eerror('g-octave overlay is not configured!')
-        out.eerror('You must append your overlay dir to PORTDIR_OVERLAY.')
-        out.eerror('Overlay: %s' % conf_prefetch.overlay)
+    if not pkg_manager.check_overlay(conf_prefetch.overlay, out):
         return os.EX_CONFIG
     
     if has_fetch:
@@ -224,7 +228,7 @@ def main():
     create_overlay(options.force_all)
     
     try:
-        ebuild = Ebuild(args[0], options.force or options.force_all)
+        ebuild = Ebuild(args[0], options.force or options.force_all, pkg_manager=pkg_manager)
     except EbuildException:
         out.eerror('Package not found: %s' % args[0])
         return os.EX_DATAERR
@@ -243,25 +247,19 @@ def main():
     
     atom = ebuild.create()
     
-    emerge = ['emerge']
-    options.ask and emerge.append('--ask')
-    options.verbose and emerge.append('--verbose')
-    options.pretend and emerge.append('--pretend')
-    options.unmerge and emerge.append('--unmerge')
-    if not options.colors:
-        emerge.append('--color=n')
-    emerge.append(atom)
-    
-    emerge_ret = subprocess.call(emerge)
-    
-    if emerge_ret != os.EX_OK:
-        out.eerror('"emerge" returned an error.')
-        sys.exit(emerge_ret)
-    
     if options.unmerge:
+        ret = pkg_manager.uninstall_package(atom)
+    else:
+        ret = pkg_manager.install_package(atom)
+    
+    if ret != os.EX_OK:
+        out.eerror('"%s" returned an error.' % conf.package_manager)
+        sys.exit(ret)
+    
+    if options.unmerge and len(pkg_manager.post_uninstall) > 0:
         print
-        out.einfo('You may want to remove the dependencies too, using:')
-        out.einfo('# emerge -av --depclean')
+        for i in pkg_manager.post_uninstall:
+            out.einfo(i)
     
     return os.EX_OK
 

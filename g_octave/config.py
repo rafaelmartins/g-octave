@@ -104,7 +104,7 @@ class Config(object):
     def overlay_bootstrap(self):
         pm = self._getattr('package_manager')
         overlay = self._getattr('overlay')
-        if pm == 'emerge':
+        if pm == 'portage':
             # just insert our overlay dir to the begin of PORTDIR-overlay
             os.environ['PORTDIR_OVERLAY'] = overlay
             portdir = os.environ.get('PORTDIR_OVERLAY', '')

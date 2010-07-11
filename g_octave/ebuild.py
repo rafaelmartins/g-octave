@@ -42,9 +42,10 @@ re_keywords = re.compile(r'(~)?(alpha|amd64|hppa|ppc64|ppc|sparc|x86)')
 
 class Ebuild:
     
-    def __init__(self, pkg_atom, force=False, conf=None):
+    def __init__(self, pkg_atom, force=False, conf=None, pkg_manager=None):
         
         self.__force = force
+        self.__pkg_manager = pkg_manager
         
         if conf is None:
             conf = Config()
@@ -197,7 +198,7 @@ RDEPEND="${DEPEND}
         fp.close()
         
         if manifest:
-            proc = subprocess.call(['ebuild', ebuild_file, 'manifest'])
+            proc = self.__pkg_manager.create_manifest(ebuild_file)
             
             if proc != os.EX_OK:
                 raise EbuildException('Failed to create Manifest file!')
