@@ -56,6 +56,13 @@ class Portage(Base):
     def uninstall_package(self, pkgatom):
         return self.run_command(['--unmerge', pkgatom])
     
+    def update_package(self, pkgatom=None):
+        if pkgatom is None:
+            pkgatom = self.installed_packages()
+        else:
+            pkgatom = [pkgatom]
+        return self.run_command(['--update'] + pkgatom)
+    
     def installed_packages(self):
         packages = []
         with open('/var/lib/portage/world') as fp:
@@ -75,7 +82,7 @@ class Portage(Base):
             out.eerror('Overlay: %s' % overlay)
             return False
         return True
-
+    
 
 class Pkgcore(Base):
     
@@ -94,6 +101,7 @@ class Pkgcore(Base):
         nocolor and self._fullcommand.append('--nocolor')
     
     def run_command(self, command):
+        print command
         return subprocess.call(self._fullcommand + command)
     
     def install_package(self, pkgatom):
@@ -101,6 +109,13 @@ class Pkgcore(Base):
 
     def uninstall_package(self, pkgatom):
         return self.run_command(['--unmerge', pkgatom])
+    
+    def update_package(self, pkgatom=None):
+        if pkgatom is None:
+            pkgatom = self.installed_packages()
+        else:
+            pkgatom = [pkgatom]
+        return self.run_command(['--upgrade', '--noreplace'] + pkgatom)
     
     def installed_packages(self):
         packages = []

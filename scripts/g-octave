@@ -96,6 +96,14 @@ def main():
     )
     
     parser.add_option(
+        '-u', '--update',
+        action = 'store_true',
+        dest = 'update',
+        default = False,
+        help = 'try to update a package or all the installed packages'
+    )
+    
+    parser.add_option(
         '-C', '--unmerge',
         action = 'store_true',
         dest = 'unmerge',
@@ -216,8 +224,10 @@ def main():
                 print '\t%s-%s' % (pkg['name'], pkg['version'])
             print
         return os.EX_OK
+    if options.update:
+        pass
     elif len(args) == 0:
-        out.eerror('You need provide a package atom or "--list" or "--sync"')
+        out.eerror('You need provide a package an argument.')
         return os.EX_USAGE
     elif len(args) > 1:
         out.eerror('At this moment g-octave can install only one package at once')
@@ -227,28 +237,34 @@ def main():
     
     create_overlay(options.force_all)
     
-    try:
-        ebuild = Ebuild(args[0], options.force or options.force_all, pkg_manager=pkg_manager)
-    except EbuildException:
-        out.eerror('Package not found: %s' % args[0])
-        return os.EX_DATAERR
-    
-    if options.info:
-        pkg = ebuild.description()
-        print portage.output.blue('Package:'), portage.output.white(str(pkg.name))
-        print portage.output.blue('Version:'), portage.output.white(str(pkg.version))
-        print portage.output.blue('Date:'), portage.output.white(str(pkg.date))
-        print portage.output.blue('Maintainer:'), portage.output.white(str(pkg.maintainer))
-        print portage.output.blue('Description:'), portage.output.white(str(pkg.description))
-        print portage.output.blue('Categories:'), portage.output.white(str(pkg.categories))
-        print portage.output.blue('License:'), portage.output.white(str(pkg.license))
-        print portage.output.blue('Url:'), portage.output.white(str(pkg.url))
-        return os.EX_OK
-    
-    atom = ebuild.create()
+    if len(args) > 0:
+        try:
+            ebuild = Ebuild(args[0], options.force or options.force_all, pkg_manager=pkg_manager)
+        except EbuildException:
+            out.eerror('Package not found: %s' % args[0])
+            return os.EX_DATAERR
+        
+        if options.info:
+            pkg = ebuild.description()
+            print portage.output.blue('Package:'), portage.output.white(str(pkg.name))
+            print portage.output.blue('Version:'), portage.output.white(str(pkg.version))
+            print portage.output.blue('Date:'), portage.output.white(str(pkg.date))
+            print portage.output.blue('Maintainer:'), portage.output.white(str(pkg.maintainer))
+            print portage.output.blue('Description:'), portage.output.white(str(pkg.description))
+            print portage.output.blue('Categories:'), portage.output.white(str(pkg.categories))
+            print portage.output.blue('License:'), portage.output.white(str(pkg.license))
+            print portage.output.blue('Url:'), portage.output.white(str(pkg.url))
+            return os.EX_OK
+        
+        atom = ebuild.create()
     
     if options.unmerge:
         ret = pkg_manager.uninstall_package(atom)
+    elif options.update:
+        if len(args) > 0:
+            ret = pkg_manager.update_package(atom)
+        else:
+            ret = pkg_manager.update_package()
     else:
         ret = pkg_manager.install_package(atom)
     
