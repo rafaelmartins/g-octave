@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-    package_managers.py
-    ~~~~~~~~~~~~~~~~~~~
+    package_manager.py
+    ~~~~~~~~~~~~~~~~~~
 
     This module implements some Python classes for the implementation of
     the multiple package manager support.
