@@ -45,6 +45,7 @@ class Ebuild:
     def __init__(self, pkg_atom, force=False, conf=None, pkg_manager=None):
         
         self.__force = force
+        self.__conf = conf
         self.__pkg_manager = pkg_manager
         
         if conf is None:
@@ -98,7 +99,7 @@ class Ebuild:
                 out.einfo('Creating ebuild: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
             
             try:
-                my_atom = self.__create(accept_keywords, manifest)
+                my_atom, my_catpkg = self.__create(accept_keywords, manifest)
             except Exception, error:
                 if display_info:
                     out.eerror('Failed to create: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
@@ -106,10 +107,13 @@ class Ebuild:
             else:
                 if not nodeps:
                     self.__resolve_dependencies()
-                return my_atom
+                return my_atom, my_catpkg
         
         else:
-            return '=g-octave/%s-%s' % (self.pkgname, self.version)
+            return (
+                '=g-octave/%s-%s' % (self.pkgname, self.version),
+                'g-octave/%s' % self.pkgname,
+            )
 
 
     def __create(self, accept_keywords=None, manifest=True):
@@ -203,7 +207,10 @@ RDEPEND="${DEPEND}
             if proc != os.EX_OK:
                 raise EbuildException('Failed to create Manifest file!')
         
-        return '=g-octave/%s-%s' % (self.pkgname, self.version)
+        return (
+            '=g-octave/%s-%s' % (self.pkgname, self.version),
+            'g-octave/%s' % self.pkgname,
+        )
         
     
     def __keywords(self, accept_keywords):
@@ -285,4 +292,9 @@ RDEPEND="${DEPEND}
         
         # creating the ebuilds for the dependencies, recursivelly
         for ebuild in to_install:
-            Ebuild(ebuild).create()
+            Ebuild(
+                ebuild,
+                force = self.__force,
+                conf = self.__conf,
+                pkg_manager = self.__pkg_manager
+            ).create()

@@ -14,6 +14,7 @@
 __all__ = [
     'Portage',
     'Pkgcore',
+    'Paludis',
 ]
 
 import os
@@ -27,9 +28,9 @@ class Base:
     post_install = []
     post_uninstall = []
     
-    def check_overlay(self, overlay, out):
-        return True
-
+    check_overlay = lambda a,b,c: True
+    create_manifest = lambda a,b: os.EX_OK
+    
 
 class Portage(Base):
     
@@ -50,13 +51,13 @@ class Portage(Base):
     def run_command(self, command):
         return subprocess.call(self._fullcommand + command)
     
-    def install_package(self, pkgatom):
+    def install_package(self, pkgatom, catpkg):
         return self.run_command([pkgatom])
 
-    def uninstall_package(self, pkgatom):
+    def uninstall_package(self, pkgatom, catpkg):
         return self.run_command(['--unmerge', pkgatom])
     
-    def update_package(self, pkgatom=None):
+    def update_package(self, pkgatom=None, catpkg=None):
         if pkgatom is None:
             pkgatom = self.installed_packages()
         else:
@@ -101,16 +102,15 @@ class Pkgcore(Base):
         nocolor and self._fullcommand.append('--nocolor')
     
     def run_command(self, command):
-        print command
         return subprocess.call(self._fullcommand + command)
     
-    def install_package(self, pkgatom):
+    def install_package(self, pkgatom, catpkg):
         return self.run_command([pkgatom])
 
-    def uninstall_package(self, pkgatom):
+    def uninstall_package(self, pkgatom, catpkg):
         return self.run_command(['--unmerge', pkgatom])
     
-    def update_package(self, pkgatom=None):
+    def update_package(self, pkgatom=None, catpkg=None):
         if pkgatom is None:
             pkgatom = self.installed_packages()
         else:
@@ -130,7 +130,64 @@ class Pkgcore(Base):
             for line in p.stdout:
                 packages.append(line.strip())
         return packages
+
+
+class Paludis(Base):
     
-    def create_manifest(self, ebuild):
-        # from portage :S
-        return subprocess.call(['ebuild', ebuild, 'manifest'])
+    _client = 'paludis'
+    
+    post_uninstall = [
+        'You may want to remove the dependencies too, using:',
+        '# paludis --pretend --uninstall-unused',
+    ]
+    
+    def __init__(self, ask=False, verbose=False, pretend=False, nocolor=False):
+        self._fullcommand = [self._client]
+        # paludis doesn't supports '--ask'
+        if verbose:
+            self._fullcommand += [
+                '--show-reasons', 'full',
+                '--show-use-descriptions', 'all',
+                '--show-package-descriptions', 'all',
+            ]
+        pretend and self._fullcommand.append('--pretend')
+        nocolor and self._fullcommand.append('--no-color')
+    
+    def run_command(self, command):
+        return subprocess.call(self._fullcommand + command)
+    
+    def install_package(self, pkgatom, catpkg):
+        return self.run_command([
+            '--install',
+            '--dl-upgrade', 'as-needed',
+            '--add-to-world-spec', catpkg,
+            pkgatom
+        ])
+
+    def uninstall_package(self, pkgatom, catpkg):
+        return self.run_command(['--uninstall', pkgatom])
+    
+    def update_package(self, pkgatom=None, catpkg=None):
+        if pkgatom is None:
+            pkgatom = self.installed_packages()
+        else:
+            pkgatom = [pkgatom]
+        return self.run_command([
+            '--install',
+            '--dl-upgrade', 'as-needed',
+            '--dl-reinstall-targets', 'never',
+        ] + pkgatom)
+    
+    def installed_packages(self):
+        packages = []
+        p = subprocess.Popen([
+            'cave',
+            'print-ids',
+            '--matching', 'g-octave/*::installed',
+            '--format', '%c/%p\n',
+        ], stdout=subprocess.PIPE)
+        if p.wait() == os.EX_OK:
+            for line in p.stdout:
+                packages.append(line.strip())
+        return packages
+

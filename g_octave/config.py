@@ -31,7 +31,7 @@ class Config(object):
         'pkg_cache': '',
         'log_level': '',
         'log_file': '/var/log/g-octave.log',
-        'package_manager': 'emerge',
+        'package_manager': 'portage',
     }
 
     _section_name = 'main'
