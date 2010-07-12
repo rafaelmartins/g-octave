@@ -20,6 +20,7 @@ __all__ = [
 import os
 import subprocess
 
+from g_octave.ebuild import Ebuild
 
 class Base:
     
@@ -30,6 +31,10 @@ class Base:
     
     check_overlay = lambda a,b,c: True
     create_manifest = lambda a,b: os.EX_OK
+    
+    def do_ebuilds(self, packages):
+        for package in packages:
+            Ebuild(package[len('g-octave/'):], pkg_manager=self).create()
     
 
 class Portage(Base):
@@ -62,6 +67,7 @@ class Portage(Base):
             pkgatom = self.installed_packages()
         else:
             pkgatom = [pkgatom]
+        self.do_ebuilds(pkgatom)
         return self.run_command(['--update'] + pkgatom)
     
     def installed_packages(self):
@@ -115,6 +121,7 @@ class Pkgcore(Base):
             pkgatom = self.installed_packages()
         else:
             pkgatom = [pkgatom]
+        self.do_ebuilds(pkgatom)
         return self.run_command(['--upgrade', '--noreplace'] + pkgatom)
     
     def installed_packages(self):
@@ -172,6 +179,7 @@ class Paludis(Base):
             pkgatom = self.installed_packages()
         else:
             pkgatom = [pkgatom]
+        self.do_ebuilds(pkgatom)
         return self.run_command([
             '--install',
             '--dl-upgrade', 'as-needed',
