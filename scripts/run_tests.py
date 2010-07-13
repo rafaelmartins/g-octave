@@ -16,6 +16,9 @@ import os
 import sys
 import unittest
 
+# disabling the logging
+os.environ['GOCTAVE_LOG_FILE'] = ''
+
 root_dir = os.path.realpath(os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '..'
 ))

@@ -42,6 +42,13 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(self._empty_cfg.overlay, '/usr/local/portage/g-octave')
         self.assertEqual(self._empty_cfg.categories, 'main,extra,language')
         self.assertEqual(self._empty_cfg.db_mirror, 'http://soc.dev.gentoo.org/~rafaelmartins/g-octave/db/')
+        self.assertEqual(self._empty_cfg.trac_user, '')
+        self.assertEqual(self._empty_cfg.trac_passwd, '')
+        self.assertEqual(self._empty_cfg.pkg_cache, '')
+        self.assertEqual(self._empty_cfg.log_level, '')
+        # the next is empty, because we disabled the logs at scripts/run_tests.py
+        self.assertEqual(self._empty_cfg.log_file, '')
+        self.assertEqual(self._empty_cfg.package_manager, 'portage')
     
     def test_config_attributes(self):
         self.assertEqual(self._cfg.db, '/path/to/the/db')
