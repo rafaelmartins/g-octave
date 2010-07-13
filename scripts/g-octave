@@ -45,6 +45,10 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
     sys.path.insert(0, os.path.join(current_dir, '..'))
 
+from g_octave.log import Log
+log = Log('g-octave')
+
+log.info('Initializing...')
 import g_octave
 
 def main():
@@ -163,52 +167,68 @@ def main():
     
     if options.config:
         try:
+            log.info('Returning configuration data.')
             print conf_prefetch.__getattr__(args[0])
         except:
+            log.error('Invalid configuration key: %s' % args[0])
             return os.EX_DATAERR
         return os.EX_OK
     
     from g_octave.package_manager import Portage, Pkgcore, Paludis
     
     if conf_prefetch.package_manager == 'portage':
+        log.info('Your package manager is: Portage')
         pkg_manager = Portage(options.ask, options.verbose, options.pretend, not options.colors)
     elif conf_prefetch.package_manager == 'pkgcore':
+        log.info('Your package manager is: Pkgcore')
         pkg_manager = Pkgcore(options.ask, options.verbose, options.pretend, not options.colors)
     elif conf_prefetch.package_manager == 'paludis':
+        log.info('Your package manager is: Paludis')
         pkg_manager = Paludis(options.ask, options.verbose, options.pretend, not options.colors)
     else:
-        print conf_prefetch.package_manager
-        out.eerror('Invalid package manager!')
+        log.error('Invalid package manager: %s' % conf_prefetch.package_manager)
+        out.eerror('Invalid package manager: %s' % conf_prefetch.package_manager)
         return os.EX_CONFIG
     
     # checking if our overlay is correctly added to PORTDIR_OVERLAY
     if not pkg_manager.check_overlay(conf_prefetch.overlay, out):
+        log.error('Overlay not properly configured.')
         return os.EX_CONFIG
     
     if has_fetch:
+        log.info('You can fetch package databases.')
+        
         # checking if we have a package database
         if need_update() and not options.sync:
+            log.error('No package database found.')
             out.eerror('Please run "g-octave --sync" to download a package database!')
             return os.EX_USAGE
         
         if options.sync:
             
+            log.info('Searching updates ...')
             out.einfo('Searching updates ...')
             
             files = check_updates()
             
             if len(files) > 0:
+                
+                log.info('Updates are available. Downloading ...')
                 out.einfo('Updates are available. Downloading ...')
                 print
                 download_files(files)
                 print
+                log.info('Package database update done.')
                 out.einfo('Done.')
             else:
+                log.info('No updates available.')
                 out.einfo('No updates available.')
             
             return os.EX_OK
     else:
+        log.info('You cant fetch package databases.')
         if options.sync:
+            log.error('You cant fetch package databases.')
             out.eerror('"--sync" not available, please install g-octave-9999 if you want this.')
             return os.EX_USAGE
     
@@ -222,6 +242,7 @@ def main():
     from g_octave.overlay import create_overlay
 
     if options.list:
+        log.info('Listing available packages.')
         tree = DescriptionTree()
         print portage.output.blue('Available packages:\n')
         for category in tree.pkg_list:
@@ -233,9 +254,11 @@ def main():
     if options.update:
         pass
     elif len(args) == 0:
+        log.error('You need provide a package an argument.')
         out.eerror('You need provide a package an argument.')
         return os.EX_USAGE
     elif len(args) > 1:
+        log.error('g-octave can install only one package at once.')
         out.eerror('At this moment g-octave can install only one package at once')
         return os.EX_USAGE
     
@@ -244,13 +267,16 @@ def main():
     create_overlay(options.force_all)
     
     if len(args) > 0:
+        log.info('Processing a package: %s' % args[0])
         try:
             ebuild = Ebuild(args[0], options.force or options.force_all, pkg_manager=pkg_manager)
         except EbuildException:
+            log.error('Package not found: %s' % args[0])
             out.eerror('Package not found: %s' % args[0])
             return os.EX_DATAERR
         
         if options.info:
+            log.info('Returning info about the package.')
             pkg = ebuild.description()
             print portage.output.blue('Package:'), portage.output.white(str(pkg.name))
             print portage.output.blue('Version:'), portage.output.white(str(pkg.version))
@@ -265,24 +291,31 @@ def main():
         atom, catpkg = ebuild.create()
     
     if options.unmerge:
+        log.info('Calling the package manager to uninstall the package.')
         ret = pkg_manager.uninstall_package(atom, catpkg)
     elif options.update:
         if len(args) > 0:
+            log.info('Calling the package manager to update the package.')
             ret = pkg_manager.update_package(atom, catpkg)
         else:
+            log.info('Calling the package manager to update all the installed packages.')
             ret = pkg_manager.update_package()
     else:
+        log.info('Calling the package manager to install the package.')
         ret = pkg_manager.install_package(atom, catpkg)
     
     if ret != os.EX_OK:
+        log.error('"%s" returned an error.' % conf.package_manager)
         out.eerror('"%s" returned an error.' % conf.package_manager)
         sys.exit(ret)
     
     if options.unmerge and len(pkg_manager.post_uninstall) > 0:
+        log.info(' '.join(pkg_manager.post_uninstall))
         print
         for i in pkg_manager.post_uninstall:
             out.einfo(i)
     
+    log.info('Finishing g-octave... all OK!')
     return os.EX_OK
 
 

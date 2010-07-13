@@ -26,6 +26,9 @@ import os
 from config import Config
 from exception import ConfigException
 
+from log import Log
+log = Log('g_octave.description')
+
 # octave-forge DESCRIPTION's dependencies atoms
 re_depends = re.compile(r'^([a-zA-Z0-9-]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
 
@@ -37,12 +40,15 @@ from exception import DescriptionException
 class Description(object):
 
     def __init__(self, file, conf=None, parse_sysreq=True):
-
+        
+        log.info('Parsing file: %s' % file)
+        
         if conf is None:
             conf = Config()
         self._config = conf
 
         if not os.path.exists(file):
+            log.error('File not found: %s' % file)
             raise DescriptionException('File not found: %s' % file)
 
         # dictionary with the parsed content of the DESCRIPTION file
@@ -188,6 +194,7 @@ class Description(object):
 
             # invalid dependency atom
             else:
+                log.error('Invalid dependency atom: %s' % depend)
                 raise DescriptionException('Invalid dependency atom: %s' % depend)
 
         return list(set(depends_list))
@@ -221,6 +228,7 @@ class Description(object):
 
             # invalid dependency atom
             else:
+                log.error('Invalid dependency atom: %s' % depend)
                 raise DescriptionException('Invalid dependency atom: %s' % depend)
 
         return depends_list

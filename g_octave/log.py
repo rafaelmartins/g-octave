@@ -52,3 +52,4 @@ class Log(object):
     def __getattr__(self, attr):
         if attr in ['debug', 'info', 'warning', 'error', 'critical']:
             return getattr(self.logger, attr)
+        return lambda x: None

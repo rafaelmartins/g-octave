@@ -20,9 +20,14 @@ from config import Config
 from description import *
 from exception import ConfigException, DescriptionTreeException
 
+from log import Log
+log = Log('g_octave.description_tree')
+
 class DescriptionTree(object):
     
     def __init__(self, conf=None, parse_sysreq=True):
+        
+        log.info('Parsing the package database.')
         
         self._parse_sysreq = parse_sysreq
         self.pkg_list = {}
@@ -34,6 +39,7 @@ class DescriptionTree(object):
         self._db_path = os.path.join(conf.db, 'octave-forge')
         
         if not os.path.isdir(self._db_path):
+            log.error('Invalid db: %s' % self._db_path)
             raise DescriptionTreeException('Invalid db: %s' % self._db_path)
         
         self.categories = {}
@@ -45,6 +51,7 @@ class DescriptionTree(object):
                 for pkg in pkgs:
                     mypkg = re_pkg_atom.match(pkg)
                     if mypkg == None:
+                        log.error('Invalid Atom: %s' % mypkg)
                         raise DescriptionTreeException('Invalid Atom: %s' % mypkg)
                     try:
                         blacklist = conf.blacklist
