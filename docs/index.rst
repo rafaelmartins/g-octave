@@ -31,7 +31,8 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-
+    
+   quickstart
    userguide
    development
    tinderbox
