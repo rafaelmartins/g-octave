@@ -46,8 +46,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(self._empty_cfg.trac_passwd, '')
         self.assertEqual(self._empty_cfg.pkg_cache, '')
         self.assertEqual(self._empty_cfg.log_level, '')
-        # the next is empty, because we disabled the logs at scripts/run_tests.py
-        self.assertEqual(self._empty_cfg.log_file, '')
+        self.assertEqual(self._empty_cfg.log_file, '/var/log/g-octave.log')
         self.assertEqual(self._empty_cfg.package_manager, 'portage')
     
     def test_config_attributes(self):

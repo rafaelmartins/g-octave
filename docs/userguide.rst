@@ -69,9 +69,28 @@ file.
 Using environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+All the options from the configuration file can be overrided with environment
+variables. The environment variable name starts with ``GOCTAVE_`` and
+ends with the option name in uppercase. e.g. ``GOCTAVE_OVERLAY`` will
+override the option ``overlay`` from the config file.
+
+Usage example::
+    
+    # GOCTAVE_OVERLAY=/tmp/overlay g-octave -av packagename
 
 
+Enabling the logging feature
+----------------------------
 
+If you want to write some relevant stuff to a log file you can enable
+the logging feature, configuring the option ``log_level`` on the configuration.
+
+The available options are: ``debug``, ``info``, ``warning``, ``error``, ``critical``.
+
+You can change the location of the log file, using the option ``log_file``.
+The default is: ``/var/log/g-octave.log``
+
+Make sure that the user running g-octave have write permissions to ``log_file``.
 
 
 Syncronizing the package database
@@ -87,24 +106,27 @@ in the first time that you run g-Octave: ::
 Configuring your package manager
 --------------------------------
 
-g-octave can use all the 3 package managers available to Gentoo Linux:
-Portage, Paludis and Pkgcore.
+g-octave can use all the 3 package managers available on Gentoo Linux:
+**Portage**, **Paludis** and **Pkgcore**.
 
-You just need to setup the option ``package_manager`` in the config file
-with the lowercase name of the package manager: portage, paludis, pkgcore.
+You just need to setup the option ``package_manager`` with the lowercase
+name of the package manager: ``portage``, ``paludis``, ``pkgcore``.
 
 If you're using Paludis or Pkgcore, you'll need to configure the overlay
 in your package manager configuration files. Please check the documentation
 of your package manager:
 
-- Paludis: http;//paludis.pioto.org/
+- Paludis: http://paludis.pioto.org/
 - Pkgcore: http://www.pkgcore.org/
 
-Portage will works out of the box.
+Portage works out of the box.
 
 
 Installing packages
 -------------------
+
+From the stable source tarballs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can list all the available packages using this command: ::
     
@@ -143,8 +165,8 @@ or ::
     # g-octave -i packagename
 
 
-Installing packages from the octave-forge SVN repository
---------------------------------------------------------
+From the octave-forge SVN repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you want to test some new feature, or to use the new version of the
 packages ever, you'll like to install your packages directly from the
@@ -160,6 +182,28 @@ SVN version.
 
 In order to be able to install packages from svn you need to install
 g-octave with the USE flag ``svn`` enabled.
+
+
+Updating packages
+-----------------
+
+You can update a package using this command: ::
+
+    # g-octave --update packagename
+
+or ::
+    
+    # g-octave -u packagename
+
+If you want to update all the installed packages, run this without arguments::
+    
+    # g-octave --update
+
+or ::
+    
+    # g-octave -u
+
+The options ``--ask`` and ``--verbose`` are also supported.
 
 
 Uninstalling packages

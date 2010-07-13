@@ -5,6 +5,11 @@ g-Octave provides a script to run build tests for all the octave-forge
 packages. This script is not intended to be used by end-users, only
 developers.
 
+.. topic:: Warning!
+
+    The automated bug reports are broken right now, because the Trac instance
+    is currently offline and being moved to the Gentoo Linux infrastructure.
+
 
 Creating the environment
 ------------------------
@@ -66,10 +71,10 @@ Updating the packages and installing the dependencies
 Getting the source code
 -----------------------
 
-Using the Mercurial repository::
+Using the Git repository::
     
     # cd
-    # hg clone http://hg.rafaelmartins.eng.br/g-octave/
+    # git clone git://git.overlays.gentoo.org/proj/g-octave.git
     # cd g-octave
 
 
@@ -87,6 +92,10 @@ Configuring g-Octave
 ::
 
     # cp etc/g-octave.cfg /etc
+
+.. topic:: Warning!
+
+    This is currently broken!
 
 You should edit the file ``/etc/g-octave.cfg`` and append the lines below
 (with your data)::

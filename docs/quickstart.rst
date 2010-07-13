@@ -34,8 +34,10 @@ for you, then just type::
 Just a line!
 ------------
 
-If you're really lazy, you can just type::
+If you're really lazy, you can just type (first time)::
 
     # layman -a science && emerge g-octave && emerge --config g-octave && g-octave packagename
 
-If all is ok, your package should be installed now!
+and when you want to install other package, you can type::
+
+    # g-octave otherpackagename
