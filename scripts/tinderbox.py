@@ -12,6 +12,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import print_function
+
 import sys
 import os
 
@@ -35,11 +37,8 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
     sys.path.insert(0, os.path.join(current_dir, '..'))
 
-import csv
 import portage
 import subprocess
-import urllib
-import urllib2
 
 from g_octave import config, description_tree, ebuild, fetch, overlay
 from g_octave.tinderbox.trac import Trac, TracError
@@ -83,9 +82,9 @@ def bug_report(pkgatom):
     try:
         for row in trac.list_tickets('=g-octave/'+ pkgatom + ' fails to build. #tinderbox'):
             bug_id = row['id']
-    except TracError, err:
+    except TracError as err:
         out.eend(1)
-        print >> sys.stderr, err
+        print(err, file=sys.stderr)
     else:
         out.eend(0)
     
@@ -98,9 +97,9 @@ def bug_report(pkgatom):
                 'This is ticket was created by tinderbox.\nLook at the attachments.'
             )
             bug_id = int(bug_id)
-        except TracError, err:
+        except TracError as err:
             out.eend(1)
-            print >> sys.stderr, err
+            print(err, file=sys.stderr)
         else:
             out.eend(0)
     
@@ -120,13 +119,13 @@ def bug_report(pkgatom):
             out.ebegin('Attaching file %s to #%i' % (f, int(bug_id)))
             try:
                 trac.attach_file(bug_id, '%s file.' % f, f_)
-            except TracError, err:
+            except TracError as err:
                 out.eend(1)
-                print >> sys.stderr, err
+                print(err, file=sys.stderr)
             else:
                 out.eend(0)
         else:
-            print >> sys.stderr, f_ + ' don\'t exists!'
+            print(f_ + ' don\'t exists!', file=sys.stderr)
 
         
 def main(argv):
@@ -138,9 +137,9 @@ def main(argv):
     out.ebegin('Trac - user autentication')
     try:
         trac = Trac(conf.trac_user, conf.trac_passwd)
-    except TracError, err:
+    except TracError as err:
         out.eend(1)
-        print >> sys.stderr, err
+        print(err, file=sys.stderr)
     else:
         out.eend(0)
     

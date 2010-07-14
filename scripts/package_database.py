@@ -12,6 +12,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -30,7 +32,7 @@ from g_octave.svn import revisions, utils
 
 def main(argv):
     if len(argv) < 2:
-        print >> sys.stderr, 'You should provide the name of the generated tarball'
+        print('You should provide the name of the generated tarball', file=sys.stderr)
         return 1
     conf = config.Config()
     json_file = os.path.join(conf.db, 'revisions.json')
@@ -53,7 +55,7 @@ def main(argv):
                                 path = category_dir
                             )
         utils.create_tarball(temp_dir, argv[1], 'octave-forge')
-    except Exception, err:
+    except Exception as err:
         raise RuntimeError('An error was ocurred: %s' % err)
     finally:
         shutil.rmtree(temp_dir)

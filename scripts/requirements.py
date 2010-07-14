@@ -13,6 +13,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import print_function
+
 import json
 import sys
 import os
@@ -26,11 +28,12 @@ if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
     sys.path.insert(0, os.path.join(current_dir, '..'))
 
 from g_octave import description, description_tree, exception
+from g_octave.compat import py3k, open
 
 def main(argv):
 
     if len(argv) <= 1:
-        print >> sys.stderr, 'one argument required: the json file.'
+        print('one argument required: the json file.', file=sys.stderr)
         return 1
 
     # init portage stuff
@@ -46,8 +49,8 @@ def main(argv):
     for pkg in desc_tree.packages():
         try:
             desc = desc_tree[pkg]
-        except exception.DescriptionTreeException, err:
-            print >> sys.stderr, 'DescriptionTree error: %s' % err
+        except exception.DescriptionTreeException as err:
+            print('DescriptionTree error: %s' % err, file=sys.stderr)
             return 1
 
         deps = []
@@ -78,17 +81,24 @@ def main(argv):
 
     for dep in dependencies:
         s.execute(dep)
-        print dep
+        print(dep)
         temp = []
         for i in range(len(s.matches['pkg'])):
-            print '    %i: %s' % (i, s.matches['pkg'][i][0])
+            print('    %i: %s' % (i, s.matches['pkg'][i][0]))
             temp.append(s.matches['pkg'][i][0])
 
         if dependencies[dep][0] in json_dict['dependencies']:
-            select = raw_input('Select a package [%s]: ' % \
-                json_dict['dependencies'][dependencies[dep][0]])
+            if py3k:
+                select = input('Select a package [%s]: ' % \
+                    json_dict['dependencies'][dependencies[dep][0]])
+            else:
+                select = raw_input('Select a package [%s]: ' % \
+                    json_dict['dependencies'][dependencies[dep][0]])
         else:
-            select = raw_input('Select a package: ')
+            if py3k:
+                select = input('Select a package: ')
+            else:
+                select = raw_input('Select a package: ')
         try:
             for dep_name in dependencies[dep]:
                 json_dict['dependencies'][dep_name] = temp[int(select)]
@@ -96,14 +106,14 @@ def main(argv):
             if select != '' or dependencies[dep][0] not in json_dict['dependencies']:
                 for dep_name in dependencies[dep]:
                     json_dict['dependencies'][dep_name] = select
-        print 'Selected: %s' % json_dict['dependencies'][dependencies[dep][0]]
-        print
+        print('Selected: %s' % json_dict['dependencies'][dependencies[dep][0]])
+        print()
 
     try:
         with open(argv[1], 'w') as fp:
             json.dump(json_dict, fp, sort_keys=True, indent=4)
     except:
-        print >> sys.stderr, 'failed to save the json file.'
+        print('failed to save the json file.', file=sys.stderr)
         return 1
 
     return 0

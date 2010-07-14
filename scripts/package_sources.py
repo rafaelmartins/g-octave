@@ -12,12 +12,13 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import print_function
+
 import datetime
 import os
 import shutil
 import sys
 import tempfile
-import urllib2
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
@@ -39,15 +40,15 @@ def main(argv):
         for category, pkg in svn.update_revisions():
             cur_checkout_dir = os.path.join(checkout_dir, pkg)
             os.makedirs(cur_checkout_dir)
-            print 'Checking out the package: %s/%s' % (category, pkg)
+            print('Checking out the package: %s/%s' % (category, pkg))
             try:
                 svn.checkout_package(category, pkg, cur_checkout_dir, stable=True)
-            except Exception, err:
+            except Exception as err:
                 error.append('%s/%s' % (category, pkg))
-                print 'An error was ocurred: %s' % err
+                print('An error was ocurred: %s' % err)
                 continue
             
-            print 'Creating the tarball: %s/%s' % (category, pkg)
+            print('Creating the tarball: %s/%s' % (category, pkg))
             desc = description.Description(os.path.join(cur_checkout_dir, 'DESCRIPTION'))
             new_checkout = os.path.join(temp_dir, '%s-%s' % (pkg, desc.version))
             shutil.move(cur_checkout_dir, new_checkout)
@@ -57,12 +58,12 @@ def main(argv):
                 '%s/%s-%s.tar.gz' % (conf.pkg_cache, pkg, desc.version),
                 '%s-%s' % (pkg, desc.version)
             )
-    except Exception, err:
+    except Exception as err:
         raise RuntimeError('An error was ocurred: %s' % err)
     finally:
         shutil.rmtree(temp_dir)
     if len(error) > 0:
-        print 'Errors: %s' % ', '.join(error)
+        print('Errors: %s' % ', '.join(error))
             
 
 if __name__ == '__main__':
