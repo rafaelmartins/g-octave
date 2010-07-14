@@ -10,10 +10,12 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import print_function, absolute_import
+
 import logging
 import sys
 
-from config import Config
+from .config import Config
 conf = Config(fetch_phase=True)
 
 
@@ -33,7 +35,7 @@ class Log(object):
         has_file = conf.log_file is not None and conf.log_file != ''
         has_level = conf.log_level is not None and conf.log_level != ''
         if not has_file:
-            print >> sys.stderr, 'WARNING: no "log_file" configured. logging disabled.'
+            print('WARNING: no "log_file" configured. logging disabled.', file=sys.stderr)
         if not has_file or not has_level:
             class NullHandler(logging.Handler):
                 def emit(self, record):

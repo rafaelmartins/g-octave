@@ -11,13 +11,20 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import absolute_import
+
 __all__ = ['Config']
 
-import ConfigParser
 import json
 import os
 
-from exception import ConfigException
+from .compat import py3k
+from .exception import ConfigException
+
+if py3k:
+    import configparser
+else:
+    import ConfigParser as configparser
 
 class Config(object):
     
@@ -40,7 +47,7 @@ class Config(object):
     def __init__(self, fetch_phase=False, config_file=None, create_dirs=True):
         
         # Config Parser
-        self._config = ConfigParser.ConfigParser(self._defaults)
+        self._config = configparser.ConfigParser(self._defaults)
         
         self._fetch_phase = fetch_phase
         
@@ -62,8 +69,8 @@ class Config(object):
         
         for dir in [_db, _overlay]:
             if not os.path.exists(dir) and create_dirs:
-                os.makedirs(dir, 0755)
-        
+                os.makedirs(dir, 0o755)
+                
         self.overlay_bootstrap()
         
         self._cache = {}
