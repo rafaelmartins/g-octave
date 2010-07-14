@@ -11,19 +11,22 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import absolute_import
+
 __all__ = [
     'Ebuild',
     're_keywords',
 ]
 
-from config import Config
-from description import *
-from description_tree import *
-from exception import EbuildException
+from .config import Config
+from .description import *
+from .description_tree import *
+from .exception import EbuildException
+from .compat import open
 
 has_svn = True
 try:
-    from svn.description import SvnDescription
+    from .svn.description import SvnDescription
 except:
     has_svn = False
 
@@ -100,7 +103,7 @@ class Ebuild:
             
             try:
                 my_atom, my_catpkg = self.__create(accept_keywords, manifest)
-            except Exception, error:
+            except Exception as error:
                 if display_info:
                     out.eerror('Failed to create: g-octave/%s-%s.ebuild' % (self.pkgname, self.version))
                 raise EbuildException(error)
@@ -122,7 +125,7 @@ class Ebuild:
         ebuild_file = os.path.join(ebuild_path, '%s-%s.ebuild' % (self.pkgname, self.version))
         
         if not os.path.exists(ebuild_path):
-            os.makedirs(ebuild_path, 0755)
+            os.makedirs(ebuild_path, 0o755)
         
         ebuild = """\
 # Copyright 1999-2010 Gentoo Foundation
@@ -187,7 +190,7 @@ RDEPEND="${DEPEND}
             patchesdir = os.path.join(self._config.db, 'patches')
             filesdir = os.path.join(self._config.overlay, 'g-octave', self.pkgname, 'files')
             if not os.path.exists(filesdir):
-                os.makedirs(filesdir, 0755)
+                os.makedirs(filesdir, 0o755)
             
             patch_string = ''
             for patch in patches:
@@ -197,7 +200,7 @@ RDEPEND="${DEPEND}
             ebuild += "\nsrc_prepare() {%s\n}\n" % patch_string
             vars['eutils'] = ' eutils'
             
-        fp = open(ebuild_file, 'w', 0644)
+        fp = open(ebuild_file, 'w')
         fp.write(ebuild % vars)
         fp.close()
         

@@ -23,9 +23,9 @@ py3k = sys.version_info >= (3, 0)
 
 #open = py3k and open or codecs.open
 
-def open(*args, **kwargs):
+def open(filename, mode, **kwargs):
     if 'encoding' not in kwargs:
         kwargs['encoding'] = 'utf-8'
     if py3k:
-        return open(*args, **kwargs)
-    return codecs.open(*args, **kwargs)
+        return open(filename, mode, **kwargs)
+    return codecs.open(filename, mode, **kwargs)

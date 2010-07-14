@@ -62,7 +62,7 @@ def check_updates():
         with open(os.path.join(conf.db, 'update.json')) as fp:
             update = fp.read()
     else:
-        with open(os.path.join(conf.db, 'update.json'), 'w', 0o644) as fp:
+        with open(os.path.join(conf.db, 'update.json'), 'w') as fp:
             fp.write(update)
     
     updated_files = json.loads(update)
@@ -97,7 +97,7 @@ def download_with_urllib2(url, dest=None, display_info=True):
         if dest != None:
             if not os.path.exists(dest):
                 os.makedirs(dest, 0o755)
-            with open(os.path.join(dest, my_file), 'w', 0o644) as fp:
+            with open(os.path.join(dest, my_file), 'w') as fp:
                 fp.write(file_content)
         else:
             if display_info:
@@ -126,7 +126,7 @@ def add_file_to_db_cache(_file):
         if re_files[f].match(_file) != None:
             files['files'][f] = _file
     
-    with open(my_file, 'w', 0o644) as fp:
+    with open(my_file, 'w') as fp:
         json.dump(files, fp)
 
 
