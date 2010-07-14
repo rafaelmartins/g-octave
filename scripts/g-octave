@@ -11,6 +11,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import print_function
+
 has_fetch = True
 
 __issue_tracker = 'Mail to: rafael@rafaelmartins.eng.br'
@@ -168,7 +170,7 @@ def main():
     if options.config:
         try:
             log.info('Returning configuration data.')
-            print conf_prefetch.__getattr__(args[0])
+            print(conf_prefetch.__getattr__(args[0]))
         except:
             log.error('Invalid configuration key: %s' % args[0])
             return os.EX_DATAERR
@@ -215,9 +217,9 @@ def main():
                 
                 log.info('Updates are available. Downloading ...')
                 out.einfo('Updates are available. Downloading ...')
-                print
+                print()
                 download_files(files)
-                print
+                print()
                 log.info('Package database update done.')
                 out.einfo('Done.')
             else:
@@ -244,12 +246,12 @@ def main():
     if options.list:
         log.info('Listing available packages.')
         tree = DescriptionTree()
-        print portage.output.blue('Available packages:\n')
+        print(portage.output.blue('Available packages:\n'))
         for category in tree.pkg_list:
-            print portage.output.white('%s:') % category
+            print(portage.output.white('%s:') % category)
             for pkg in tree.pkg_list[category]:
-                print '\t%s-%s' % (pkg['name'], pkg['version'])
-            print
+                print('\t%s-%s' % (pkg['name'], pkg['version']))
+            print()
         return os.EX_OK
     if options.update:
         pass
@@ -278,14 +280,14 @@ def main():
         if options.info:
             log.info('Returning info about the package.')
             pkg = ebuild.description()
-            print portage.output.blue('Package:'), portage.output.white(str(pkg.name))
-            print portage.output.blue('Version:'), portage.output.white(str(pkg.version))
-            print portage.output.blue('Date:'), portage.output.white(str(pkg.date))
-            print portage.output.blue('Maintainer:'), portage.output.white(str(pkg.maintainer))
-            print portage.output.blue('Description:'), portage.output.white(str(pkg.description))
-            print portage.output.blue('Categories:'), portage.output.white(str(pkg.categories))
-            print portage.output.blue('License:'), portage.output.white(str(pkg.license))
-            print portage.output.blue('Url:'), portage.output.white(str(pkg.url))
+            print(portage.output.blue('Package:'), portage.output.white(str(pkg.name)))
+            print(portage.output.blue('Version:'), portage.output.white(str(pkg.version)))
+            print(portage.output.blue('Date:'), portage.output.white(str(pkg.date)))
+            print(portage.output.blue('Maintainer:'), portage.output.white(str(pkg.maintainer)))
+            print(portage.output.blue('Description:'), portage.output.white(str(pkg.description)))
+            print(portage.output.blue('Categories:'), portage.output.white(str(pkg.categories)))
+            print(portage.output.blue('License:'), portage.output.white(str(pkg.license)))
+            print(portage.output.blue('Url:'), portage.output.white(str(pkg.url)))
             return os.EX_OK
         
         atom, catpkg = ebuild.create()
@@ -311,7 +313,7 @@ def main():
     
     if options.unmerge and len(pkg_manager.post_uninstall) > 0:
         log.info(' '.join(pkg_manager.post_uninstall))
-        print
+        print()
         for i in pkg_manager.post_uninstall:
             out.einfo(i)
     
@@ -327,43 +329,43 @@ if __name__ == '__main__':
     
     try:
         return_code = main()
-    except ConfigException, error:
+    except ConfigException as error:
         log.error('Config class error - %s' % error)
         out.eerror('Config class error - %s' % error)
         return_code = os.EX_CONFIG
-    except DescriptionException, error:
+    except DescriptionException as error:
         log.error('Description class error - %s' % error)
         out.eerror('Description class error - %s' % error)
         return_code = os.EX_SOFTWARE
-    except DescriptionTreeException, error:
+    except DescriptionTreeException as error:
         log.error('DescriptionTree class error - %s' % error)
         out.eerror('DescriptionTree class error - %s' % error)
         return_code = os.EX_SOFTWARE
-    except EbuildException, error:
+    except EbuildException as error:
         log.error('Ebuild class error - %s' % error)
         out.eerror('Ebuild class error - %s' % error)
         return_code = os.EX_SOFTWARE
-    except FetchException, error:
+    except FetchException as error:
         log.error('Fetch module error - %s' % error)
         out.eerror('Fetch module error - %s' % error)
         return_code = os.EX_SOFTWARE
-    except OSError, error:
+    except OSError as error:
         log.error('Operating System error - %s' % error)
         out.eerror('Operating System error - %s' % error)
         out.eerror('Try run "g-octave" as root.')
         return_code = os.EX_OSERR
-    except IOError, error:
+    except IOError as error:
         log.error('I/O error - %s' % error)
         out.eerror('I/O error - %s' % error)
         out.eerror('Try run "g-octave" as root.')
         return_code = os.EX_IOERR
-    except KeyError, error:
+    except KeyError as error:
         log.error('Key error - %s' % error)
         out.eerror('Key error - %s' % error)
         out.eerror('Probably you have more than one overlay configured to use with g-octave')
         out.eerror('Try remove the oldest and maintain only the overlay actually in use.')
         return_code = os.EX_SOFTWARE
-    except Exception, error:
+    except Exception as error:
         log.error('Unknown error - %s' % error)
         out.eerror('Unknown error - %s' % error)
         return_code = os.EX_SOFTWARE

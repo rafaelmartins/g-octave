@@ -4,3 +4,4 @@
 ^g-octave\.(1|html|log)$
 ^docs/_build/[^(\.keep)]
 ^db/
+\.bak$
