@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -22,7 +24,7 @@ html = {
     'README.rst': 'g-octave.html',
 }
 
-outputs = manpages.values() + html.values()
+outputs = list(manpages.values()) + list(html.values())
 
 def bdoc():
     
@@ -32,10 +34,10 @@ def bdoc():
         return
     
     from codecs import open
-    from StringIO import StringIO
+    from io import StringIO
     from datetime import date
     
-    print 'building the manpages'
+    print('building the manpages')
     
     for rst in manpages:
         path_rst = os.path.join(current_dir, rst)
@@ -64,10 +66,10 @@ def bdoc():
         )
         man_tmp.close()
         man.close()
-    except Exception, error:
+    except Exception as error:
         raise RuntimeError('Failed to build the manpage: %s' % error)
     
-    print 'building the html docs'
+    print('building the html docs')
     
     for rst in html:
         path_rst = os.path.join(current_dir, rst)
@@ -86,7 +88,7 @@ def bdoc():
         )
         readme_rst.close()
         readme.close()
-    except Exception, error:
+    except Exception as error:
         raise RuntimeError('Failed to build the html doc: %s' % error)
 
 
@@ -115,7 +117,7 @@ class clean(_clean):
             for i in outputs:
                 my_path = os.path.join(current_dir, i)
                 if os.path.exists(my_path):
-                    print 'removing %s' % my_path
+                    print('removing %s' % my_path)
                     os.remove(my_path)
 
 
