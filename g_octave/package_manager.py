@@ -17,7 +17,9 @@ __all__ = [
     'Paludis',
 ]
 
+import grp
 import os
+import pwd
 import subprocess
 
 from g_octave.ebuild import Ebuild
@@ -25,6 +27,7 @@ from g_octave.ebuild import Ebuild
 class Base:
     
     _client = ''
+    _group = None
     
     post_install = []
     post_uninstall = []
@@ -36,10 +39,23 @@ class Base:
         for package in packages:
             Ebuild(package[len('g-octave/'):], pkg_manager=self).create()
     
+    def allowed_users(self):
+        if self._group is None:
+            return [i.pw_name for i in pwd.getpwall()]
+        try:
+            users = grp.getgrnam(self._group).gr_mem
+        except KeyError:
+            users = []
+        # root is the master!!! :P
+        if 'root' not in users:
+            users.append('root')
+        return users
+
 
 class Portage(Base):
     
     _client = 'emerge'
+    _group = 'portage'
     
     post_uninstall = [
         'You may want to remove the dependencies too, using:',
@@ -146,6 +162,7 @@ class Pkgcore(Base):
 class Paludis(Base):
     
     _client = 'paludis'
+    _group = 'paludisbuild'
     
     post_uninstall = [
         'You may want to remove the dependencies too, using:',
