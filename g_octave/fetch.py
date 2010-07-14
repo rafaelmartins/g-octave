@@ -13,6 +13,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import absolute_import
+
 __all__ = [
     'need_update',
     'check_updates',
@@ -20,12 +22,16 @@ __all__ = [
     'check_db_cache',
 ]
 
-from config import Config
+from .config import Config
 conf = Config(True) # fetch phase
 
-from exception import FetchException
+from .exception import FetchException
+from .compat import py3k
 
-import urllib2
+if py3k:
+    import urllib.request as urllib
+else:
+    import urllib2 as urllib
 import os
 import json
 import re
@@ -49,14 +55,14 @@ def check_updates():
     
     try:
         update = download_with_urllib2(conf.db_mirror + '/update.json', display_info=False)
-    except Exception, error:
+    except Exception as error:
         # if we already have a file, that's ok
         if need_update():
             raise FetchException(error)
         with open(os.path.join(conf.db, 'update.json')) as fp:
             update = fp.read()
     else:
-        with open(os.path.join(conf.db, 'update.json'), 'w', 0644) as fp:
+        with open(os.path.join(conf.db, 'update.json'), 'w', 0o644) as fp:
             fp.write(update)
     
     updated_files = json.loads(update)
@@ -85,19 +91,19 @@ def download_with_urllib2(url, dest=None, display_info=True):
     if display_info:
         out.ebegin('Downloading: %s' % my_file)
     try:
-        fp = urllib2.urlopen(url)
+        fp = urllib.urlopen(url)
         file_content = fp.read()
         fp.close()
         if dest != None:
             if not os.path.exists(dest):
-                os.makedirs(dest, 0755)
-            with open(os.path.join(dest, my_file), 'w', 0644) as fp:
+                os.makedirs(dest, 0o755)
+            with open(os.path.join(dest, my_file), 'w', 0o644) as fp:
                 fp.write(file_content)
         else:
             if display_info:
                 out.eend(0)
             return file_content
-    except Exception, error:
+    except Exception as error:
         if display_info:
             out.eend(1)
         raise Exception('Failed to fetch the file (%s): %s' % (my_file, error))
@@ -120,7 +126,7 @@ def add_file_to_db_cache(_file):
         if re_files[f].match(_file) != None:
             files['files'][f] = _file
     
-    with open(my_file, 'w', 0644) as fp:
+    with open(my_file, 'w', 0o644) as fp:
         json.dump(files, fp)
 
 
@@ -144,7 +150,7 @@ def check_db_cache():
                     update['files'].append(f)
     
     for _file in update['files']:
-        if _file not in cache['files'].values():
+        if _file not in list(cache['files'].values()):
             my_file = os.path.join(conf.db, _file)
             if not os.path.exists(my_file):
                 download_with_wget(conf.db_mirror + '/' + _file, my_file)
@@ -162,7 +168,7 @@ def extract(gz_file, display_info=True):
         try:
             fp = tarfile.open(my_file, 'r:gz')
             fp.extractall(conf.db)
-        except Exception, error:
+        except Exception as error:
             if display_info:
                 out.eend(1)
             raise Exception('Failed to extract the file (%s): %s' % (my_file, error))
