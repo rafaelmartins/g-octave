@@ -1,8 +1,0 @@
-[main]
-db = db
-#overlay = /development/contrib/octave-overlay
-#categories = main,extra,language
-#db_mirror = http://files.rafaelmartins.eng.br/octave-forge
-
-;log_file = /home/rafael/g-octave.log
-;log_level = debug
