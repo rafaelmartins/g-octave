@@ -11,7 +11,12 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import ConfigParser
+from g_octave.compat import py3k, open
+
+if py3k:
+    import configparser
+else:
+    import ConfigParser as configparser
 import os
 import shutil
 import tempfile
@@ -29,7 +34,7 @@ def create_env(json_files=False):
     db = os.path.join(current_dir, 'files')
     overlay = os.path.join(directory, 'overlay')
     
-    cp = ConfigParser.ConfigParser()
+    cp = configparser.ConfigParser()
     cp.add_section('main')
     cp.set('main', 'db', db)
     cp.set('main', 'overlay', overlay)
