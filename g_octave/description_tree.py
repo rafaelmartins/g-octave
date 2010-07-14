@@ -12,15 +12,17 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import absolute_import
+
 __all__ = ['DescriptionTree']
 
 import os
 
-from config import Config
-from description import *
-from exception import ConfigException, DescriptionTreeException
+from .config import Config
+from .description import *
+from .exception import ConfigException, DescriptionTreeException
 
-from log import Log
+from .log import Log
 log = Log('g_octave.description_tree')
 
 class DescriptionTree(object):

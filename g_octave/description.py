@@ -14,6 +14,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import absolute_import
+
 __all__ = [
     'Description',
     're_depends',
@@ -23,10 +25,10 @@ __all__ = [
 import re
 import os
 
-from config import Config
-from exception import ConfigException
+from .config import Config
+from .exception import ConfigException
 
-from log import Log
+from .log import Log
 log = Log('g_octave.description')
 
 # octave-forge DESCRIPTION's dependencies atoms
@@ -35,7 +37,7 @@ re_depends = re.compile(r'^([a-zA-Z0-9-]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
 # we'll use atoms like 'control-1.0.11' to g-octave packages
 re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
 
-from exception import DescriptionException
+from .exception import DescriptionException
 
 class Description(object):
 
