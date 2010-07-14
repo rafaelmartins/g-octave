@@ -11,6 +11,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import absolute_import
+
 __all__ = ['create_overlay']
 
 import os
@@ -18,8 +20,9 @@ import sys
 import shutil
 import portage.output
 
-from config import Config
-from exception import ConfigException
+from .config import Config
+from .exception import ConfigException
+from .compat import open
 
 out = portage.output.EOutput()
 
@@ -42,7 +45,7 @@ def create_overlay(force=False, conf=None, quiet=False):
             for _dir in ['profiles', 'eclass']:
                 dir = os.path.join(conf.overlay, _dir)
                 if not os.path.exists(dir) or force:
-                    os.makedirs(dir, 0755)
+                    os.makedirs(dir, 0o755)
             
             # creating files
             files = {
@@ -67,12 +70,12 @@ def create_overlay(force=False, conf=None, quiet=False):
                 sys.exit(1)
             for _file in files:
                 if not os.path.exists(_file) or force:
-                    with open(_file, 'w', 0644) as fp:
+                    with open(_file, 'w') as fp:
                         content = files[_file]
                         if isinstance(content, file):
                             content = content.read()
                         fp.write(content)
-        except Exception, error:
+        except Exception as error:
             if not quiet:
                 out.eend(1)
             sys.exit(1)
