@@ -20,10 +20,9 @@ import sys
 import shutil
 import portage.output
 
-from codecs import open
-
 from .config import Config
 from .exception import ConfigException
+from .compat import open
 
 out = portage.output.EOutput()
 

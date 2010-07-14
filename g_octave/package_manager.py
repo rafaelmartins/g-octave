@@ -23,6 +23,7 @@ import pwd
 import subprocess
 
 from g_octave.ebuild import Ebuild
+from g_octave.compat import open
 
 class Base:
     

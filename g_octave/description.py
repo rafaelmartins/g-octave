@@ -27,6 +27,7 @@ import os
 
 from .config import Config
 from .exception import ConfigException
+from .compat import open
 
 from .log import Log
 log = Log('g_octave.description')

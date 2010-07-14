@@ -327,9 +327,10 @@ if __name__ == '__main__':
     
     return_code = os.EX_OK
     
-    try:
+    if True:
+    #try:
         return_code = main()
-    except ConfigException as error:
+    """except ConfigException as error:
         log.error('Config class error - %s' % error)
         out.eerror('Config class error - %s' % error)
         return_code = os.EX_CONFIG
@@ -368,7 +369,7 @@ if __name__ == '__main__':
     except Exception as error:
         log.error('Unknown error - %s' % error)
         out.eerror('Unknown error - %s' % error)
-        return_code = os.EX_SOFTWARE
+        return_code = os.EX_SOFTWARE"""
     
     if return_code not in [os.EX_OK, os.EX_CONFIG, os.EX_USAGE, os.EX_DATAERR]:
         out.einfo('If you fell that this is a bug, please report to us.')

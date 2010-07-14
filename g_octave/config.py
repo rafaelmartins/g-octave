@@ -18,7 +18,7 @@ __all__ = ['Config']
 import json
 import os
 
-from .compat import py3k
+from .compat import py3k, open
 from .exception import ConfigException
 
 if py3k:

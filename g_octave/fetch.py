@@ -26,7 +26,7 @@ from .config import Config
 conf = Config(True) # fetch phase
 
 from .exception import FetchException
-from .compat import py3k
+from .compat import py3k, open as open_
 
 if py3k:
     import urllib.request as urllib
@@ -35,8 +35,11 @@ else:
 import os
 import json
 import re
+import shutil
 import tarfile
 import portage.output
+
+from contextlib import closing
 
 out = portage.output.EOutput()
 
@@ -54,15 +57,18 @@ def need_update():
 def check_updates():
     
     try:
-        update = download_with_urllib2(conf.db_mirror + '/update.json', display_info=False)
+        update = download_with_urllib2(
+            conf.db_mirror + '/update.json',
+            display_info=False
+        ).decode('utf-8')
     except Exception as error:
         # if we already have a file, that's ok
         if need_update():
             raise FetchException(error)
-        with open(os.path.join(conf.db, 'update.json')) as fp:
+        with open_(os.path.join(conf.db, 'update.json')) as fp:
             update = fp.read()
     else:
-        with open(os.path.join(conf.db, 'update.json'), 'w') as fp:
+        with open_(os.path.join(conf.db, 'update.json'), 'w') as fp:
             fp.write(update)
     
     updated_files = json.loads(update)
@@ -91,18 +97,17 @@ def download_with_urllib2(url, dest=None, display_info=True):
     if display_info:
         out.ebegin('Downloading: %s' % my_file)
     try:
-        fp = urllib.urlopen(url)
-        file_content = fp.read()
-        fp.close()
         if dest != None:
-            if not os.path.exists(dest):
-                os.makedirs(dest, 0o755)
-            with open(os.path.join(dest, my_file), 'w') as fp:
-                fp.write(file_content)
+            with closing(urllib.urlopen(url)) as fp:
+                if not os.path.exists(dest):
+                    os.makedirs(dest, 0o755)
+                with open(os.path.join(dest, my_file), 'wb') as fp_:
+                    shutil.copyfileobj(fp, fp_)
         else:
-            if display_info:
-                out.eend(0)
-            return file_content
+            with closing(urllib.urlopen(url)) as fp:
+                if display_info:
+                    out.eend(0)
+                return fp.read()
     except Exception as error:
         if display_info:
             out.eend(1)
@@ -117,7 +122,7 @@ def add_file_to_db_cache(_file):
     my_file = os.path.join(conf.db, 'cache.json')
     
     try:
-        with open(my_file) as fp:
+        with open_(my_file) as fp:
             files = json.load(fp)
     except:
         files = {'files': {}}
@@ -126,20 +131,20 @@ def add_file_to_db_cache(_file):
         if re_files[f].match(_file) != None:
             files['files'][f] = _file
     
-    with open(my_file, 'w') as fp:
+    with open_(my_file, 'w') as fp:
         json.dump(files, fp)
 
 
 def check_db_cache():
     
     try:
-        with open(os.path.join(conf.db, 'cache.json')) as fp:
+        with open_(os.path.join(conf.db, 'cache.json')) as fp:
             cache = json.load(fp)
     except:
         cache = {'files': {}}
     
     try:
-        with open(os.path.join(conf.db, 'update.json')) as fp:
+        with open_(os.path.join(conf.db, 'update.json')) as fp:
             update = json.load(fp)
     except:
         my_cache = os.listdir(conf.db)
