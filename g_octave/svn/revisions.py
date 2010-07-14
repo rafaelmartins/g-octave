@@ -13,6 +13,8 @@
 
 import json
 
+from g_octave.compat import open
+
 class Revisions(object):
     
     def __init__(self, json_file):
@@ -53,10 +55,3 @@ class Revisions(object):
         revisions[category][package] = value
         if not self._dump_json(revisions):
             raise RuntimeError('Failed to save JSON file.')
-        
-
-if __name__ == '__main__':
-    a = Revisions('/tmp/file.json')
-    a.set('main', 'fuuuu', 1234)
-    print a.get()
-            

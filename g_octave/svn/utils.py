@@ -10,6 +10,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from __future__ import print_function
+
 import sys
 import tarfile
 
@@ -23,5 +25,5 @@ def create_tarball(src_dir, tarball_file, arcname):
     try:
         with closing(tarfile.open(tarball_file, 'w:gz')) as tar:
             tar.add(src_dir, arcname=arcname, recursive=True, exclude=exclude)
-    except tarfile.TarError, err:
-        print >> sys.stderr, 'Failed to create the tarball: %s' % err
+    except tarfile.TarError as err:
+        print('Failed to create the tarball: %s' % err, file=sys.stderr)

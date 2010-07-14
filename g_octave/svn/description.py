@@ -21,7 +21,7 @@ from g_octave import description, exception
 class SvnDescription(description.Description):
     
     def __init__(self, category, package):
-        self._svn = client.SvnClient()
+        self._svn = client.SvnClient(create_revisions=False)
         temp_desc = config_file = tempfile.mkstemp()[1]
         try:
             self._svn.download_file(
