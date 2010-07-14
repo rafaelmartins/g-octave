@@ -16,6 +16,14 @@ import os
 import sys
 import unittest
 
+# cleaning the environment vars
+to_remove = []
+for var_name in os.environ:
+    if var_name.upper().startswith('GOCTAVE_'):
+        to_remove.append(var_name)
+for var_name in to_remove:
+    del os.environ[var_name]
+
 # disabling the logging
 os.environ['GOCTAVE_LOG_LEVEL'] = ''
 
