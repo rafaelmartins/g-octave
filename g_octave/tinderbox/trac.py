@@ -14,8 +14,15 @@ import csv
 import pycurl
 import re
 import sys
-import StringIO
-import urllib
+
+from g_octave.compat import py3k
+
+if py3k:
+    import io
+    import urllib.parse as url_parse
+else:
+    import StringIO as io
+    import urllib as url_parse
 
 class TracError(Exception):
     pass
@@ -108,11 +115,11 @@ class Trac(object):
         ]
         results = []
         code, html = self.request(
-            self.url + 'query?' + urllib.urlencode(params, True),
+            self.url + 'query?' + url_parse.urlencode(params, True),
         )
         if code != 200:
             sys.exit('Failed to request the list of tickets.')
-        fp = csv.reader(StringIO.StringIO(html))
+        fp = csv.reader(io.StringIO(html))
         result = list(fp)
         keys = result[0]
         for i in range(1, len(result)):
@@ -130,11 +137,11 @@ class Trac(object):
             self.curl.setopt(pycurl.HTTPPOST, params)
         if upload:
             self.curl.setopt(pycurl.HTTPHEADER, ['Expect:'])
-        buffer = StringIO.StringIO()
+        buffer = io.StringIO()
         self.curl.setopt(pycurl.WRITEFUNCTION, buffer.write)
         try:
             self.curl.perform()
-        except pycurl.error, err:
+        except pycurl.error as err:
             raise TracError('HTTP request failed: %s' % err)
         return self.curl.getinfo(pycurl.HTTP_CODE), buffer.getvalue()
 
