@@ -13,7 +13,7 @@
 
 __all__ = [
     'py3k',
-    'open',
+    'open_py3k',
 ]
 
 import codecs
@@ -23,7 +23,7 @@ py3k = sys.version_info >= (3, 0)
 
 #open = py3k and open or codecs.open
 
-def open(filename, mode, **kwargs):
+def open_py3k(filename, mode, **kwargs):
     if 'encoding' not in kwargs:
         kwargs['encoding'] = 'utf-8'
     if py3k:

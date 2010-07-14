@@ -20,9 +20,10 @@ import sys
 import shutil
 import portage.output
 
+from codecs import open
+
 from .config import Config
 from .exception import ConfigException
-from .compat import open
 
 out = portage.output.EOutput()
 
@@ -72,7 +73,7 @@ def create_overlay(force=False, conf=None, quiet=False):
                 if not os.path.exists(_file) or force:
                     with open(_file, 'w') as fp:
                         content = files[_file]
-                        if isinstance(content, file):
+                        if hasattr(content, 'name'):
                             content = content.read()
                         fp.write(content)
         except Exception as error:

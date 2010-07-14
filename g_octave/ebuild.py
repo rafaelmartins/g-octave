@@ -22,7 +22,6 @@ from .config import Config
 from .description import *
 from .description_tree import *
 from .exception import EbuildException
-from .compat import open
 
 has_svn = True
 try:
@@ -37,6 +36,8 @@ import portage
 import re
 import shutil
 import subprocess
+
+from codecs import open
 
 out = portage.output.EOutput()
 
