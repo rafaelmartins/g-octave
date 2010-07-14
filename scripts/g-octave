@@ -13,7 +13,7 @@
 
 has_fetch = True
 
-__issue_tracker = 'http://g-octave.rafaelmartins.eng.br/report'
+__issue_tracker = 'Mail to: rafael@rafaelmartins.eng.br'
 
 import sys
 
@@ -226,9 +226,9 @@ def main():
             
             return os.EX_OK
     else:
-        log.info('You cant fetch package databases.')
+        log.info('You can\'t fetch package databases.')
         if options.sync:
-            log.error('You cant fetch package databases.')
+            log.error('You can\'t fetch package databases.')
             out.eerror('"--sync" not available, please install g-octave-9999 if you want this.')
             return os.EX_USAGE
     
@@ -254,8 +254,8 @@ def main():
     if options.update:
         pass
     elif len(args) == 0:
-        log.error('You need provide a package an argument.')
-        out.eerror('You need provide a package an argument.')
+        log.error('You need provide an argument.')
+        out.eerror('You need provide an argument.')
         return os.EX_USAGE
     elif len(args) > 1:
         log.error('g-octave can install only one package at once.')
@@ -328,39 +328,48 @@ if __name__ == '__main__':
     try:
         return_code = main()
     except ConfigException, error:
+        log.error('Config class error - %s' % error)
         out.eerror('Config class error - %s' % error)
         return_code = os.EX_CONFIG
     except DescriptionException, error:
+        log.error('Description class error - %s' % error)
         out.eerror('Description class error - %s' % error)
         return_code = os.EX_SOFTWARE
     except DescriptionTreeException, error:
+        log.error('DescriptionTree class error - %s' % error)
         out.eerror('DescriptionTree class error - %s' % error)
         return_code = os.EX_SOFTWARE
     except EbuildException, error:
+        log.error('Ebuild class error - %s' % error)
         out.eerror('Ebuild class error - %s' % error)
         return_code = os.EX_SOFTWARE
     except FetchException, error:
+        log.error('Fetch module error - %s' % error)
         out.eerror('Fetch module error - %s' % error)
         return_code = os.EX_SOFTWARE
     except OSError, error:
+        log.error('Operating System error - %s' % error)
         out.eerror('Operating System error - %s' % error)
         out.eerror('Try run "g-octave" as root.')
         return_code = os.EX_OSERR
     except IOError, error:
+        log.error('I/O error - %s' % error)
         out.eerror('I/O error - %s' % error)
         out.eerror('Try run "g-octave" as root.')
         return_code = os.EX_IOERR
     except KeyError, error:
+        log.error('Key error - %s' % error)
         out.eerror('Key error - %s' % error)
         out.eerror('Probably you have more than one overlay configured to use with g-octave')
         out.eerror('Try remove the oldest and maintain only the overlay actually in use.')
         return_code = os.EX_SOFTWARE
     except Exception, error:
+        log.error('Unknown error - %s' % error)
         out.eerror('Unknown error - %s' % error)
         return_code = os.EX_SOFTWARE
     
     if return_code not in [os.EX_OK, os.EX_CONFIG, os.EX_USAGE, os.EX_DATAERR]:
         out.einfo('If you fell that this is a bug, please report to us.')
-        out.einfo('Issue tracker: %s' % __issue_tracker)
+        out.einfo(__issue_tracker)
     
     sys.exit(return_code)

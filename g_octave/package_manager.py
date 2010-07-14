@@ -137,6 +137,10 @@ class Pkgcore(Base):
             for line in p.stdout:
                 packages.append(line.strip())
         return packages
+    
+    def create_manifest(self, ebuild):
+        # using portage :(
+        return subprocess.call(['ebuild', ebuild, 'manifest'])
 
 
 class Paludis(Base):
