@@ -36,6 +36,11 @@ class Base:
     check_overlay = lambda a,b,c: True
     create_manifest = lambda a,b: os.EX_OK
     
+    def is_installed(self):
+        if self._client != '':
+            return os.path.exists(self._client)
+        return False
+    
     def do_ebuilds(self, packages):
         for package in packages:
             Ebuild(package[len('g-octave/'):], pkg_manager=self).create()
@@ -55,7 +60,7 @@ class Base:
 
 class Portage(Base):
     
-    _client = 'emerge'
+    _client = '/usr/bin/emerge'
     _group = 'portage'
     
     post_uninstall = [
@@ -110,7 +115,7 @@ class Portage(Base):
 
 class Pkgcore(Base):
     
-    _client = 'pmerge'
+    _client = '/usr/bin/pmerge'
     _group = 'portage'
     
     post_uninstall = [
@@ -163,7 +168,7 @@ class Pkgcore(Base):
 
 class Paludis(Base):
     
-    _client = 'paludis'
+    _client = '/usr/bin/paludis'
     _group = 'paludisbuild'
     
     post_uninstall = [

@@ -193,6 +193,12 @@ def main():
         out.eerror('Invalid package manager: %s' % conf_prefetch.package_manager)
         return os.EX_CONFIG
     
+    # checking if the package manager is installed
+    if not pkg_manager.is_installed():
+        log.error('Package manager not installed: %s' % conf_prefetch.package_manager)
+        out.eerror('Package manager not installed: %s' % conf_prefetch.package_manager)
+        return os.EX_CONFIG
+    
     # checking if the current user is allowed to run g-octave
     current_user = getpass.getuser()
     if current_user not in pkg_manager.allowed_users():
