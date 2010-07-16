@@ -36,6 +36,7 @@ except KeyboardInterrupt:
     sys.exit(1)
 
 
+import getpass
 import os
 import optparse
 import portage
@@ -191,6 +192,19 @@ def main():
         log.error('Invalid package manager: %s' % conf_prefetch.package_manager)
         out.eerror('Invalid package manager: %s' % conf_prefetch.package_manager)
         return os.EX_CONFIG
+    
+    # checking if the current user is allowed to run g-octave
+    current_user = getpass.getuser()
+    if current_user not in pkg_manager.allowed_users():
+        log.error(
+            'The current user (%s) can\'t run the current selected '
+            'package manager (%s)' % (current_user, conf_prefetch.package_manager)
+        )
+        out.eerror(
+            'The current user (%s) can\'t run the current selected '
+            'package manager (%s)' % (current_user, conf_prefetch.package_manager)
+        )
+        return os.EX_NOPERM
     
     # checking if our overlay is correctly added to PORTDIR_OVERLAY
     if not pkg_manager.check_overlay(conf_prefetch.overlay, out):
@@ -370,7 +384,7 @@ if __name__ == '__main__':
         out.eerror('Unknown error - %s' % error)
         return_code = os.EX_SOFTWARE
     
-    if return_code not in [os.EX_OK, os.EX_CONFIG, os.EX_USAGE, os.EX_DATAERR]:
+    if return_code not in [os.EX_OK, os.EX_CONFIG, os.EX_USAGE, os.EX_DATAERR, os.EX_NOPERM]:
         out.einfo('If you fell that this is a bug, please report to us.')
         out.einfo(__issue_tracker)
     

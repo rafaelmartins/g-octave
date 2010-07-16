@@ -111,6 +111,7 @@ class Portage(Base):
 class Pkgcore(Base):
     
     _client = 'pmerge'
+    _group = 'portage'
     
     post_uninstall = [
         'You may want to remove the dependencies too, using:',
