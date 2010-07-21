@@ -45,8 +45,9 @@ re_keywords = re.compile(r'(~)?(alpha|amd64|hppa|ppc64|ppc|sparc|x86)')
 
 class Ebuild:
     
-    def __init__(self, pkg_atom, force=False, conf=None, pkg_manager=None):
+    def __init__(self, pkg_atom, scm=False, force=False, conf=None, pkg_manager=None):
         
+        self.__scm = scm
         self.__force = force
         self.__conf = conf
         self.__pkg_manager = pkg_manager
@@ -57,7 +58,6 @@ class Ebuild:
         self._config = conf
         
         self.__dbtree = DescriptionTree(conf = self._config)
-        self.svn_version = False
         
         atom = re_pkg_atom.match(pkg_atom)
         if atom == None:
@@ -66,10 +66,8 @@ class Ebuild:
         else:
             self.pkgname = atom.group(1)
             self.version = atom.group(2)
-            if has_svn and self.version == '9999':
-                self.svn_version = True
         
-        if self.svn_version:
+        if self.__scm:
             category = self.__dbtree.categories.get(self.pkgname, None)
             if category is not None:
                 self.__desc = SvnDescription(category, self.pkgname)
