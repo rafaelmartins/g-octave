@@ -17,10 +17,17 @@ from __future__ import absolute_import
 __all__ = ['DescriptionTree']
 
 import os
+import re
 
 from .config import Config
 from .description import *
 from .exception import ConfigException, DescriptionTreeException
+
+has_svn = True
+try:
+    from .svn import *
+except ImportError:
+    has_svn = False
 
 from .log import Log
 log = Log('g_octave.description_tree')
@@ -136,3 +143,23 @@ class DescriptionTree(object):
                 packages.append(pkg['name'] + '-' + pkg['version'])
         
         return packages
+
+    
+    def search(self, term):
+        
+        # term can be a regular expression
+        re_term = re.compile(r'%s' % term)
+        packages = {}
+        
+        for cat in self.pkg_list:
+            for pkg in self.pkg_list[cat]:
+                if re_term.search(pkg['name']) is not None:
+                    if pkg['name'] not in packages:
+                        packages[pkg['name']] = [pkg['version']]
+                        if has_svn:
+                            packages[pkg['name']].append('9999')
+                    else:
+                        packages[pkg['name']].insert(-1, pkg['version'])
+        
+        return packages
+

@@ -133,6 +133,9 @@ CLI options
 *-u, --update*
     try to update a package or all the installed packages
 
+*-s, --search*
+    search for packages with some term on the name (regular expressions allowed)
+
 *-C, --unmerge*
     try to unmerge a package instead of merge
 

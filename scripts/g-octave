@@ -111,6 +111,14 @@ def main():
     )
     
     parser.add_option(
+        '-s', '--search',
+        action = 'store_true',
+        dest = 'search',
+        default = False,
+        help = 'search for packages with some term on the name (regular expressions allowed)'
+    )
+    
+    parser.add_option(
         '-C', '--unmerge',
         action = 'store_true',
         dest = 'unmerge',
@@ -273,7 +281,7 @@ def main():
                 print('\t%s-%s' % (pkg['name'], pkg['version']))
             print()
         return os.EX_OK
-    if options.update:
+    elif options.update:
         pass
     elif len(args) == 0:
         log.error('You need provide an argument.')
@@ -285,10 +293,34 @@ def main():
         return os.EX_USAGE
     
     # if we're alive yet, we have a package to install! :D
+    # or a search to do! :P
     
     create_overlay(options.force_all)
     
     if len(args) > 0:
+        
+        if options.search:
+            log.info('Searching for packages: %s' % args[0])
+            tree = DescriptionTree()
+            print(
+                portage.output.blue('Search results for '),
+                portage.output.white(args[0]),
+                portage.output.blue(':\n'),
+                sep = ''
+            )
+            packages = tree.search(args[0])
+            for pkg in packages:
+                print(
+                    portage.output.green('Package:'),
+                    portage.output.white(pkg)
+                )
+                print(
+                    portage.output.green('Available versions:'),
+                    portage.output.red(', '.join(packages[pkg]))
+                )
+                print()
+            return os.EX_OK
+        
         log.info('Processing a package: %s' % args[0])
         try:
             ebuild = Ebuild(args[0], options.force or options.force_all, pkg_manager=pkg_manager)

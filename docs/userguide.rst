@@ -206,6 +206,19 @@ or ::
 The options ``--ask`` and ``--verbose`` are also supported.
 
 
+Searching packages
+------------------
+
+You can do searches on the package names if you use the option ``-s`` or
+``--search``. Regular expressions are allowed. ::
+    
+    # g-octave --search anything
+
+or ::
+
+    # g-octave -s ^con
+
+
 Uninstalling packages
 ---------------------
 

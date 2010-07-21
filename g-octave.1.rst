@@ -45,6 +45,7 @@ OPTIONS
 -a, --ask           ask to confirmation before perform (un)merges
 -v, --verbose       Portage makes a lot of noise.
 -u, --update        try to update a package or all the installed packages
+-s, --search        search for packages with some term on the name (regular expressions allowed)
 -C, --unmerge       try to unmerge a package instead of merge
 -f, --force         forces the recreation of the ebuilds
 --force-all         forces the recreation of the overlay and of the ebuilds
