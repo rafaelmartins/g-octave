@@ -127,6 +127,22 @@ def main():
     )
     
     parser.add_option(
+        '--scm',
+        action = 'store_true',
+        dest = 'scm',
+        default = False,
+        help = 'enable the installation of the current live version of a package, if disabled on the configuration file'
+    )
+    
+    parser.add_option(
+        '--no-scm',
+        action = 'store_true',
+        dest = 'no_scm',
+        default = False,
+        help = 'disable the installation of the current live version of a package, if enabled on the configuration file'
+    )
+    
+    parser.add_option(
         '-f', '--force',
         action = 'store_true',
         dest = 'force',

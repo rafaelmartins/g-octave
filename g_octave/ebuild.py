@@ -165,7 +165,7 @@ RDEPEND="${DEPEND}
             'eutils': '',
             'description': description,
             'url': self.__desc.url,
-            'keywords': self.__keywords(accept_keywords),
+            'keywords': self.__scm and '' or self.__keywords(accept_keywords),
             'category': category,
             'depend': '',
             'rdepend': '',
