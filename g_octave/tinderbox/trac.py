@@ -43,6 +43,7 @@ class Trac(object):
                 self.url + 'login', [
                     ('user', user),
                     ('password', passwd),
+                    ('referer', self.url + 'wiki'),
                     ('__FORM_TOKEN', self.token),
                 ]
             )
@@ -51,7 +52,7 @@ class Trac(object):
         
     
     def user_autenticated(self, html):
-        return html.find('<a href="/logout">') != -1
+        return html.find('logout">') != -1
 
     
     def _get_token(self):
@@ -135,8 +136,7 @@ class Trac(object):
         if params is not None:
             self.curl.setopt(pycurl.POST, 1)
             self.curl.setopt(pycurl.HTTPPOST, params)
-        if upload:
-            self.curl.setopt(pycurl.HTTPHEADER, ['Expect:'])
+        self.curl.setopt(pycurl.HTTPHEADER, ['Expect:'])
         buffer = io.StringIO()
         self.curl.setopt(pycurl.WRITEFUNCTION, buffer.write)
         try:
