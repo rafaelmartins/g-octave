@@ -29,7 +29,7 @@ class TracError(Exception):
 
 class Trac(object):
     
-    url = 'http://g-octave.rafaelmartins.eng.br/'
+    url = 'http://www.g-octave.org/trac/'
     
     def __init__(self, user, passwd):
         self.curl = pycurl.Curl()
