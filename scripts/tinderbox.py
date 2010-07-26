@@ -41,6 +41,7 @@ import portage
 import subprocess
 
 from g_octave import config, description_tree, ebuild, fetch, overlay
+from g_octave.package_manager import Portage
 from g_octave.tinderbox.trac import Trac, TracError
 
 trac = None
@@ -150,9 +151,11 @@ def main(argv):
     packages = desc_tree.packages()
     out.einfo('Number of octave-forge packages: %i' % len(packages))
     
+    pkg_manager = Portage()
+    
     # creating the ebuilds for all the packages
     for pkgatom in packages:
-        e = ebuild.Ebuild(pkgatom)
+        e = ebuild.Ebuild(pkgatom, pkg_manager=pkg_manager)
         try:
             e.create(nodeps=True)
         except:
