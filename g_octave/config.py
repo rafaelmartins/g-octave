@@ -39,6 +39,7 @@ class Config(object):
         'log_level': '',
         'log_file': '/var/log/g-octave.log',
         'package_manager': 'portage',
+        'use_scm': 'false',
     }
 
     _section_name = 'main'

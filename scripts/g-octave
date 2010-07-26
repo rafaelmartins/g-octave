@@ -311,6 +311,14 @@ def main():
     # if we're alive yet, we have a package to install! :D
     # or a search to do! :P
     
+    # check if use said that want the live version in some place
+    use_scm = conf.use_scm.lower() == 'true' or options.scm
+    
+    # if the user said that don't want the live version with --no-scm,
+    # this is mandatory
+    if options.no_scm:
+        use_scm = False
+    
     create_overlay(options.force_all)
     
     if len(args) > 0:
@@ -339,7 +347,12 @@ def main():
         
         log.info('Processing a package: %s' % args[0])
         try:
-            ebuild = Ebuild(args[0], options.force or options.force_all, pkg_manager=pkg_manager)
+            ebuild = Ebuild(
+                args[0], # pkg atom
+                options.force or options.force_all, # force
+                pkg_manager=pkg_manager, # package manager
+                scm = use_scm, # want to use the live version?
+            )
         except EbuildException:
             log.error('Package not found: %s' % args[0])
             out.eerror('Package not found: %s' % args[0])

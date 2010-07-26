@@ -45,7 +45,7 @@ re_keywords = re.compile(r'(~)?(alpha|amd64|hppa|ppc64|ppc|sparc|x86)')
 
 class Ebuild:
     
-    def __init__(self, pkg_atom, scm=False, force=False, conf=None, pkg_manager=None):
+    def __init__(self, pkg_atom, force=False, scm=False, conf=None, pkg_manager=None):
         
         self.__scm = scm
         self.__force = force
@@ -68,6 +68,7 @@ class Ebuild:
             self.version = atom.group(2)
         
         if self.__scm:
+            self.version = '9999'
             category = self.__dbtree.categories.get(self.pkgname, None)
             if category is not None:
                 self.__desc = SvnDescription(category, self.pkgname)
