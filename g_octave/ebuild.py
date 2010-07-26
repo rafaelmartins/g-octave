@@ -300,5 +300,6 @@ RDEPEND="${DEPEND}
                 ebuild,
                 force = self.__force,
                 conf = self.__conf,
-                pkg_manager = self.__pkg_manager
+                pkg_manager = self.__pkg_manager,
+                scm = self.__scm
             ).create()
