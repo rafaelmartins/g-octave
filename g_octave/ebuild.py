@@ -166,7 +166,7 @@ RDEPEND="${DEPEND}
             'eutils': '',
             'description': description,
             'url': self.__desc.url,
-            'keywords': self.__scm and '' or self.__keywords(accept_keywords),
+            'keywords': self.__keywords(accept_keywords),
             'category': category,
             'depend': '',
             'rdepend': '',
@@ -199,9 +199,8 @@ RDEPEND="${DEPEND}
             ebuild += "\nsrc_prepare() {%s\n}\n" % patch_string
             vars['eutils'] = ' eutils'
             
-        fp = open(ebuild_file, 'w')
-        fp.write(ebuild % vars)
-        fp.close()
+        with open(ebuild_file, 'w') as fp:
+            fp.write(ebuild % vars)
         
         if manifest:
             proc = self.__pkg_manager.create_manifest(ebuild_file)
@@ -216,6 +215,9 @@ RDEPEND="${DEPEND}
         
     
     def __keywords(self, accept_keywords):
+        
+        if self.__scm:
+            return ''
         
         keywords = [i.strip() for i in accept_keywords.split(' ')]
         
