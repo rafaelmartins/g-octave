@@ -129,7 +129,6 @@ class DescriptionTree(object):
     def version_compare(self, versions):
         
         tmp = list(versions[:])
-        print tmp
         tmp.sort(vercmp)
         return tmp[-1]
 
