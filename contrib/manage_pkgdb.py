@@ -118,6 +118,7 @@ class SfUpdates:
     def download(self, tarball_name, entry):
         return subprocess.call([
             'wget',
+            '--continue',
             '--output-document', os.path.join(
                     self._local_dir,
                     entry['category'],
