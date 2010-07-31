@@ -13,18 +13,20 @@
 G_OCTAVE_CAT="${G_OCTAVE_CAT:-main}"
 
 
+REPO_URI="https://octave.svn.sourceforge.net/svnroot/octave/trunk/octave-forge"
 if [[ ${PV} = 9999* ]]; then
 	inherit subversion autotools
-	REPO_URI="https://octave.svn.sourceforge.net/svnroot/octave/trunk/octave-forge"
 	ESVN_REPO_URI="${REPO_URI}/${G_OCTAVE_CAT}/${PN}"
-	SRC_URI="${REPO_URI}/packages/package_Makefile.in -> g-octave_Makefile
-		${REPO_URI}/packages/package_configure.in -> g-octave_configure"
 else
-	SRC_URI="http://soc.dev.gentoo.org/~rafaelmartins/g-octave/distfiles/octave-forge/${P}.tar.gz"
+	inherit autotools
+	SRC_URI="mirror://sourceforge/octave/${P}.tar.gz"
 fi
 
+SRC_URI="${SRC_URI}
+	${REPO_URI}/packages/package_Makefile.in -> g-octave_Makefile
+	${REPO_URI}/packages/package_configure.in -> g-octave_configure"
 
-HOMEPAGE="http://g-octave.rafaelmartins.eng.br/"
+HOMEPAGE="http://www.g-octave.org/"
 SLOT="0"
 LICENSE="GPL-2"
 DESCRIPTION="Based on the ${ECLASS} eclass"
@@ -34,21 +36,22 @@ OCT_ROOT="/usr/share/octave"
 OCT_PKGDIR="${OCT_ROOT}/packages"
 OCT_BIN="$(type -p octave)"
 
-if [[ ${PV} = 9999* ]]; then
-	EXPORT_FUNCTIONS src_prepare src_install pkg_postinst pkg_prerm pkg_postrm
-else
-	EXPORT_FUNCTIONS src_install pkg_postinst pkg_prerm pkg_postrm
-fi
+EXPORT_FUNCTIONS src_prepare src_install pkg_postinst pkg_prerm pkg_postrm
 
 g-octave_src_prepare() {
-	subversion_src_prepare
+	if [ ! -d "${WORKDIR}/${P}" ]; then
+		S="${WORKDIR}/${PN}"
+		cd "${S}"
+	fi
+	[[ ${PV} = 9999* ]] && subversion_src_prepare
 	for filename in Makefile configure; do
-		cp "${DISTDIR}/g-octave_${filename}" "${S}/$filename"
-		chmod 0755 "${S}/$filename"
+		cp "${DISTDIR}/g-octave_${filename}" "${S}/${filename}"
 	done
-	if [[ ${PV} = 9999* ]] && [ -e "${S}"/src/autogen.sh ]; then
+	chmod 0755 "${S}/configure"
+	if [ -e "${S}"/src/autogen.sh ]; then
 		cd "${S}"/src && ./autogen.sh || die 'failed to run autogen.sh'
 	fi
+	sed -i 's/-s//g' ${S}/src/Makefile || die 'sed failed.'
 }
 
 g-octave_src_install() {
