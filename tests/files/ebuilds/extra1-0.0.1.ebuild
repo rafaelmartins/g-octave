@@ -16,10 +16,6 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
 
-# it's annoying have to see the download of packages from the official
-# mirrors fail with a 404 error.
-RESTRICT="mirror"
-
 DEPEND=">sci-mathematics/pkg4-1.0.0
 	sci-mathematics/pkg3
 	<sci-mathematics/pkg2-1.2.3
