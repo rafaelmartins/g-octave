@@ -34,6 +34,26 @@ except ImportError:
 from .log import Log
 log = Log('g_octave.description_tree')
 
+# from http://wiki.python.org/moin/HowTo/Sorting/
+def cmp_to_key(mycmp):
+    'Convert a cmp= function into a key= function'
+    class K(object):
+        def __init__(self, obj, *args):
+            self.obj = obj
+        def __lt__(self, other):
+            return mycmp(self.obj, other.obj) < 0
+        def __gt__(self, other):
+            return mycmp(self.obj, other.obj) > 0
+        def __eq__(self, other):
+            return mycmp(self.obj, other.obj) == 0
+        def __le__(self, other):
+            return mycmp(self.obj, other.obj) <= 0
+        def __ge__(self, other):
+            return mycmp(self.obj, other.obj) >= 0
+        def __ne__(self, other):
+            return mycmp(self.obj, other.obj) != 0
+    return K
+
 class DescriptionTree(object):
     
     def __init__(self, conf=None, parse_sysreq=True):
@@ -116,7 +136,7 @@ class DescriptionTree(object):
                 if pkg['name'] == pkgname:
                     tmp.append(pkg['version'])
         
-        tmp.sort(vercmp)
+        tmp.sort(key=cmp_to_key(vercmp))
         return tmp
         
     
@@ -129,7 +149,7 @@ class DescriptionTree(object):
     def version_compare(self, versions):
         
         tmp = list(versions[:])
-        tmp.sort(vercmp)
+        tmp.sort(key=cmp_to_key(vercmp))
         return tmp[-1]
 
     

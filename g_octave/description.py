@@ -31,7 +31,7 @@ from contextlib import closing
 
 from .config import Config
 from .exception import ConfigException, DescriptionException
-from .compat import open, py3k
+from .compat import py3k
 
 if py3k:
     import urllib.request as urllib
@@ -67,7 +67,7 @@ class Description(object):
         # current key
         key = None
 
-        with open(file, 'r', encoding='iso-8859-1') as fp:
+        with open(file, 'r') as fp:
             for line in fp:
                 line_splited = line.split(':')
 

@@ -54,15 +54,15 @@ class GitHub:
     def __init__(self, user, repo):
         self.user = user
         self.repo = repo
-        self.api_url = u'http://github.com/api/v2/json'
-        self.url = u'http://github.com'
+        self.api_url = 'http://github.com/api/v2/json'
+        self.url = 'http://github.com'
     
     def need_update(self):
         return not os.path.exists(os.path.join(
             conf.db, 'cache', 'commit_id'
         ))
     
-    def get_commits(self, branch=u'master'):
+    def get_commits(self, branch='master'):
         url = '%s/commits/list/%s/%s/%s/' % (
             self.api_url,
             self.user,
