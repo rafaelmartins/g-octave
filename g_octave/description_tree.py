@@ -116,22 +116,22 @@ class DescriptionTree(object):
                 if pkg['name'] == pkgname:
                     tmp.append(pkg['version'])
         
+        tmp.sort(vercmp)
         return tmp
         
     
     def latest_version(self, pkgname):
         
         tmp = self.package_versions(pkgname)
-        return self.version_compare(tmp)
+        return tmp[-1]
 
 
     def version_compare(self, versions):
         
-        max = '0'
-        for version in versions:
-            if vercmp(max, version) < 0:
-                max = version
-        return max
+        tmp = list(versions[:])
+        print tmp
+        tmp.sort(vercmp)
+        return tmp[-1]
 
     
     def packages(self):
