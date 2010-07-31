@@ -134,6 +134,7 @@ class SfUpdates:
             entry = local_files[tarball_name]
             description = os.path.join(
                 db_dir,
+                'octave-forge',
                 entry['category'],
                 entry['name'],
                 '%s-%s.DESCRIPTION' % (entry['name'], entry['version'])
