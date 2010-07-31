@@ -188,7 +188,7 @@ def main():
         portage.output.nocolor()
     
     from g_octave.config import Config
-    from g_octave.fetch import need_update, check_updates, download_files, check_db_cache
+    from g_octave.fetch import fetch
     
     conf_prefetch = Config(True)
     
@@ -243,9 +243,15 @@ def main():
     
     if has_fetch:
         log.info('You can fetch package databases.')
+        updates = fetch()
+        if updates is None:
+            log.error('Invalid db_mirror value.')
+            out.eerror('Your db_mirror value is invalid. Change it, or leave it empty to use the default.')
+            return os.EX_CONFIG
+        
         
         # checking if we have a package database
-        if need_update() and not options.sync:
+        if updates.need_update() and not options.sync:
             log.error('No package database found.')
             out.eerror('Please run "g-octave --sync" to download a package database!')
             return os.EX_USAGE
@@ -255,20 +261,10 @@ def main():
             log.info('Searching updates ...')
             out.einfo('Searching updates ...')
             
-            files = check_updates()
-            
-            if len(files) > 0:
-                
-                log.info('Updates are available. Downloading ...')
-                out.einfo('Updates are available. Downloading ...')
-                print()
-                download_files(files)
-                print()
-                log.info('Package database update done.')
-                out.einfo('Done.')
-            else:
-                log.info('No updates available.')
-                out.einfo('No updates available.')
+            if not updates.fetch_db():
+                log.info('No updates available')
+                out.einfo('No updates available')
+            updates.extract()
             
             return os.EX_OK
     else:
@@ -277,8 +273,6 @@ def main():
             log.error('You can\'t fetch package databases.')
             out.eerror('"--sync" not available, please install g-octave-9999 if you want this.')
             return os.EX_USAGE
-    
-    check_db_cache()
     
     conf = Config()
     
