@@ -22,12 +22,21 @@ __all__ = [
     're_pkg_atom'
 ]
 
-import re
 import os
+import re
+import shutil
+import tempfile
+
+from contextlib import closing
 
 from .config import Config
-from .exception import ConfigException
-from .compat import open
+from .exception import ConfigException, DescriptionException
+from .compat import open, py3k
+
+if py3k:
+    import urllib.request as urllib
+else:
+    import urllib2 as urllib
 
 from .log import Log
 log = Log('g_octave.description')
@@ -36,9 +45,7 @@ log = Log('g_octave.description')
 re_depends = re.compile(r'^([a-zA-Z0-9-]+) *(\( *([><=]?=?) *([0-9.]+) *\))?')
 
 # we'll use atoms like 'control-1.0.11' to g-octave packages
-re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$')
-
-from .exception import DescriptionException
+re_pkg_atom = re.compile(r'^(.+)-([0-9.]+)$') 
 
 class Description(object):
 
@@ -243,3 +250,24 @@ class Description(object):
         """
 
         return self._desc.get(name, None)
+
+
+class SvnDescription(Description):
+    
+    _url = 'https://octave.svn.sourceforge.net/svnroot/octave/trunk/octave-forge'
+    
+    def __init__(self, category, package):
+        temp_desc = config_file = tempfile.mkstemp()[1]
+        desc_url = '%s/%s/%s/DESCRIPTION' % (
+            self._url,
+            category,
+            package,
+        )
+        try:
+            with closing(urllib.urlopen(desc_url)) as fp:
+                with open(temp_desc, 'wb') as fp_:
+                    shutil.copyfileobj(fp, fp_)
+        except:
+            raise DescriptionException('Failed to fetch DESCRIPTION file from SVN')
+        Description.__init__(self, temp_desc, parse_sysreq=True)
+        os.unlink(temp_desc)

@@ -26,7 +26,7 @@ from .compat import open
 
 has_svn = True
 try:
-    from .svn.description import SvnDescription
+    from .description import SvnDescription
 except:
     has_svn = False
 
