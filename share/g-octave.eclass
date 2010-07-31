@@ -30,6 +30,7 @@ HOMEPAGE="http://www.g-octave.org/"
 SLOT="0"
 LICENSE="GPL-2"
 DESCRIPTION="Based on the ${ECLASS} eclass"
+RESTRICT="mirror"
 
 # defining some paths
 OCT_ROOT="/usr/share/octave"
