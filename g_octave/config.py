@@ -32,7 +32,7 @@ class Config(object):
         'db': '/var/cache/g-octave',
         'overlay': '/usr/local/portage/g-octave',
         'categories': 'main,extra,language',
-        'db_mirror': 'http://soc.dev.gentoo.org/~rafaelmartins/g-octave/db/',
+        'db_mirror': 'github://rafaelmartins/g-octave-db-test',
         'trac_user': '',
         'trac_passwd': '',
         'pkg_cache': '',
@@ -79,13 +79,8 @@ class Config(object):
         
         if not fetch_phase:
             
-            # Cache (JSON)
-            cache_file = os.path.join(_db, 'cache.json')
-            with open(cache_file) as fp:
-                self._cache = json.load(fp)
-            
             # JSON
-            json_file = os.path.join(_db, self._cache['files']['info.json'])
+            json_file = os.path.join(_db, 'info.json')
             with open(json_file) as fp:
                 self._info = json.load(fp)
         
@@ -96,8 +91,6 @@ class Config(object):
             return self._getattr(attr)
         elif attr in self._info:
             return self._info[attr]
-        elif attr == 'cache' and 'files' in self._cache:
-            return self._cache['files']
         else:
             raise ConfigException('Invalid option: %s' % attr)
     

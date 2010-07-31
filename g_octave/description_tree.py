@@ -19,6 +19,8 @@ __all__ = ['DescriptionTree']
 import os
 import re
 
+from portage.versions import vercmp
+
 from .config import Config
 from .description import *
 from .exception import ConfigException, DescriptionTreeException
@@ -58,21 +60,24 @@ class DescriptionTree(object):
                 self.pkg_list[cat] = []
                 pkgs = os.listdir(catdir)
                 for pkg in pkgs:
-                    mypkg = re_pkg_atom.match(pkg)
-                    if mypkg == None:
-                        log.error('Invalid Atom: %s' % mypkg)
-                        raise DescriptionTreeException('Invalid Atom: %s' % mypkg)
-                    try:
-                        blacklist = conf.blacklist
-                    except ConfigException:
-                        # blacklist isn't mandatory
-                        blacklist = []
-                    if mypkg.group(1) not in blacklist or not parse_sysreq:
-                        self.categories[mypkg.group(1)] = cat
-                        self.pkg_list[cat].append({
-                            'name': mypkg.group(1),
-                            'version': mypkg.group(2),
-                        })
+                    pkgdir = os.path.join(catdir, pkg)
+                    for desc_file in os.listdir(pkgdir):
+                        pkg_p = desc_file[:-len('.DESCRIPTION')]
+                        mypkg = re_pkg_atom.match(pkg_p)
+                        if mypkg == None:
+                            log.error('Invalid Atom: %s' % mypkg)
+                            raise DescriptionTreeException('Invalid Atom: %s' % mypkg)
+                        try:
+                            blacklist = conf.blacklist
+                        except ConfigException:
+                            # blacklist isn't mandatory
+                            blacklist = []
+                        if mypkg.group(1) not in blacklist or not parse_sysreq:
+                            self.categories[mypkg.group(1)] = cat
+                            self.pkg_list[cat].append({
+                                'name': mypkg.group(1),
+                                'version': mypkg.group(2),
+                            })
     
     
     def __getitem__(self, key):
@@ -90,8 +95,8 @@ class DescriptionTree(object):
                     pkgfile = os.path.join(
                         self._db_path,
                         cat,
-                        '%s-%s' % (pkg['name'], pkg['version']),
-                        'DESCRIPTION'
+                        pkg['name'],
+                        '%s-%s.DESCRIPTION' % (pkg['name'], pkg['version']),
                     )
                     return Description(
                         pkgfile,
@@ -122,16 +127,11 @@ class DescriptionTree(object):
 
     def version_compare(self, versions):
         
-        max = ('0',)
-        maxstr = None
-        
+        max = '0'
         for version in versions:
-            tmp = tuple(version.split('.'))
-            if tmp > max:
-                max = tmp
-                maxstr = version
-        
-        return maxstr
+            if vercmp(max, version) < 0:
+                max = version
+        return max
 
     
     def packages(self):

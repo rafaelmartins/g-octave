@@ -13,14 +13,9 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
-__all__ = [
-    'need_update',
-    'check_updates',
-    'download_files',
-    'check_db_cache',
-]
+__all__ = ['fetch']
 
 from .config import Config
 conf = Config(True) # fetch phase
@@ -32,151 +27,109 @@ if py3k:
     import urllib.request as urllib
 else:
     import urllib2 as urllib
-import os
+
+import glob
 import json
+import os
 import re
 import shutil
+import subprocess
+import sys
 import tarfile
-import portage.output
 
 from contextlib import closing
 
-out = portage.output.EOutput()
+def clean_db():
+    for f in ['info.json', 'patches', 'octave-forge']:
+        current = os.path.join(conf.db, f)
+        if os.path.isdir(current):
+            shutil.rmtree(current)
+        elif os.path.isfile(current):
+            os.unlink(current)
 
-re_files = {
-    'info.json':              re.compile(r'info-([0-9]{10})-([0-9]+)\.json'),
-    'octave-forge.db.tar.gz': re.compile(r'octave-forge-([0-9]{10})\.db\.tar\.gz'),
-    'patches.tar.gz':         re.compile(r'patches-([0-9]{10})-([0-9]+)\.tar\.gz'),
-}
+class GitHub:
+    
+    re_db_mirror = re.compile(r'github://(?P<user>[^/]+)/(?P<repo>[^/]+)/?')
+    
+    def __init__(self, user, repo):
+        self.user = user
+        self.repo = repo
+        self.api_url = u'http://github.com/api/v2/json'
+        self.url = u'http://github.com'
+    
+    def need_update(self):
+        return not os.path.exists(os.path.join(
+            conf.db, 'cache', 'commit_id'
+        ))
+    
+    def get_commits(self, branch=u'master'):
+        url = '%s/commits/list/%s/%s/%s/' % (
+            self.api_url,
+            self.user,
+            self.repo,
+            branch
+        )
+        commits = {}
+        with closing(urllib.urlopen(url)) as fp:
+            commits = json.load(fp)
+        return commits['commits']
+    
+    def fetch_db(self, branch='master'):
+        cache = os.path.join(conf.db, 'cache')
+        commit_id = os.path.join(cache, 'commit_id')
+        if not os.path.exists(cache):
+            os.makedirs(cache)
+        last_commit = self.get_commits()[0]['id']
+        if os.path.exists(commit_id):
+            with open_(commit_id) as fp:
+                if fp.read().strip() == last_commit:
+                    return False
+        dest = os.path.join(cache, 'octave-forge-%s.tar.gz' % last_commit)
+        return_value = subprocess.call([
+            'wget',
+            '--continue',
+            '--output-document', dest,
+            '%s/%s/%s/tarball/%s/' % (
+                self.url,
+                self.user,
+                self.repo,
+                branch
+            )
+        ])
+        if return_value == os.EX_OK:
+            with open_(os.path.join(cache, 'commit_id'), 'w') as fp:
+                fp.write(last_commit)
+        return True
 
-def need_update():
-    
-    return not os.path.exists(os.path.join(conf.db, 'update.json'))
+    def extract(self):
+        clean_db()
+        cache = os.path.join(conf.db, 'cache')
+        commit_id = os.path.join(cache, 'commit_id')
+        tarball = None
+        if os.path.exists(commit_id):
+            with open_(commit_id) as fp:
+                tarball = os.path.join(
+                    cache,
+                    'octave-forge-%s.tar.gz' % fp.read().strip()
+                )
+        if tarball is not None:
+            if tarfile.is_tarfile(tarball):
+                with closing(tarfile.open(tarball, 'r')) as fp:
+                    fp.extractall(conf.db)
+                dirs = glob.glob('%s/%s-%s*' % (conf.db, self.user, self.repo))
+                if len(dirs) != 1:
+                    print('Failed to extract the tarball.', file=sys.stderr)
+                    return
+                for f in os.listdir(dirs[0]):
+                    shutil.move(os.path.join(dirs[0], f), conf.db)
+                os.rmdir(dirs[0])
 
+__modules__ = [
+    GitHub
+]
 
-def check_updates():
-    
-    try:
-        update = download_with_urllib2(
-            conf.db_mirror + '/update.json',
-            display_info=False
-        ).decode('utf-8')
-    except Exception as error:
-        # if we already have a file, that's ok
-        if need_update():
-            raise FetchException(error)
-        with open_(os.path.join(conf.db, 'update.json')) as fp:
-            update = fp.read()
-    else:
-        with open_(os.path.join(conf.db, 'update.json'), 'w') as fp:
-            fp.write(update)
-    
-    updated_files = json.loads(update)
-    
-    old_files = []
-    
-    for _file in updated_files['files']:
-        if not os.path.exists(os.path.join(conf.db, _file)):
-            old_files.append(_file)
-    
-    return old_files
-
-
-def download_files(files):
-    
-    for _file in files:
-        download_with_urllib2(conf.db_mirror + '/' + _file, conf.db)
-        add_file_to_db_cache(_file)
-        extract(_file)
-    
-
-def download_with_urllib2(url, dest=None, display_info=True):
-    
-    my_file = os.path.basename(url)
-    
-    if display_info:
-        out.ebegin('Downloading: %s' % my_file)
-    try:
-        if dest != None:
-            with closing(urllib.urlopen(url)) as fp:
-                if not os.path.exists(dest):
-                    os.makedirs(dest, 0o755)
-                with open(os.path.join(dest, my_file), 'wb') as fp_:
-                    shutil.copyfileobj(fp, fp_)
-        else:
-            with closing(urllib.urlopen(url)) as fp:
-                if display_info:
-                    out.eend(0)
-                return fp.read()
-    except Exception as error:
-        if display_info:
-            out.eend(1)
-        raise Exception('Failed to fetch the file (%s): %s' % (my_file, error))
-    else:
-        if display_info:
-            out.eend(0)
-
-
-def add_file_to_db_cache(_file):
-    
-    my_file = os.path.join(conf.db, 'cache.json')
-    
-    try:
-        with open_(my_file) as fp:
-            files = json.load(fp)
-    except:
-        files = {'files': {}}
-    
-    for f in re_files:
-        if re_files[f].match(_file) != None:
-            files['files'][f] = _file
-    
-    with open_(my_file, 'w') as fp:
-        json.dump(files, fp)
-
-
-def check_db_cache():
-    
-    try:
-        with open_(os.path.join(conf.db, 'cache.json')) as fp:
-            cache = json.load(fp)
-    except:
-        cache = {'files': {}}
-    
-    try:
-        with open_(os.path.join(conf.db, 'update.json')) as fp:
-            update = json.load(fp)
-    except:
-        my_cache = os.listdir(conf.db)
-        update = {'files': []}
-        for f in my_cache:
-            for s in ['patches-', 'info-', 'octave-forge-']:
-                if f.startswith(s) and f not in update['files']:
-                    update['files'].append(f)
-    
-    for _file in update['files']:
-        if _file not in list(cache['files'].values()):
-            my_file = os.path.join(conf.db, _file)
-            if not os.path.exists(my_file):
-                download_with_wget(conf.db_mirror + '/' + _file, my_file)
-            add_file_to_db_cache(_file)
-            extract(_file)
-
-
-def extract(gz_file, display_info=True):
-     
-    my_file = os.path.join(conf.db, gz_file)
-    
-    if tarfile.is_tarfile(my_file):
-        if display_info:
-            out.ebegin('Extracting: %s' % os.path.basename(gz_file))
-        try:
-            fp = tarfile.open(my_file, 'r:gz')
-            fp.extractall(conf.db)
-        except Exception as error:
-            if display_info:
-                out.eend(1)
-            raise Exception('Failed to extract the file (%s): %s' % (my_file, error))
-        else:
-            if display_info:
-                out.eend(0)
+def fetch():
+    for module in __modules__:
+        match = module.re_db_mirror.match(conf.db_mirror)
+        if match is not None:
+            return module(**match.groupdict())
