@@ -26,4 +26,5 @@ RDEPEND="${DEPEND}
 src_prepare() {
 	epatch "${FILESDIR}/001_language1-0.0.1.patch"
 	epatch "${FILESDIR}/002_language1-0.0.1.patch"
+	g-octave_src_prepare
 }

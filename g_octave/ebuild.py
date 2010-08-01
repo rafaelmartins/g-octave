@@ -188,7 +188,7 @@ RDEPEND="${DEPEND}
                 patch_string += "\n\tepatch \"${FILESDIR}/%s\"" % patch
                 shutil.copy2(os.path.join(patchesdir, patch), filesdir)
             
-            ebuild += "\nsrc_prepare() {%s\n}\n" % patch_string
+            ebuild += "\nsrc_prepare() {%s\n\tg-octave_src_prepare\n}\n" % patch_string
             vars['eutils'] = ' eutils'
             
         with open(ebuild_file, 'w') as fp:
