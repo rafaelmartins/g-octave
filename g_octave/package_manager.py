@@ -22,8 +22,11 @@ import os
 import pwd
 import subprocess
 
+from g_octave.config import Config
 from g_octave.ebuild import Ebuild
 from g_octave.compat import open
+
+conf = Config(True)
 
 class Base:
     
@@ -69,6 +72,7 @@ class Portage(Base):
     ]
     
     def __init__(self, ask=False, verbose=False, pretend=False, nocolor=False):
+        self.overlay_bootstrap()
         self._fullcommand = [self._client]
         ask and self._fullcommand.append('--ask')
         verbose and self._fullcommand.append('--verbose')
@@ -112,6 +116,12 @@ class Portage(Base):
             return False
         return True
     
+    def overlay_bootstrap(self):
+        overlay = conf.overlay
+        portdir_overlay = os.environ.get('PORTDIR_OVERLAY', '')
+        if overlay not in portdir_overlay:
+            os.environ['PORTDIR_OVERLAY'] = (portdir_overlay + ' ' + overlay).strip()
+
 
 class Pkgcore(Base):
     

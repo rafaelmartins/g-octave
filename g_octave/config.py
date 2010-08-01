@@ -70,8 +70,6 @@ class Config(object):
         for dir in [_db, _overlay]:
             if not os.path.exists(dir) and create_dirs:
                 os.makedirs(dir, 0o755)
-                
-        self.overlay_bootstrap()
         
         self._cache = {}
         self._info = {}
@@ -100,13 +98,3 @@ class Config(object):
             return self._config.get(self._section_name, attr)
         return from_env
     
-    
-    def overlay_bootstrap(self):
-        pm = self._getattr('package_manager')
-        overlay = self._getattr('overlay')
-        if pm == 'portage':
-            # just insert our overlay dir to the begin of PORTDIR-overlay
-            os.environ['PORTDIR_OVERLAY'] = overlay
-            portdir = os.environ.get('PORTDIR_OVERLAY', '')
-            if portdir != '':
-                os.environ['PORTDIR_OVERLAY'] += ' ' + portdir
