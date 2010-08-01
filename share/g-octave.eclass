@@ -53,7 +53,7 @@ g-octave_src_prepare() {
 		cd "${S}"/src && ./autogen.sh || die 'failed to run autogen.sh'
 	fi
 	if [ -e ${S}/src/Makefile ]; then
-		sed -i 's/-s//g' ${S}/src/Makefile || die 'sed failed.'
+		sed -i 's/ -s //g' ${S}/src/Makefile || die 'sed failed.'
 	fi
 }
 
