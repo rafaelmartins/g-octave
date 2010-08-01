@@ -52,7 +52,9 @@ g-octave_src_prepare() {
 	if [ -e "${S}"/src/autogen.sh ]; then
 		cd "${S}"/src && ./autogen.sh || die 'failed to run autogen.sh'
 	fi
-	sed -i 's/-s//g' ${S}/src/Makefile || die 'sed failed.'
+	if [ -e ${S}/src/Makefile ]; then
+		sed -i 's/-s//g' ${S}/src/Makefile || die 'sed failed.'
+	fi
 }
 
 g-octave_src_install() {
