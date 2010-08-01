@@ -24,13 +24,6 @@ from portage.versions import vercmp
 from .config import Config
 from .description import *
 from .exception import ConfigException, DescriptionTreeException
-
-has_svn = True
-try:
-    from .svn import *
-except ImportError:
-    has_svn = False
-
 from .log import Log
 log = Log('g_octave.description_tree')
 
@@ -174,11 +167,24 @@ class DescriptionTree(object):
             for pkg in self.pkg_list[cat]:
                 if re_term.search(pkg['name']) is not None:
                     if pkg['name'] not in packages:
-                        packages[pkg['name']] = [pkg['version']]
-                        if has_svn:
-                            packages[pkg['name']].append('9999')
+                        packages[pkg['name']] = [pkg['version'], '9999']
                     else:
                         packages[pkg['name']].insert(-1, pkg['version'])
+                    packages[pkg['name']].sort(key=cmp_to_key(vercmp))
         
         return packages
 
+    def list(self):
+        
+        packages = {}
+        
+        for cat in self.pkg_list:
+            packages[cat] = {}
+            for pkg in self.pkg_list[cat]:
+                if pkg['name'] not in packages[cat]:
+                    packages[cat][pkg['name']] = [pkg['version'], '9999']
+                else:
+                    packages[cat][pkg['name']].insert(-1, pkg['version'])
+                    packages[cat][pkg['name']].sort(key=cmp_to_key(vercmp))
+        
+        return packages

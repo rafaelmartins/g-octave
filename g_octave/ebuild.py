@@ -24,12 +24,6 @@ from .description_tree import *
 from .exception import EbuildException
 from .compat import open
 
-has_svn = True
-try:
-    from .description import SvnDescription
-except:
-    has_svn = False
-
 import os
 import portage
 import re
