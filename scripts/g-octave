@@ -284,12 +284,25 @@ def main():
     if options.list:
         log.info('Listing available packages.')
         tree = DescriptionTree()
-        print(portage.output.blue('Available packages:\n'))
-        for category in tree.pkg_list:
-            print(portage.output.white('%s:') % category)
-            for pkg in tree.pkg_list[category]:
-                print('\t%s-%s' % (pkg['name'], pkg['version']))
+        print(portage.output.blue('Available packages:'))
+        print()
+        packages = tree.list()
+        for category in packages:
+            print(
+                portage.output.blue('Category:'),
+                portage.output.white(category)
+            )
             print()
+            for pkg in packages[category]:
+                print(
+                    portage.output.green('    Package:'),
+                    portage.output.white(pkg)
+                )
+                print(
+                    portage.output.green('    Available versions:'),
+                    portage.output.red(', '.join(packages[category][pkg]))
+                )
+                print()
         return os.EX_OK
     elif options.update:
         pass
