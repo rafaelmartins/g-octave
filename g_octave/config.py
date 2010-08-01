@@ -30,12 +30,11 @@ class Config(object):
     
     _defaults = {
         'db': '/var/cache/g-octave',
-        'overlay': '/usr/local/portage/g-octave',
+        'overlay': '/var/lib/g-octave',
         'categories': 'main,extra,language',
         'db_mirror': 'github://rafaelmartins/g-octave-db-test',
         'trac_user': '',
         'trac_passwd': '',
-        'pkg_cache': '',
         'log_level': '',
         'log_file': '/var/log/g-octave.log',
         'package_manager': 'portage',

@@ -39,12 +39,11 @@ class TestConfig(unittest.TestCase):
     
     def test_empty_config_attributes(self):
         self.assertEqual(self._empty_cfg.db, '/var/cache/g-octave')
-        self.assertEqual(self._empty_cfg.overlay, '/usr/local/portage/g-octave')
+        self.assertEqual(self._empty_cfg.overlay, '/var/lib/g-octave')
         self.assertEqual(self._empty_cfg.categories, 'main,extra,language')
         self.assertEqual(self._empty_cfg.db_mirror, 'github://rafaelmartins/g-octave-db-test')
         self.assertEqual(self._empty_cfg.trac_user, '')
         self.assertEqual(self._empty_cfg.trac_passwd, '')
-        self.assertEqual(self._empty_cfg.pkg_cache, '')
         self.assertEqual(self._empty_cfg.log_level, '')
         self.assertEqual(self._empty_cfg.log_file, '/var/log/g-octave.log')
         self.assertEqual(self._empty_cfg.package_manager, 'portage')
