@@ -99,7 +99,15 @@ def main():
         action = 'store_true',
         dest = 'verbose',
         default = False,
-        help = 'Portage makes a lot of noise.'
+        help = 'package manager\'s makes a lot of noise.'
+    )
+    
+    parser.add_option(
+        '-1', '--oneshot',
+        action = 'store_true',
+        dest = 'oneshot',
+        default = False,
+        help = 'do not add the packages to the world file for later updating.'
     )
     
     parser.add_option(
@@ -205,13 +213,13 @@ def main():
     
     if conf_prefetch.package_manager == 'portage':
         log.info('Your package manager is: Portage')
-        pkg_manager = Portage(options.ask, options.verbose, options.pretend, not options.colors)
+        pkg_manager = Portage(options.ask, options.verbose, options.pretend, options.oneshot, not options.colors)
     elif conf_prefetch.package_manager == 'pkgcore':
         log.info('Your package manager is: Pkgcore')
-        pkg_manager = Pkgcore(options.ask, options.verbose, options.pretend, not options.colors)
+        pkg_manager = Pkgcore(options.ask, options.verbose, options.pretend, options.oneshot, not options.colors)
     elif conf_prefetch.package_manager == 'paludis':
         log.info('Your package manager is: Paludis')
-        pkg_manager = Paludis(options.ask, options.verbose, options.pretend, not options.colors)
+        pkg_manager = Paludis(options.ask, options.verbose, options.pretend, options.oneshot, not options.colors)
     else:
         log.error('Invalid package manager: %s' % conf_prefetch.package_manager)
         out.eerror('Invalid package manager: %s' % conf_prefetch.package_manager)

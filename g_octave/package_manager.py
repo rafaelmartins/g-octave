@@ -71,12 +71,13 @@ class Portage(Base):
         '# emerge -av --depclean',
     ]
     
-    def __init__(self, ask=False, verbose=False, pretend=False, nocolor=False):
+    def __init__(self, ask=False, verbose=False, pretend=False, oneshot=False, nocolor=False):
         self.overlay_bootstrap()
         self._fullcommand = [self._client]
         ask and self._fullcommand.append('--ask')
         verbose and self._fullcommand.append('--verbose')
         pretend and self._fullcommand.append('--pretend')
+        oneshot and self._fullcommand.append('--oneshot')
         nocolor and self._fullcommand.append('--color=n')
     
     def run_command(self, command):
@@ -133,11 +134,12 @@ class Pkgcore(Base):
         '# pmerge -av --clean',
     ]
     
-    def __init__(self, ask=False, verbose=False, pretend=False, nocolor=False):
+    def __init__(self, ask=False, verbose=False, pretend=False, oneshot=False, nocolor=False):
         self._fullcommand = [self._client]
         ask and self._fullcommand.append('--ask')
         verbose and self._fullcommand.append('--verbose')
         pretend and self._fullcommand.append('--pretend')
+        oneshot and self._fullcommand.append('--oneshot')
         nocolor and self._fullcommand.append('--nocolor')
     
     def run_command(self, command):
@@ -186,8 +188,9 @@ class Paludis(Base):
         '# paludis --pretend --uninstall-unused',
     ]
     
-    def __init__(self, ask=False, verbose=False, pretend=False, nocolor=False):
+    def __init__(self, ask=False, verbose=False, pretend=False, oneshot=False, nocolor=False):
         self._fullcommand = [self._client]
+        self._oneshot = oneshot
         # paludis doesn't supports '--ask'
         if verbose:
             self._fullcommand += [
@@ -196,18 +199,21 @@ class Paludis(Base):
                 '--show-package-descriptions', 'all',
             ]
         pretend and self._fullcommand.append('--pretend')
+        oneshot and self._fullcommand.append('--preserve-world')
         nocolor and self._fullcommand.append('--no-color')
     
     def run_command(self, command):
         return subprocess.call(self._fullcommand + command)
     
     def install_package(self, pkgatom, catpkg):
-        return self.run_command([
+        cmd = [
             '--install',
-            '--dl-upgrade', 'as-needed',
-            '--add-to-world-spec', catpkg,
-            pkgatom
-        ])
+            '--dl-upgrade', 'as-needed'
+        ]
+        if not self._oneshot:
+            cmd += ['--add-to-world-spec', catpkg]
+        cmd.append(pkgatom)
+        return self.run_command(cmd)
 
     def uninstall_package(self, pkgatom, catpkg):
         return self.run_command(['--uninstall', pkgatom])
