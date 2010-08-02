@@ -136,14 +136,14 @@ class DescriptionTree(object):
     def latest_version(self, pkgname):
         
         tmp = self.package_versions(pkgname)
-        return tmp[-1]
+        return (len(tmp) > 0) and tmp[-1] or None
 
 
     def version_compare(self, versions):
         
         tmp = list(versions[:])
         tmp.sort(key=cmp_to_key(vercmp))
-        return tmp[-1]
+        return (len(tmp) > 0) and tmp[-1] or None
 
     
     def packages(self):
