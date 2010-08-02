@@ -24,6 +24,7 @@ from .description_tree import *
 from .exception import EbuildException
 from .compat import open
 
+import getpass
 import os
 import portage
 import re
@@ -116,6 +117,7 @@ class Ebuild:
         
         ebuild_path = os.path.join(self._config.overlay, 'g-octave', self.pkgname)
         ebuild_file = os.path.join(ebuild_path, '%s-%s.ebuild' % (self.pkgname, self.version))
+        metadata_file = os.path.join(ebuild_path, 'metadata.xml')
         
         if not os.path.exists(ebuild_path):
             os.makedirs(ebuild_path, 0o755)
@@ -142,6 +144,20 @@ IUSE=""
 DEPEND="%(depend)s"
 RDEPEND="${DEPEND}
 \t%(rdepend)s"
+"""
+        
+        metadata = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+\t<herd>no-herd</herd>
+\t<maintainer>
+\t\t<email>%(username)s@%(hostname)s</email>
+\t</maintainer>
+\t<longdescription lang="en">
+\t\tThe files on this directory was created by g-octave.
+\t</longdescription>
+</pkgmetadata>
 """
         
         description = len(self.__desc.description) > 70 and \
@@ -191,6 +207,17 @@ RDEPEND="${DEPEND}
             
         with open(ebuild_file, 'w') as fp:
             fp.write(ebuild % vars)
+        
+        if not os.path.exists(metadata_file):
+            try:
+                hostname = os.uname()[1]
+            except:
+                hostname = 'localhost'
+            with open(metadata_file, 'w') as fp:
+                fp.write(metadata % {
+                    'username': getpass.getuser(),
+                    'hostname': hostname,
+                })
         
         if manifest:
             proc = self.__pkg_manager.create_manifest(ebuild_file)
