@@ -67,7 +67,15 @@ def main():
         action = 'store_true',
         dest = 'list',
         default = False,
-        help = 'show a list of packages available to install and exit'
+        help = 'show a list of packages available to install (separed by categories) and exit'
+    )
+    
+    parser.add_option(
+        '--list-raw',
+        action = 'store_true',
+        dest = 'list_raw',
+        default = False,
+        help = 'show a list of packages available to install (a package per line, without colors) and exit'
     )
     
     parser.add_option(
@@ -289,7 +297,13 @@ def main():
     from g_octave.ebuild import Ebuild, EbuildException
     from g_octave.overlay import create_overlay
 
-    if options.list:
+    if options.list_raw:
+        log.info('Raw list of available packages.')
+        tree = DescriptionTree()
+        for pkg in tree.packages():
+            print(pkg)
+        return os.EX_OK
+    elif options.list:
         log.info('Listing available packages.')
         tree = DescriptionTree()
         print(portage.output.blue('Available packages:'))

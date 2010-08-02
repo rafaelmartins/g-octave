@@ -154,6 +154,7 @@ class DescriptionTree(object):
             for pkg in self.pkg_list[cat]:
                 packages.append(pkg['name'] + '-' + pkg['version'])
         
+        packages.sort()
         return packages
 
     
