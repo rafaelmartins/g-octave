@@ -41,7 +41,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(self._empty_cfg.db, '/var/cache/g-octave')
         self.assertEqual(self._empty_cfg.overlay, '/var/lib/g-octave')
         self.assertEqual(self._empty_cfg.categories, 'main,extra,language')
-        self.assertEqual(self._empty_cfg.db_mirror, 'github://rafaelmartins/g-octave-db-test')
+        self.assertEqual(self._empty_cfg.db_mirror, 'github://rafaelmartins/g-octave-db')
         self.assertEqual(self._empty_cfg.trac_user, '')
         self.assertEqual(self._empty_cfg.trac_passwd, '')
         self.assertEqual(self._empty_cfg.log_level, '')

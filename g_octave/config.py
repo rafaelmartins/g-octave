@@ -32,7 +32,7 @@ class Config(object):
         'db': '/var/cache/g-octave',
         'overlay': '/var/lib/g-octave',
         'categories': 'main,extra,language',
-        'db_mirror': 'github://rafaelmartins/g-octave-db-test',
+        'db_mirror': 'github://rafaelmartins/g-octave-db',
         'trac_user': '',
         'trac_passwd': '',
         'log_level': '',
