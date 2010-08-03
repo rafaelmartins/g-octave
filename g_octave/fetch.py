@@ -118,11 +118,13 @@ class GitHub:
                     fp.extractall(conf.db)
                 dirs = glob.glob('%s/%s-%s*' % (conf.db, self.user, self.repo))
                 if len(dirs) != 1:
-                    print('Failed to extract the tarball.', file=sys.stderr)
+                    raise FetchException('Failed to extract the tarball.')
                     return
                 for f in os.listdir(dirs[0]):
                     shutil.move(os.path.join(dirs[0], f), conf.db)
                 os.rmdir(dirs[0])
+
+# TODO: Implement gitweb support
 
 __modules__ = [
     GitHub

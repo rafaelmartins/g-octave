@@ -12,6 +12,8 @@
 
 from __future__ import print_function, absolute_import
 
+__all__ = ['Log']
+
 import logging
 import sys
 
