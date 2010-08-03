@@ -11,7 +11,7 @@ inherit g-octave
 DESCRIPTION="This is the Main 2 description"
 HOMEPAGE="http://main2.org"
 
-LICENSE="|| ( GPL-2 GPL-3 LGPL BSD GFDL )"
+LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""

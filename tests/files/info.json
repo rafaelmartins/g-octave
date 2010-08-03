@@ -8,5 +8,8 @@
         "pkg6": "sci-mathematics/pkg6",
         "pkg7": "sci-mathematics/pkg7",
         "pkg8": "sci-mathematics/pkg8"
+    },
+    "licenses": {
+        "GPL-3": ""
     }
 }

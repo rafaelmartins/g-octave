@@ -147,7 +147,10 @@ class Description(object):
             
             # license
             if key == 'license':
-                new_license = self._config.licenses.get(self._desc['license'])
+                try:
+                    new_license = self._config.licenses.get(self._desc['license'])
+                except:
+                    new_license = ''
                 if new_license not in [None, '']:
                     self._desc['license_gentoo'] = new_license
                 else:

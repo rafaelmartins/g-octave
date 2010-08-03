@@ -11,7 +11,7 @@ inherit g-octave eutils
 DESCRIPTION="This is the Main 1 description"
 HOMEPAGE="http://main1.org"
 
-LICENSE="|| ( GPL-2 GPL-3 LGPL BSD GFDL )"
+LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
