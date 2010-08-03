@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-    requirements.py
-    ~~~~~~~~~~~~~~~
+    manage_info.py
+    ~~~~~~~~~~~~~~
 
-    a simple script that creates a JSON file with the list of dependencies
+    a simple script that manage a JSON file with the list of dependencies
     that are not from octave-forge package (SystemRequirements and
-    BuildRequires). It writes the JSON content to the stdout.
+    BuildRequires), and the list of license names on the portage tree.
 
     :copyright: (c) 2010 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
