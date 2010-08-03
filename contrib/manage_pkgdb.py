@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import time
 import urllib
 
 from contextlib import closing
@@ -46,12 +47,29 @@ class SfUpdates:
     svnroot_url = u'https://octave.svn.sourceforge.net/svnroot/octave/trunk/octave-forge/'
     categories = [u'main', u'extra', u'language', u'nonfree']
     
-    def __init__(self, local_dir):
+    _timestamp = None
+    
+    def __init__(self, local_dir, repo_dir):
         self._local_dir = local_dir
+        self._repo_dir = repo_dir
         self.feed = feedparser.parse(self.feed_url)
         if self.feed.bozo == 1:
             raise self.feed.bozo_exception
         self.entries = self.feed.entries
+
+    def _save_timestamp(self):
+        try:
+            with open(os.path.join(self._repo_dir, 'timestamp'), 'w') as fp:
+                fp.write(str(self._timestamp))
+        except:
+            pass
+    
+    def _load_timestamp(self):
+        try:
+            with open(os.path.join(self._repo_dir, 'timestamp')) as fp:
+                return int(fp.read().strip())
+        except:
+            return 0
 
     def remote_files(self):
         # tarball name: {
@@ -60,7 +78,15 @@ class SfUpdates:
         #   download url
         # }
         entries = {}
+        timestamp = self._load_timestamp()
+        if self._timestamp is None:
+            self._timestamp = timestamp
         for entry in self.entries:
+            entry_timestamp = int(time.mktime(entry.updated_parsed))
+            if entry_timestamp <= timestamp:
+                break
+            if entry_timestamp > self._timestamp:
+                self._timestamp = entry_timestamp
             tarball = re_tarball.search(entry.summary)
             if tarball is not None:
                 entries[tarball.group(1)] = {
@@ -99,9 +125,11 @@ class SfUpdates:
     def check_updates(self):
         local_files = self.local_files()
         remote_files = self.remote_files()
+        updates = {}
         for remote in remote_files:
             if remote not in local_files:
                 print('update found: %s; ' % remote, end='')
+                updates[remote] = local_files[remote]
                 category = self.guess_category(remote_files[remote]['name'])
                 if category is None:
                     remote_name = remote_files[remote]['name'].lower()
@@ -114,6 +142,7 @@ class SfUpdates:
                 print('category: %s' % category)
                 if self.download(remote, remote_files[remote]) != os.EX_OK:
                     raise RuntimeError('Failed to download: %s' % remote)
+        return updates
     
     def download(self, tarball_name, entry):
         return subprocess.call([
@@ -127,10 +156,9 @@ class SfUpdates:
             entry['url']
         ])
 
-    def update_package_database(self, db_dir):
+    def update_package_database(self, local_files, db_dir):
         if not os.path.exists(db_dir):
             os.makedirs(db_dir)
-        local_files = self.local_files()
         for tarball_name in local_files:
             entry = local_files[tarball_name]
             description = os.path.join(
@@ -160,6 +188,7 @@ class SfUpdates:
                     with closing(src_tar.extractfile(f)) as fp_tar:
                         with open(description, 'w') as fp:
                             shutil.copyfileobj(fp_tar, fp)
+        self._save_timestamp()
 
 
 def main(argv):
@@ -198,11 +227,11 @@ def main(argv):
         return os.EX_USAGE
     
     print('* Fetching and parsing the Octave-Forge RSS feed ...')
-    sf = SfUpdates(args[0])
+    sf = SfUpdates(args[0], args[1])
     print('* Looking for updates ...')
-    sf.check_updates()
+    remote_files = sf.check_updates()
     print('* Trying to update the package database ...')
-    sf.update_package_database(args[1])
+    sf.update_package_database(remote_files, args[1])
     if options.commit or options.push:
         print('* Trying to commit the changes to the package database Git repository ...')
         git = Git(args[1])
