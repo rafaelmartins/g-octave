@@ -136,7 +136,7 @@ inherit g-octave%(eutils)s
 DESCRIPTION="%(description)s"
 HOMEPAGE="%(url)s"
 
-LICENSE="|| ( GPL-2 GPL-3 LGPL BSD GFDL )"
+LICENSE="%(license)s"
 SLOT="0"
 KEYWORDS="%(keywords)s"
 IUSE=""
@@ -172,6 +172,7 @@ RDEPEND="${DEPEND}
             'eutils': '',
             'description': description,
             'url': self.__desc.url,
+            'license': self.__desc.license_gentoo,
             'keywords': self.__keywords(accept_keywords),
             'category': category,
             'depend': '',

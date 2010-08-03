@@ -128,8 +128,11 @@ class Description(object):
 
         # add the 'self_depends' key
         self._desc['self_depends'] = list()
+        
+        # add the 'gentoo_license' key
+        self._desc['license_gentoo'] = ''
 
-        # parse the dependencies
+        # parse the dependencies and license
         for key in self._desc:
 
             # depends
@@ -141,6 +144,14 @@ class Description(object):
             # requirements
             if key in ('systemrequirements', 'buildrequires') and parse_sysreq:
                 self._desc[key] = self._parse_depends(self._desc[key])
+            
+            # license
+            if key == 'license':
+                new_license = self._config.licenses.get(self._desc['license'])
+                if new_license not in [None, '']:
+                    self._desc['license_gentoo'] = new_license
+                else:
+                    self._desc['license_gentoo'] = self._desc['license']
 
 
     def _parse_depends(self, depends):
