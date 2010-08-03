@@ -45,6 +45,9 @@ def main(argv):
 
     # identifier => list of dependencies
     dependencies = dict()
+    
+    # list of licenses
+    licenses = list()
 
     for pkg in desc_tree.packages():
         try:
@@ -52,7 +55,10 @@ def main(argv):
         except exception.DescriptionTreeException as err:
             print('DescriptionTree error: %s' % err, file=sys.stderr)
             return 1
-
+        
+        if desc.license not in licenses:
+            licenses.append(desc.license)
+        
         deps = []
 
         if desc.systemrequirements is not None:
@@ -70,15 +76,19 @@ def main(argv):
                     dependencies[my_match] = [my_dep]
                 else:
                     dependencies[my_match].append(my_dep)
-
-    json_dict = dict(dependencies=dict())
+    
+    json_dict = dict(
+        dependencies = dict(),
+        licenses = dict(),
+    )
 
     try:
         with open(argv[1], 'r') as fp:
             json_dict = json.load(fp)
     except:
         pass
-
+    
+    print('***** Dependencies *****\n')
     for dep in dependencies:
         s.execute(dep)
         print(dep)
@@ -107,6 +117,33 @@ def main(argv):
                 for dep_name in dependencies[dep]:
                     json_dict['dependencies'][dep_name] = select
         print('Selected: %s' % json_dict['dependencies'][dependencies[dep][0]])
+        print()
+    
+    print('***** Licenses *****\n')
+    for lic in licenses:
+        if lic in json_dict['licenses']:
+            if py3k:
+                temp = input(
+                    '%s [%s]: ' % (
+                        lic,
+                        json_dict['licenses'][lic],
+                    )
+                )
+            else:
+                temp = raw_input(
+                    '%s [%s]: ' % (
+                        lic,
+                        json_dict['licenses'][lic],
+                    )
+                )
+            if temp != '':
+                json_dict['licenses'][lic] = temp
+        else:
+            if py3k:
+                json_dict['licenses'][lic] = input('%s: ' % lic)
+            else:
+                json_dict['licenses'][lic] = raw_input('%s: ' % lic)
+        print('Selected: %s' % json_dict['licenses'][lic])
         print()
 
     try:
