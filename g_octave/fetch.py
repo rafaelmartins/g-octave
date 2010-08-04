@@ -40,7 +40,7 @@ import tarfile
 from contextlib import closing
 
 def clean_db():
-    for f in ['info.json', 'patches', 'octave-forge']:
+    for f in ['timestamp', 'info.json', 'patches', 'octave-forge']:
         current = os.path.join(conf.db, f)
         if os.path.isdir(current):
             shutil.rmtree(current)
