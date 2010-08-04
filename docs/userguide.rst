@@ -1,8 +1,7 @@
 User Guide
 ==========
 
-This is a small user guide for g-Octave, with some instructions to the
-end user.
+This is an user guide with some instructions to the end-user.
 
 
 Installing g-Octave
@@ -14,15 +13,15 @@ To install it with ``layman`` and ``git`` installed, type::
 
     # layman -a science
 
-
 After you have the overlay installed, you can install the package, using: ::
     
     # emerge -av app-portage/g-octave
 
-We have 2 ebuilds, one for the latest stable release (for ``~x86`` and ``~amd64``)
-and one live ebuild, that installs g-Octave from the mercurial repository
-(without keywords). If you want to use the live ebuild, you need to unmask
-this ebuild, adding the line below to ``/etc/portage/package.keywords``::
+We have 2 ebuilds, one for with latest stable release (for ``~x86`` and
+``~amd64``) and one live ebuild, that installs g-Octave from the Git
+repository (without keywords). If you want to use the live ebuild, you
+need to unmask them adding the line below to your
+``/etc/portage/package.keywords``::
 
     app-portage/g-octave **
 
@@ -46,7 +45,18 @@ installed, of course)::
 
 The release tarballs can be found here:
 
-http://soc.dev.gentoo.org/~rafaelmartins/g-octave/releases/
+http://www.g-octave.org/releases/
+
+
+USE flags
+~~~~~~~~~
+
+g-Octave have 2 USE flags:
+
+- ``doc``: Install this documentation. Depends on ``dev-python/sphinx``.
+- ``sync``: Enable the ``--sync`` command-line option. Available only
+  on the ebuilds of stable releases. The live ebuild will enable this
+  feature by default.
 
 
 Configuring g-Octave
@@ -71,8 +81,8 @@ Using environment variables
 
 All the options from the configuration file can be overrided with environment
 variables. The environment variable name starts with ``GOCTAVE_`` and
-ends with the option name in uppercase. e.g. ``GOCTAVE_OVERLAY`` will
-override the option ``overlay`` from the config file.
+ends with the option name in uppercase. for example, ``GOCTAVE_OVERLAY``
+will override the option ``overlay`` from the config file.
 
 Usage example::
     
@@ -97,8 +107,9 @@ Syncronizing the package database
 ---------------------------------
 
 Currently g-Octave depends on an external package database, in order to
-create the ebuilds for the packages. You'll need to fetch this database
-in the first time that you run g-Octave: ::
+create the ebuilds for the packages (only if you installed g-Octave with
+``USE="-sync"``). You'll need to fetch this database in the first time
+that you run g-Octave (and whenever you want to updates): ::
     
     # g-octave --sync
 
@@ -112,21 +123,21 @@ g-octave can use all the 3 package managers available on Gentoo Linux:
 You just need to setup the option ``package_manager`` with the lowercase
 name of the package manager: ``portage``, ``paludis``, ``pkgcore``.
 
-If you're using Paludis or Pkgcore, you'll need to configure the overlay
+If you're using **Paludis** or **Pkgcore**, you'll need to configure the overlay
 in your package manager configuration files. Please check the documentation
 of your package manager:
 
 - Paludis: http://paludis.pioto.org/
 - Pkgcore: http://www.pkgcore.org/
 
-Portage works out of the box.
+**Portage** works out of the box.
 
 
 Installing packages
 -------------------
 
-From the stable source tarballs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+From the upstream source tarballs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can list all the available packages using this command: ::
     
@@ -155,6 +166,9 @@ of packages:
     Ask before install the package
 ``-p`` or ``--pretend``
     Only pretend the installation of the package
+``-1`` or ``--oneshot``
+    Do not add the packages to the world file for later updating.
+
 
 You can get some information about the package using this command: ::
 
@@ -168,20 +182,22 @@ or ::
 From the octave-forge SVN repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you want to test some new feature, or to use the new version of the
-packages ever, you'll like to install your packages directly from the
+If you want to test some new feature or to always use the newest version
+of the packages, you'll like to install the packages directly from the
 SVN repository.
 
-To install a package from SVN, type::
+To install a package from SVN, you'll need to configure g-Octave, changing
+the value of the variable ``use_scm`` on the file ``/etc/g-octave.cfg``
+to ``true``. After that, type::
     
-    # g-octave packagename-9999
+    # g-octave packagename
 
-All the common g-octave options for install packages are allowed, and
-the special version ``9999`` says to g-octave that you want to use the
-SVN version.
+If you only want to install a single package, you can use the command-line
+option ``--scm``.
 
-In order to be able to install packages from svn you need to install
-g-octave with the USE flag ``svn`` enabled.
+If you enabled the installation from SVN on the configuration file and
+wants to install a stable version, you can use the command-line option
+``--no-scm``.
 
 
 Updating packages
@@ -231,3 +247,21 @@ or ::
     # g-octave -C packagename-version
 
 The options ``--ask`` and ``--verbose`` are also supported.
+
+
+Troubleshooting
+---------------
+
+Some times the generated ebuilds can be broken for some reason. To fix
+this you can use the command-line option ``--force``, that will rebuild
+the ebuild or the command-line option ``--force-all``, that rebuild the
+entire overlay.
+
+If you got some problem with corrupted sources, please remove the tarball
+from the ``${DISTDIR}`` and run::
+
+    # g-octave --force packagename
+
+If you still have problems, please fill a ticket on our `bug tracker`_
+
+.. _`bug tracker`: http://www.g-octave.org/trac/newticket

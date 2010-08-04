@@ -2,13 +2,13 @@ Tinderbox
 =========
 
 g-Octave provides a script to run build tests for all the octave-forge
-packages. This script is not intended to be used by end-users, only
-developers.
+packages automatically and report issues to the `bug tracker`_.
 
-.. topic:: Warning!
+.. _`bug tracker`: http://www.g-octave.org/trac/report/9
 
-    The automated bug reports are broken right now, because the Trac instance
-    is currently offline and being moved to the Gentoo Linux infrastructure.
+.. warning::
+
+    This script is not intended to be used by end-users, only developers.
 
 
 Creating the environment
@@ -37,7 +37,9 @@ You may also need some files from ``/etc/portage``
 Mounting filesystems/directories
 --------------------------------
 
-You should mount your current ``/usr/portage`` inside the chroot dir::
+You should mount your current ``${PORTDIR}`` (e.g. ``/usr/portage``)
+inside the chroot dir (the script will force the use of Portage to build
+the packages)::
 
     # mkdir /home/user/g-octave/usr/portage
     # mount -o bind /usr/portage /home/user/g-octave/usr/portage
@@ -65,54 +67,24 @@ Updating the packages and installing the dependencies
 ::
 
     # emerge -avuDN system
-    # emerge -av mercurial pycurl
-
-
-Getting the source code
------------------------
-
-Using the Git repository::
-    
-    # cd
-    # git clone git://git.overlays.gentoo.org/proj/g-octave.git
-    # cd g-octave
-
-
-Using the source tarball::
-    
-    # cd
-    # wget http://files.rafaelmartins.eng.br/distfiles/g-octave/g-octave-<VERSION>.tar.gz
-    # tar xvzf g-octave-<VERSION>.tar.gz
-    # cd g-octave-<VERSION>
+    # USE="git" emerge -av layman
+    # layman -a science
+    # FEATURES="test" USE="sync" emerge -av g-octave
 
 
 Configuring g-Octave
 --------------------
 
-::
-
-    # cp etc/g-octave.cfg /etc
-
-.. topic:: Warning!
-
-    This is currently broken!
-
-You should edit the file ``/etc/g-octave.cfg`` and append the lines below
-(with your data)::
+You should `create an account`_ on the `g-Octave project page`_, edit the
+file ``/etc/g-octave.cfg`` and append the lines below (with your data)::
 
     trac_user = username
     trac_passwd = password
 
-For this you'll need to register_ at the `g-Octave project page`_, in order
-to be able to create new tickets and attachments.
+.. _`create an account`: http://www.g-octave.org/trac/register
+.. _`g-Octave project page`: http://www.g-octave.org/trac/
 
-.. _register: http://g-octave.rafaelmartins.eng.br/register
-.. _`g-Octave project page`: http://g-octave.rafaelmartins.eng.br/
-
-Now you need to add the g-octave overlay to the Portage configuration file
-``/etc/make.conf`` (use the same overlay path from ``/etc/g-octave.cfg``)::
-
-    # echo 'PORTDIR_OVERLAY="/usr/local/portage/g-octave ${PORTDIR_OVERLAY}" >> /etc/make.conf
+Now you're done with the configuration.
 
 
 Running the script
@@ -120,22 +92,23 @@ Running the script
 
 Update the package database::
 
-    # ./scripts/g-octave --sync
+    # g-octave --sync
 
-Run the test suites::
-
-    # ./scripts/run_tests.py
-
-Make sure that you have activated all the ``USE`` flags needed by octave::
+Make sure that you have activated all the ``USE`` flags needed on octave::
 
     # emerge -vp octave
 
-Run the script::
-    
-    # ./scripts/tinderbox.py
+And build it first::
 
-At the end, the script should uninstall all the octave-forge packages
-directly installed. If you want to remove the dependencies, run::
+    # emerge octave
+
+Now that you already have the main dependency of the packages installed
+and g-Octave configured, you can run the script::
+    
+    # /usr/share/g-octave/contrib/manage_pkgdb.py
+
+The packages are installed with the ``--oneshot`` option. To remove them
+with the dependencies, run::
 
     # emerge -av --depclean
 
