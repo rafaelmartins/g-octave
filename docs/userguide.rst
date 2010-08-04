@@ -51,12 +51,7 @@ http://www.g-octave.org/releases/
 USE flags
 ~~~~~~~~~
 
-g-Octave have 2 USE flags:
-
 - ``doc``: Install this documentation. Depends on ``dev-python/sphinx``.
-- ``sync``: Enable the ``--sync`` command-line option. Available only
-  on the ebuilds of stable releases. The live ebuild will enable this
-  feature by default.
 
 
 Configuring g-Octave
@@ -107,9 +102,9 @@ Syncronizing the package database
 ---------------------------------
 
 Currently g-Octave depends on an external package database, in order to
-create the ebuilds for the packages (only if you installed g-Octave with
-``USE="-sync"``). You'll need to fetch this database in the first time
-that you run g-Octave (and whenever you want to updates): ::
+create the ebuilds for the packages. If you installed the live version of
+g-Octave (=g-octave-9999) you'll need to fetch this database in the first
+time that you run g-Octave (and whenever you want to updates): ::
     
     # g-octave --sync
 

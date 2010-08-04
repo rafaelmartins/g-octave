@@ -18,7 +18,4 @@ To know what are the current values, type::
     $ g-octave --config db
     $ g-octave --config overlay
 
-And remove both directories!
-
-If you installed g-Octave with ``USE="-sync"``, please remove those
-directories before run ``emerge --config g-octave``.
+And remove both directories before run ``emerge --config =g-octave-0.4``

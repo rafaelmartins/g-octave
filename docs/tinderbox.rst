@@ -69,7 +69,7 @@ Updating the packages and installing the dependencies
     # emerge -avuDN system
     # USE="git" emerge -av layman
     # layman -a science
-    # FEATURES="test" USE="sync" emerge -av g-octave
+    # FEATURES="test" emerge -av g-octave
 
 
 Configuring g-Octave
@@ -90,7 +90,8 @@ Now you're done with the configuration.
 Running the script
 ------------------
 
-Update the package database::
+Try to update the package database (only works with the live version of
+g-Octave)::
 
     # g-octave --sync
 
@@ -98,11 +99,11 @@ Make sure that you have activated all the ``USE`` flags needed on octave::
 
     # emerge -vp octave
 
-And build it first::
+And build it firstly::
 
     # emerge octave
 
-Now that you already have the main dependency of the packages installed
+Now that you already have the main dependency of all the packages installed
 and g-Octave configured, you can run the script::
     
     # /usr/share/g-octave/contrib/manage_pkgdb.py

@@ -65,6 +65,10 @@ The first parameter of the script is the path to the directory that will
 store the tarballs. The second parameter is the path to the local clone
 of your forked git repository.
 
+You'll need an additional dependency::
+
+    # emerge -av dev-python/feedparser
+
 
 Updating the list of external dependencies and licenses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
