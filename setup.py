@@ -135,6 +135,11 @@ setup(
     data_files = [
         ('/etc', ['etc/g-octave.cfg']),
         ('share/g-octave', ['share/g-octave.eclass']),
+        ('share/g-octave/contrib', [
+            'contrib/manage_pkgdb.py',
+            'contrib/manage_info.py',
+            'contrib/tinderbox.py',
+        ]),
     ],
     requires = ['portage'],
     cmdclass = {

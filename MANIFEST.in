@@ -6,11 +6,10 @@ include share/g-octave.eclass
 include g-octave.1
 include g-octave.html
 include scripts/*
-recursive-include g_octave/tinderbox *
+include contrib/*
 recursive-include docs *
 recursive-include tests *
 prune docs/_build/
 include docs/_build/.keep
-exclude g_octave/tinderbox/*.pyc
 exclude tests/*.pyc
-
+exclude contrib/*.pyc
