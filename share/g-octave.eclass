@@ -69,7 +69,7 @@ g-octave_pkg_postinst() {
 	einfo "Registering ${CATEGORY}/${PF} on the Octave package database."
 	[ -d ${OCT_PKGDIR} ] || mkdir -p ${OCT_PKGDIR}
 	${OCT_BIN} -H -q --no-site-file --eval "pkg('rebuild');" \
-		|| die 'failed to register the package.'
+		&> /dev/null || die 'failed to register the package.'
 }
 
 g-octave_pkg_prerm() {
