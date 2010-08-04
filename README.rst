@@ -1,12 +1,12 @@
 .. _`GNU Octave`: http://octave.org/
 .. _`Octave-Forge`: http://octave.sf.net/
-.. _`g-octave`: http://g-octave.rafaelmartins.eng.br/
+.. _`g-octave`: http://www.g-octave.org/
 .. _Python: http://python.org/
 .. _Portage: http://www.gentoo.org/proj/en/portage/ 
 .. _Paludis: http://paludis.pioto.org/
 .. _pkgcore: http://www.pkgcore.org/
 .. _`Gentoo Linux`: http://www.gentoo.org/
-.. _`issue tracker`: http://g-octave.rafaelmartins.eng.br/report
+.. _`issue tracker`: http://www.g-octave.org/trac/report
 .. _Git: http://git-scm.com/
 .. _PySVN: http://pysvn.tigris.org/
 
@@ -53,27 +53,10 @@ Dependencies
 
 `g-octave`_ have some basic dependencies:
 
-* Python_ 2.6
+* Python_ >= 2.6
 * Portage_
-* PySVN_ (optional)
 * Paludis_ (optional)
 * pkgcore_ (optional)
-
-`g-octave`_ also depends on some files, distributed by the maintainer,
-like the package database (a tarball with the DESCRIPTION file of all
-the packages), a file with the dependencies and the blacklist, a tarball
-with the patches and a file that list the updated files.
-
-These files are needed because upstream don't ship a package database
-(they only distribute a tarball with the sources of all the packages, so
-we have a script that create the database using this tarball) and because
-we don't want to do a new release every time that the eclass is changed
-or that a new patch is added. All these files are automatically fetched
-by `g-octave`_
-
-At this time, these files are here:
-http://soc.dev.gentoo.org/~rafaelmartins/g-octave/db/
-
 
 Settings
 --------
@@ -84,26 +67,13 @@ everything as it is. :)
 
 You can also use environment variables to configure `g-octave`.
 
-http://soc.dev.gentoo.org/~rafaelmartins/g-octave/docs/latest/userguide/#configuring-g-octave
+http://doc.g-octave.org/latest/userguide/#configuring-g-octave
 
 
 Configuring your package manager
 --------------------------------
 
-g-octave can use all the 3 package managers available on Gentoo Linux:
-**Portage**, **Paludis** and **Pkgcore**.
-
-You just need to setup the option `package_manager` with the lowercase
-name of the package manager: `portage`, `paludis`, `pkgcore`.
-
-If you're using Paludis or Pkgcore, you'll need to configure the overlay
-in your package manager configuration files. Please check the documentation
-of your package manager:
-
-- Paludis: http://paludis.pioto.org/
-- Pkgcore: http://www.pkgcore.org/
-
-Portage works out of the box.
+http://doc.g-octave.org/latest/userguide/#configuring-g-octave
 
 
 CLI options
@@ -130,6 +100,9 @@ CLI options
 *-v, --verbose*
     Portage makes a lot of noise.
 
+*-1, --oneshot*
+    do not add the packages to the world file for later updating.
+
 *-u, --update*
     try to update a package or all the installed packages
 
@@ -138,6 +111,14 @@ CLI options
 
 *-C, --unmerge*
     try to unmerge a package instead of merge
+
+*--scm*
+    enable the installation of the current live version of a package, if disabled
+    on the configuration file
+
+*--no-scm*
+    disable the installation of the current live version of a package, if
+    enabled on the configuration file
 
 *-f, --force*
     forces the recreation of the ebuilds
@@ -153,6 +134,10 @@ CLI options
 
 *--config*
     return a value from the configuration file (/etc/g-octave.cfg)
+
+*--list-raw*
+    show a list of packages available to install (a package per line,
+    without colors) and exit
 
 
 Usage Examples
@@ -208,7 +193,7 @@ Download Page
 -------------
 
 You can get the sources here:
-http://soc.dev.gentoo.org/~rafaelmartins/g-octave/releases/
+http://www.g-octave.org/releases/
 
 or clone the Git_ repository using: ::
     

@@ -71,14 +71,6 @@ def main():
     )
     
     parser.add_option(
-        '--list-raw',
-        action = 'store_true',
-        dest = 'list_raw',
-        default = False,
-        help = 'show a list of packages available to install (a package per line, without colors) and exit'
-    )
-    
-    parser.add_option(
         '-i', '--info',
         action = 'store_true',
         dest = 'info',
@@ -159,7 +151,7 @@ def main():
     )
     
     parser.add_option(
-        '-f', '--force',
+        '--force',
         action = 'store_true',
         dest = 'force',
         default = False,
@@ -196,6 +188,14 @@ def main():
         dest = 'config',
         default = False,
         help = 'return a value from the configuration file (/etc/g-octave.cfg)'
+    )
+    
+    parser.add_option(
+        '--list-raw',
+        action = 'store_true',
+        dest = 'list_raw',
+        default = False,
+        help = 'show a list of packages available to install (a package per line, without colors) and exit'
     )
     
     options, args = parser.parse_args()

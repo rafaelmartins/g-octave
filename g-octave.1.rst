@@ -30,8 +30,8 @@ g-octave can also handle patches to the packages automatically. The command
 line interface tries to be very similar to the interface of the emerge(1)
 tool.
 
-At this moment g-octave depends on the Portage package manager to works,
-but the support to Paludis and pkgcore is planned.
+g-octave can use any of the 3 package managers available to Gentoo Linux:
+Portage, Paludis and Pkgcore.
 
 
 OPTIONS
@@ -41,27 +41,39 @@ OPTIONS
 -h, --help          show this help message and exit
 -l, --list          show a list of packages available to install and exit
 -i, --info          show a description of the required package and exit
--p, --pretend       don't (un)merge packages, only create ebuilds and solve the dependencies
+-p, --pretend       don't (un)merge packages, only create ebuilds and solve
+                    the dependencies
 -a, --ask           ask to confirmation before perform (un)merges
 -v, --verbose       Portage makes a lot of noise.
+-1, --oneshot       do not add the packages to the world file for later
+                    updating.
 -u, --update        try to update a package or all the installed packages
--s, --search        search for packages with some term on the name (regular expressions allowed)
+-s, --search        search for packages with some term on the name (regular
+                    expressions allowed)
 -C, --unmerge       try to unmerge a package instead of merge
+--scm               enable the installation of the current live version of
+                    a package, if disabled on the configuration file
+--no-scm            disable the installation of the current live version
+                    of a package, if enabled on the configuration file
 -f, --force         forces the recreation of the ebuilds
 --force-all         forces the recreation of the overlay and of the ebuilds
 --no-colors         don't use colors on the CLI
---sync              search for updates of the package database, patches and auxiliary files
+--sync              search for updates of the package database, patches
+                    and auxiliary files
 --config            return a value from the configuration file (/etc/g-octave.cfg)
+--list-raw          show a list of packages available to install (a package
+                    per line, without colors) and exit
 
 
 SEE ALSO
 ========
 
-* http://soc.dev.gentoo.org/~rafaelmartins/g-octave/docs/
+* http://www.g-octave.org/
 * http://git.overlays.gentoo.org/gitweb/?p=proj/g-octave.git;a=summary
 
 
-BUGS
-====
+BUGS TO
+=======
 
-* rafael@rafaelmartins.eng.br
+* http://www.g-octave.org/trac/newticket
+* http://www.g-octave.org/trac/report
