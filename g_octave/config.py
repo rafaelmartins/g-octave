@@ -51,18 +51,16 @@ class Config(object):
         
         self._fetch_phase = fetch_phase
         
-        my_config = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            '..', 'etc', 'g-octave.cfg.devel'
-        )
-        if config_file is not None:
-            self._config_file = config_file
-        elif os.path.exists(my_config):
-            self._config_file = my_config
-        else:
-            self._config_file = '/etc/g-octave.cfg'
+        parsed_files = self._config.read([
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                '..', 'etc', 'g-octave.cfg'
+            ),
+            config_file or '/etc/g-octave.cfg',
+        ])
         
-        self._config.read(self._config_file)
+        if len(parsed_files) == 0:
+            raise ConfigException('Configuration file not found.')
         
         _db = self._getattr('db')
         _overlay = self._getattr('overlay')
