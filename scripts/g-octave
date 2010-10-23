@@ -4,9 +4,9 @@
 """
     g-octave
     ~~~~~~~~
-    
+
     Main script of g-Octave.
-    
+
     :copyright: (c) 2009-2010 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -15,7 +15,7 @@ from __future__ import print_function
 
 has_fetch = True
 
-__issue_tracker = 'Mail to: rafael@rafaelmartins.eng.br'
+__issue_tracker = 'http://www.g-octave.org/'
 
 import sys
 
@@ -61,7 +61,7 @@ def main():
         version = '%prog ' + g_octave.__version__,
         description = g_octave.__description__
     )
-    
+
     parser.add_option(
         '-l', '--list',
         action = 'store_true',
@@ -69,7 +69,7 @@ def main():
         default = False,
         help = 'show a list of packages available to install (separed by categories) and exit'
     )
-    
+
     parser.add_option(
         '-i', '--info',
         action = 'store_true',
@@ -77,7 +77,7 @@ def main():
         default = False,
         help = 'show a description of the required package and exit'
     )
-    
+
     parser.add_option(
         '-p', '--pretend',
         action = 'store_true',
@@ -85,7 +85,7 @@ def main():
         default = False,
         help = 'don\'t (un)merge packages, only create ebuilds and solve the dependencies'
     )
-    
+
     parser.add_option(
         '-a', '--ask',
         action = 'store_true',
@@ -93,7 +93,7 @@ def main():
         default = False,
         help = 'ask to confirmation before perform (un)merges'
     )
-    
+
     parser.add_option(
         '-v', '--verbose',
         action = 'store_true',
@@ -101,7 +101,7 @@ def main():
         default = False,
         help = 'package manager\'s makes a lot of noise.'
     )
-    
+
     parser.add_option(
         '-1', '--oneshot',
         action = 'store_true',
@@ -109,7 +109,7 @@ def main():
         default = False,
         help = 'do not add the packages to the world file for later updating.'
     )
-    
+
     parser.add_option(
         '-u', '--update',
         action = 'store_true',
@@ -117,7 +117,7 @@ def main():
         default = False,
         help = 'try to update a package or all the installed packages'
     )
-    
+
     parser.add_option(
         '-s', '--search',
         action = 'store_true',
@@ -125,7 +125,7 @@ def main():
         default = False,
         help = 'search for packages with some term on the name (regular expressions allowed)'
     )
-    
+
     parser.add_option(
         '-C', '--unmerge',
         action = 'store_true',
@@ -133,7 +133,7 @@ def main():
         default = False,
         help = 'try to unmerge a package instead of merge'
     )
-    
+
     parser.add_option(
         '--scm',
         action = 'store_true',
@@ -141,7 +141,7 @@ def main():
         default = False,
         help = 'enable the installation of the current live version of a package, if disabled on the configuration file'
     )
-    
+
     parser.add_option(
         '--no-scm',
         action = 'store_true',
@@ -149,7 +149,7 @@ def main():
         default = False,
         help = 'disable the installation of the current live version of a package, if enabled on the configuration file'
     )
-    
+
     parser.add_option(
         '--force',
         action = 'store_true',
@@ -157,7 +157,7 @@ def main():
         default = False,
         help = 'forces the recreation of the ebuilds'
     )
-    
+
     parser.add_option(
         '--force-all',
         action = 'store_true',
@@ -165,7 +165,7 @@ def main():
         default = False,
         help = 'forces the recreation of the overlay and of the ebuilds'
     )
-    
+
     parser.add_option(
         '--no-colors',
         action = 'store_false',
@@ -173,7 +173,7 @@ def main():
         default = True,
         help = 'don\'t use colors on the CLI'
     )
-    
+
     parser.add_option(
         '--sync',
         action = 'store_true',
@@ -181,7 +181,7 @@ def main():
         default = False,
         help = 'search for updates of the package database, patches and auxiliary files'
     )
-    
+
     parser.add_option(
         '--config',
         action = 'store_true',
@@ -189,7 +189,7 @@ def main():
         default = False,
         help = 'return a value from the configuration file (/etc/g-octave.cfg)'
     )
-    
+
     parser.add_option(
         '--list-raw',
         action = 'store_true',
@@ -197,17 +197,17 @@ def main():
         default = False,
         help = 'show a list of packages available to install (a package per line, without colors) and exit'
     )
-    
+
     options, args = parser.parse_args()
-    
+
     if not options.colors:
         portage.output.nocolor()
-    
+
     from g_octave.config import Config
     from g_octave.fetch import fetch
-    
+
     conf_prefetch = Config(True)
-    
+
     if options.config:
         try:
             log.info('Returning configuration data.')
@@ -216,9 +216,9 @@ def main():
             log.error('Invalid configuration key: %s' % args[0])
             return os.EX_DATAERR
         return os.EX_OK
-    
+
     from g_octave.package_manager import Portage, Pkgcore, Paludis
-    
+
     if conf_prefetch.package_manager == 'portage':
         log.info('Your package manager is: Portage')
         pkg_manager = Portage(options.ask, options.verbose, options.pretend, options.oneshot, not options.colors)
@@ -232,13 +232,13 @@ def main():
         log.error('Invalid package manager: %s' % conf_prefetch.package_manager)
         out.eerror('Invalid package manager: %s' % conf_prefetch.package_manager)
         return os.EX_CONFIG
-    
+
     # checking if the package manager is installed
     if not pkg_manager.is_installed():
         log.error('Package manager not installed: %s' % conf_prefetch.package_manager)
         out.eerror('Package manager not installed: %s' % conf_prefetch.package_manager)
         return os.EX_CONFIG
-    
+
     # checking if the current user is allowed to run g-octave
     current_user = getpass.getuser()
     if current_user not in pkg_manager.allowed_users():
@@ -251,12 +251,12 @@ def main():
             'package manager (%s)' % (current_user, conf_prefetch.package_manager)
         )
         return os.EX_NOPERM
-    
+
     # checking if our overlay is correctly added to PORTDIR_OVERLAY
     if not pkg_manager.check_overlay(conf_prefetch.overlay, out):
         log.error('Overlay not properly configured.')
         return os.EX_CONFIG
-    
+
     if has_fetch:
         log.info('You can fetch package databases.')
         updates = fetch()
@@ -264,24 +264,24 @@ def main():
             log.error('Invalid db_mirror value.')
             out.eerror('Your db_mirror value is invalid. Change it, or leave it empty to use the default.')
             return os.EX_CONFIG
-        
-        
+
+
         # checking if we have a package database
         if updates.need_update() and not options.sync:
             log.error('No package database found.')
             out.eerror('Please run "g-octave --sync" to download a package database!')
             return os.EX_USAGE
-        
+
         if options.sync:
-            
+
             log.info('Searching updates ...')
             out.einfo('Searching updates ...')
-            
+
             if not updates.fetch_db():
                 log.info('No updates available')
                 out.einfo('No updates available')
             updates.extract()
-            
+
             return os.EX_OK
     else:
         log.info('You can\'t fetch package databases.')
@@ -289,9 +289,9 @@ def main():
             log.error('You can\'t fetch package databases.')
             out.eerror('"--sync" not available, please install g-octave-9999 if you want this.')
             return os.EX_USAGE
-    
+
     conf = Config()
-    
+
     from g_octave.description import Description
     from g_octave.description_tree import DescriptionTree
     from g_octave.ebuild import Ebuild, EbuildException
@@ -336,22 +336,22 @@ def main():
         log.error('g-octave can install only one package at once.')
         out.eerror('At this moment g-octave can install only one package at once')
         return os.EX_USAGE
-    
+
     # if we're alive yet, we have a package to install! :D
     # or a search to do! :P
-    
+
     # check if use said that want the live version in some place
     use_scm = conf.use_scm.lower() == 'true' or options.scm
-    
+
     # if the user said that don't want the live version with --no-scm,
     # this is mandatory
     if options.no_scm:
         use_scm = False
-    
+
     create_overlay(options.force_all)
-    
+
     if len(args) > 0:
-        
+
         if options.search:
             log.info('Searching for packages: %s' % args[0])
             tree = DescriptionTree()
@@ -373,7 +373,7 @@ def main():
                 )
                 print()
             return os.EX_OK
-        
+
         log.info('Processing a package: %s' % args[0])
         try:
             ebuild = Ebuild(
@@ -386,7 +386,7 @@ def main():
             log.error('Package not found: %s' % args[0])
             out.eerror('Package not found: %s' % args[0])
             return os.EX_DATAERR
-        
+
         if options.info:
             log.info('Returning info about the package.')
             pkg = ebuild.description()
@@ -399,9 +399,9 @@ def main():
             print(portage.output.blue('License:'), portage.output.white(str(pkg.license)))
             print(portage.output.blue('Url:'), portage.output.white(str(pkg.url)))
             return os.EX_OK
-        
+
         atom, catpkg = ebuild.create()
-    
+
     if options.unmerge:
         log.info('Calling the package manager to uninstall the package.')
         ret = pkg_manager.uninstall_package(atom, catpkg)
@@ -415,28 +415,28 @@ def main():
     else:
         log.info('Calling the package manager to install the package.')
         ret = pkg_manager.install_package(atom, catpkg)
-    
+
     if ret != os.EX_OK:
         log.error('"%s" returned an error.' % conf.package_manager)
         out.eerror('"%s" returned an error.' % conf.package_manager)
         sys.exit(ret)
-    
+
     if options.unmerge and len(pkg_manager.post_uninstall) > 0:
         log.info(' '.join(pkg_manager.post_uninstall))
         print()
         for i in pkg_manager.post_uninstall:
             out.einfo(i)
-    
+
     log.info('Finishing g-octave... all OK!')
     return os.EX_OK
 
 
 if __name__ == '__main__':
-    
+
     from g_octave.exception import *
-    
+
     return_code = os.EX_OK
-    
+
     try:
         return_code = main()
     except ConfigException as error:
@@ -479,9 +479,9 @@ if __name__ == '__main__':
         log.error('Unknown error - %s' % error)
         out.eerror('Unknown error - %s' % error)
         return_code = os.EX_SOFTWARE
-    
+
     if return_code not in [os.EX_OK, os.EX_CONFIG, os.EX_USAGE, os.EX_DATAERR, os.EX_NOPERM]:
         out.einfo('If you fell that this is a bug, please report to us.')
         out.einfo(__issue_tracker)
-    
+
     sys.exit(return_code)

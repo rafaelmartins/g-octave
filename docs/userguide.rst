@@ -7,20 +7,15 @@ This is an user guide with some instructions to the end-user.
 Installing g-Octave
 -------------------
 
-The ebuilds for g-Octave will be available on the Portage tree as soon
-as possible. For now, they can be found on the Gentoo ``science`` overlay.
-To install it with ``layman`` and ``git`` installed, type::
+The ebuilds for g-Octave are available on the Portage tree. You can install
+the package, using::
 
-    # layman -a science
-
-After you have the overlay installed, you can install the package, using: ::
-    
     # emerge -av app-portage/g-octave
 
 We have 2 ebuilds, one for with latest stable release (for ``~x86`` and
 ``~amd64``) and one live ebuild, that installs g-Octave from the Git
 repository (without keywords). If you want to use the live ebuild, you
-need to unmask them adding the line below to your
+need to unmask it adding the line below to your
 ``/etc/portage/package.keywords``::
 
     app-portage/g-octave **
@@ -40,7 +35,7 @@ http://git.overlays.gentoo.org/gitweb/?p=proj/g-octave.git;a=summary
 
 You can clone the Git repository using this command (with Git
 installed, of course)::
-    
+
     $ git clone git://git.overlays.gentoo.org/proj/g-octave.git
 
 The release tarballs can be found here:
@@ -80,7 +75,7 @@ ends with the option name in uppercase. for example, ``GOCTAVE_OVERLAY``
 will override the option ``overlay`` from the config file.
 
 Usage example::
-    
+
     # GOCTAVE_OVERLAY=/tmp/overlay g-octave -av packagename
 
 
@@ -105,7 +100,7 @@ Currently g-Octave depends on an external package database, in order to
 create the ebuilds for the packages. If you installed the live version of
 g-Octave (=g-octave-9999) you'll need to fetch this database in the first
 time that you run g-Octave (and whenever you want to updates): ::
-    
+
     # g-octave --sync
 
 
@@ -135,28 +130,28 @@ From the upstream source tarballs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can list all the available packages using this command: ::
-    
+
     # g-octave --list
 
 or ::
-    
+
     # g-octave -l
 
 To install a package, use: ::
-    
+
     # g-octave packagename
 
 or ::
-    
+
     # g-octave packagename-version
 
 For example: ::
-    
+
     # g-octave control-1.0.11
 
 ``g-octave`` command-line tool supports some options for the installation
 of packages:
-    
+
 ``-a`` or ``--ask``
     Ask before install the package
 ``-p`` or ``--pretend``
@@ -170,7 +165,7 @@ You can get some information about the package using this command: ::
     # g-octave --info packagename
 
 or ::
-    
+
     # g-octave -i packagename
 
 
@@ -184,7 +179,7 @@ SVN repository.
 To install a package from SVN, you'll need to configure g-Octave, changing
 the value of the variable ``use_scm`` on the file ``/etc/g-octave.cfg``
 to ``true``. After that, type::
-    
+
     # g-octave packagename
 
 If you only want to install a single package, you can use the command-line
@@ -203,15 +198,15 @@ You can update a package using this command: ::
     # g-octave --update packagename
 
 or ::
-    
+
     # g-octave -u packagename
 
 If you want to update all the installed packages, run this without arguments::
-    
+
     # g-octave --update
 
 or ::
-    
+
     # g-octave -u
 
 The options ``--ask`` and ``--verbose`` are also supported.
@@ -222,7 +217,7 @@ Searching packages
 
 You can do searches on the package names if you use the option ``-s`` or
 ``--search``. Regular expressions are allowed. ::
-    
+
     # g-octave --search anything
 
 or ::
@@ -238,7 +233,7 @@ You can uninstall packages using this command: ::
     # g-octave --unmerge packagename
 
 or ::
-    
+
     # g-octave -C packagename-version
 
 The options ``--ask`` and ``--verbose`` are also supported.
