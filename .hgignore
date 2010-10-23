@@ -1,8 +1,0 @@
-\.py[co]$
-^(build|dist)/
-^MANIFEST$
-^g-octave\.(1|html|log)$
-^docs/_build/[^(\.keep)]
-^db/
-\.bak$
-\.devel$
