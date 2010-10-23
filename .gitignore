@@ -1,0 +1,19 @@
+# python stuff
+*.py[co]
+build
+dist
+MANIFEST
+
+# generated files for releases
+g-octave.1
+g-octave.html
+g-octave.log
+
+# docs
+docs/_build
+!docs/_build/.keep
+
+# temporary files
+db
+*.bak
+*.devel
