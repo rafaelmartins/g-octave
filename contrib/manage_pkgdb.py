@@ -4,9 +4,9 @@
 """
     manage_pkgdb.py
     ~~~~~~~~~~~~~~~
-    
+
     a simple script to update a Git repository with a package database.
-    
+
     :copyright: (c) 2010 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -27,8 +27,14 @@ import urllib
 
 from contextlib import closing
 
+current_dir = os.path.dirname(os.path.realpath(__file__))
+if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
+    sys.path.insert(0, os.path.join(current_dir, '..'))
+
+from g_octave import description_tree
+
 class Git:
-    
+
     def __init__(self, repo):
         self._repo = repo
 
@@ -40,16 +46,17 @@ class Git:
 re_tarball = re.compile(r'(([^/]+)-([0-9.]+)\.tar\.gz)$')
 
 class SfUpdates:
-    
+
     # feed url from 'http://sourceforge.net/projects/octave/files/Octave%20Forge%20Packages/Individual%20Package%20Releases/'
     feed_url = u'http://sourceforge.net/api/file/index/project-id/2888/mtime/desc/rss?path=%2FOctave%20Forge%20Packages%2FIndividual%20Package%20Releases'
-    
+
     svnroot_url = u'https://octave.svn.sourceforge.net/svnroot/octave/trunk/octave-forge/'
     categories = [u'main', u'extra', u'language', u'nonfree']
-    
+
     _timestamp = None
-    
+
     def __init__(self, local_dir, repo_dir):
+        os.environ['GOCTAVE_DB'] = repo_dir
         self._local_dir = local_dir
         self._repo_dir = repo_dir
         self.feed = feedparser.parse(self.feed_url)
@@ -63,7 +70,7 @@ class SfUpdates:
                 fp.write(str(self._timestamp))
         except:
             pass
-    
+
     def _load_timestamp(self):
         try:
             with open(os.path.join(self._repo_dir, 'timestamp')) as fp:
@@ -95,66 +102,65 @@ class SfUpdates:
                     'url': entry.link,
                 }
         return entries
-    
+
     def local_files(self):
         # tarball name: {
         #   name,
         #   version,
         #   category
         # }
-        if not os.path.isdir(self._local_dir):
-            return {}
+        db = description_tree.DescriptionTree()
         entries = {}
-        for category in os.listdir(self._local_dir):
-            for tarball in os.listdir(os.path.join(self._local_dir, category)):
-                my_tarball = re_tarball.search(unicode(tarball))
-                if my_tarball is not None:
-                    entries[my_tarball.group(1)] = {
-                        'name': my_tarball.group(2),
-                        'version': my_tarball.group(3),
-                        'category': unicode(category),
-                    }
+        for category in db.pkg_list:
+            for pkg in db.pkg_list[category]:
+                entries['%s-%s.tar.gz' % (pkg['name'], pkg['version'])] = {
+                    'name': pkg['name'],
+                    'version': pkg['version'],
+                    'category': unicode(db.categories[pkg['name']]),
+                }
         return entries
-    
+
     def guess_category(self, pkgname):
         for category in self.categories:
             f = urllib.urlopen(self.svnroot_url + '/' + category + '/' + pkgname + '/DESCRIPTION')
             if f.getcode() == 200:
-                return category            
-    
+                return category
+
     def check_updates(self):
         local_files = self.local_files()
         remote_files = self.remote_files()
         updates = {}
         for remote in remote_files:
-            if remote not in local_files:
-                print('update found: %s; ' % remote, end='')
-                updates[remote] = local_files[remote]
-                category = self.guess_category(remote_files[remote]['name'])
-                if category is None:
-                    remote_name = remote_files[remote]['name'].lower()
-                    for local in local_files:
-                        local_name = local_files[local]['name'].lower()
-                        if remote_name == local_name:
-                            category = local_files[local]['category']
-                            break
-                remote_files[remote]['category'] = category
-                print('category: %s' % category)
-                if self.download(remote, remote_files[remote]) != os.EX_OK:
-                    raise RuntimeError('Failed to download: %s' % remote)
+            print('update found: %s; ' % remote, end='')
+            sys.stdout.flush()
+            updates[remote] = remote_files[remote]
+            category = self.guess_category(remote_files[remote]['name'])
+            if category is None:
+                remote_name = remote_files[remote]['name'].lower()
+                for local in local_files:
+                    local_name = local_files[local]['name'].lower()
+                    if remote_name == local_name:
+                        category = local_files[local]['category']
+                        break
+            remote_files[remote]['category'] = category
+            print('category: %s' % category)
+            if self.download(remote, remote_files[remote]) != os.EX_OK:
+                raise RuntimeError('Failed to download: %s' % remote)
         return updates
-    
+
     def download(self, tarball_name, entry):
-        return subprocess.call([
-            'wget',
-            '--continue',
-            '--output-document', os.path.join(
-                    self._local_dir,
-                    entry['category'],
-                    tarball_name,
-                ),
-            entry['url']
-        ])
+        cat_dir = os.path.join(self._local_dir, entry['category'])
+        file_path = os.path.join(cat_dir, tarball_name)
+        if not os.path.exists(cat_dir):
+            os.makedirs(cat_dir, 0o755)
+        if not os.path.exists(file_path):
+            return subprocess.call([
+                'wget',
+                '--continue',
+                '--output-document', file_path,
+                entry['url']
+            ])
+        return os.EX_OK
 
     def update_package_database(self, local_files, db_dir):
         if not os.path.exists(db_dir):
@@ -192,13 +198,13 @@ class SfUpdates:
 
 
 def main(argv):
-    
+
     parser = optparse.OptionParser(
         usage = '%prog [options] <sources directory> <package database directory>',
         version = 'see g-octave --version',
         description = 'a simple script to update a Git repository with a package database.'
     )
-    
+
     parser.add_option(
         '-c', '--commit',
         action = 'store_true',
@@ -206,7 +212,7 @@ def main(argv):
         default = False,
         help = 'commit the changes to the Git repository'
     )
-    
+
     parser.add_option(
         '-p', '--push',
         action = 'store_true',
@@ -214,9 +220,9 @@ def main(argv):
         default = False,
         help = 'push the changes to the remote Git repository'
     )
-    
+
     options, args = parser.parse_args(argv[1:])
-    
+
     if len(args) != 2:
         print(
             'You need to provide 2 arguments:\n'
@@ -225,7 +231,7 @@ def main(argv):
             file=sys.stderr
         )
         return os.EX_USAGE
-    
+
     print('* Fetching and parsing the Octave-Forge RSS feed ...')
     sf = SfUpdates(args[0], args[1])
     print('* Looking for updates ...')
@@ -244,7 +250,7 @@ def main(argv):
             return os.EX_OK
         return os.EX_SOFTWARE
     return os.EX_OK
-            
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
