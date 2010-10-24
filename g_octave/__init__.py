@@ -3,9 +3,9 @@
 """
     g_octave
     ~~~~~~~~
-    
+
     Main package of g-Octave
-    
+
     :copyright: (c) 2009-2010 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -32,4 +32,4 @@ __url__ = 'http://g-octave.rafaelmartins.eng.br/'
 __copyright__ = '(c) 2009-2010 %s' % __author__
 __license__ = 'GPLv2'
 
-__version__ = '0.4'
+__version__ = '0.4.1'
