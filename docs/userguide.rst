@@ -31,16 +31,16 @@ release will need to unmask the ebuild too, adding this to
 
 The source code of g-Octave can be found in this Git repository:
 
-http://git.overlays.gentoo.org/gitweb/?p=proj/g-octave.git;a=summary
+https://github.com/rafaelmartins/g-octave/downloads
 
 You can clone the Git repository using this command (with Git
 installed, of course)::
 
-    $ git clone git://git.overlays.gentoo.org/proj/g-octave.git
+    $ git clone git://github.com/rafaelmartins/g-octave.git
 
 The release tarballs can be found here:
 
-http://www.g-octave.org/releases/
+https://github.com/rafaelmartins/g-octave/downloads
 
 
 USE flags
@@ -254,4 +254,4 @@ from the ``${DISTDIR}`` and run::
 
 If you still have problems, please fill a ticket on our `bug tracker`_
 
-.. _`bug tracker`: http://www.g-octave.org/trac/newticket
+.. _`bug tracker`: https://github.com/rafaelmartins/g-octave/issues

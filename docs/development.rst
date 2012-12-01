@@ -1,8 +1,8 @@
 Development
 ===========
 
-:Source code: http://git.overlays.gentoo.org/gitweb/?p=proj/g-octave.git
-:Bugs to: http://www.g-octave.org/trac/newticket
+:Source code: https://github.com/rafaelmartins/g-octave
+:Bugs to: https://github.com/rafaelmartins/g-octave/issues
 
 .. warning::
     
@@ -17,8 +17,8 @@ You can run the tests suites using the script ``run_tests.py`` that can be
 found in the directory ``scripts`` in the recent `source tarballs`_ or
 in the `Git repository`_
 
-.. _`source tarballs`: http://www.g-octave.org/releases/
-.. _`Git repository`: http://git.overlays.gentoo.org/gitweb/?p=proj/g-octave.git
+.. _`source tarballs`: https://github.com/rafaelmartins/g-octave/downloads
+.. _`Git repository`: https://github.com/rafaelmartins/g-octave
 
 ::
     
@@ -27,7 +27,7 @@ in the `Git repository`_
 
 If some test is broken, please use the `bug tracker`_.
 
-.. _`bug tracker`: http://www.g-octave.org/trac/newticket
+.. _`bug tracker`: https://github.com/rafaelmartins/g-octave/issues
 
 
 Working on the package database
@@ -119,7 +119,7 @@ Sending patches to the source code
 The source code of g-Octave lives on a repository on the Gentoo Linux
 infrastructure. ::
 
-    $ git clone git://git.overlays.gentoo.org/proj/g-octave.git
+    $ git clone git://github.com/rafaelmartins/g-octave.git
 
 You can change what you need, commit, generate a Git-formated patch and
 attach it to a new ticket on our `bug tracker`_.

@@ -8,9 +8,8 @@ Welcome to g-Octave's documentation!
 
 :Author: Rafael Goncalves Martins
 :Website: http://www.g-octave.org/
-:Source code: http://www.g-octave.org/trac/browser
-              http://git.overlays.gentoo.org/gitweb/?p=proj/g-octave.git
-:Bugs to: http://www.g-octave.org/trac/newticket
+:Source code: https://github.com/rafaelmartins/g-octave
+:Bugs to: https://github.com/rafaelmartins/g-octave/issues
 :Version: |release|
 
 .. topic:: Overview
@@ -40,4 +39,3 @@ Contents
    userguide
    upgrading
    development
-   tinderbox

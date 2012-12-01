@@ -69,11 +69,11 @@ SEE ALSO
 ========
 
 * http://www.g-octave.org/
-* http://git.overlays.gentoo.org/gitweb/?p=proj/g-octave.git;a=summary
+* https://github.com/rafaelmartins/g-octave
 
 
 BUGS TO
 =======
 
-* http://www.g-octave.org/trac/newticket
-* http://www.g-octave.org/trac/report
+* https://github.com/rafaelmartins/g-octave/issues
+

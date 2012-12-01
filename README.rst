@@ -6,7 +6,7 @@
 .. _Paludis: http://paludis.pioto.org/
 .. _pkgcore: http://www.pkgcore.org/
 .. _`Gentoo Linux`: http://www.gentoo.org/
-.. _`issue tracker`: http://www.g-octave.org/trac/report
+.. _`issue tracker`: https://github.com/rafaelmartins/g-octave/issues
 .. _Git: http://git-scm.com/
 .. _PySVN: http://pysvn.tigris.org/
 
@@ -193,11 +193,11 @@ Download Page
 -------------
 
 You can get the sources here:
-http://www.g-octave.org/releases/
+https://github.com/rafaelmartins/g-octave/downloads
 
 or clone the Git_ repository using: ::
     
-    $ git clone git://git.overlays.gentoo.org/proj/g-octave.git
+    $ git clone git://github.com/rafaelmartins/g-octave.git
 
 
 Authors
