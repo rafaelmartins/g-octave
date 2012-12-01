@@ -217,7 +217,7 @@ def main():
             return os.EX_DATAERR
         return os.EX_OK
 
-    from g_octave.package_manager import Portage, Pkgcore, Paludis
+    from g_octave.package_manager import Portage, Pkgcore, Paludis, Cave
 
     if conf_prefetch.package_manager == 'portage':
         log.info('Your package manager is: Portage')
@@ -228,6 +228,9 @@ def main():
     elif conf_prefetch.package_manager == 'paludis':
         log.info('Your package manager is: Paludis')
         pkg_manager = Paludis(options.ask, options.verbose, options.pretend, options.oneshot, not options.colors)
+    elif conf_prefetch.package_manager == 'cave':
+        log.info('Your package manager is: Paludis (Cave)')
+        pkg_manager = Cave(options.ask, options.verbose, options.pretend, options.oneshot, not options.colors)
     else:
         log.error('Invalid package manager: %s' % conf_prefetch.package_manager)
         out.eerror('Invalid package manager: %s' % conf_prefetch.package_manager)

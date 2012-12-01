@@ -15,6 +15,7 @@ __all__ = [
     'Portage',
     'Pkgcore',
     'Paludis',
+    'Cave',
 ]
 
 import grp
@@ -243,3 +244,56 @@ class Paludis(Base):
                 packages.append(line.strip())
         return packages
 
+class Cave(Base):
+    
+    _client = '/usr/bin/cave'
+    _group = 'paludisbuild'
+    
+    post_uninstall = [
+        'You may want to remove the dependencies too, using:',
+        '# cave purge',
+    ]
+    
+    def __init__(self, ask=False, verbose=False, pretend=False, oneshot=False, nocolor=False):
+        self._fullcommand = [self._client]
+        self._cmd = ['-z']
+        oneshot and self._cmd.append('-1')
+        not pretend and self._cmd.append('-x')
+        #if verbose:
+        #    self._fullcommand += [
+        #        '--show-descriptions', 'all',
+        #        '--show-option-descriptions', 'all',
+        #    ]
+        #cave doesn't support '--ask'
+        #cave doesn't support '--no-color'
+    
+    def run_command(self, command):
+        return subprocess.call(self._fullcommand + command + self._cmd)
+    
+    def install_package(self, pkgatom, catpkg):
+        return self.run_command(['resolve'] + [pkgatom])
+
+    def uninstall_package(self, pkgatom, catpkg):
+        return self.run_command(['uninstall'] + [pkgatom])
+    
+    def update_package(self, pkgatom=None, catpkg=None):
+        cmd = ['-1','-K','s','-k','s']
+        if pkgatom is None:
+            pkgatom = self.installed_packages()
+        else:
+            pkgatom = [pkgatom]
+        self.do_ebuilds(pkgatom)
+        return self.run_command(['resolve'] + cmd + pkgatom)
+    
+    def installed_packages(self):
+        packages = []
+        p = subprocess.Popen([
+            'cave',
+            'print-ids',
+            '--matching', 'g-octave/*::installed',
+            '--format', '%c/%p\n',
+        ], stdout=subprocess.PIPE)
+        if p.wait() == os.EX_OK:
+            for line in p.stdout:
+                packages.append(line.strip())
+        return packages
