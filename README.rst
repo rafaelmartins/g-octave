@@ -67,13 +67,13 @@ everything as it is. :)
 
 You can also use environment variables to configure `g-octave`.
 
-http://doc.g-octave.org/latest/userguide/#configuring-g-octave
+http://docs.g-octave.org/en/latest/userguide/#configuring-g-octave
 
 
 Configuring your package manager
 --------------------------------
 
-http://doc.g-octave.org/latest/userguide/#configuring-g-octave
+http://docs.g-octave.org/en/latest/userguide/#configuring-g-octave
 
 
 CLI options
