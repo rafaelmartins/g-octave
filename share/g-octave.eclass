@@ -13,7 +13,7 @@
 G_OCTAVE_CAT="${G_OCTAVE_CAT:-main}"
 
 
-REPO_URI="https://octave.svn.sourceforge.net/svnroot/octave/trunk/octave-forge"
+REPO_URI="http://svn.code.sf.net/p/octave/code/trunk/octave-forge"
 if [[ ${PV} = 9999* ]]; then
 	inherit subversion autotools
 	ESVN_REPO_URI="${REPO_URI}/${G_OCTAVE_CAT}/${PN}"
