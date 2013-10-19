@@ -48,6 +48,9 @@ g-octave_src_prepare() {
 	for filename in Makefile configure; do
 		cp "${DISTDIR}/g-octave_${filename}" "${S}/${filename}"
 	done
+
+	sed -i -e 's@libexec@lib@g' "${S}/Makefile" || die 'sed failed.'
+
 	chmod 0755 "${S}/configure"
 	if [ -e "${S}"/src/autogen.sh ]; then
 		cd "${S}"/src && ./autogen.sh || die 'failed to run autogen.sh'
