@@ -68,7 +68,7 @@ class Description(object):
         # current key
         key = None
 
-        with open(file, 'r') as fp:
+        with open(file, 'r', encoding="utf-8") as fp:
             for line in fp:
                 line_splited = line.split(':')
 
