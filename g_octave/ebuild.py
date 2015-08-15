@@ -66,7 +66,7 @@ class Ebuild:
             self.version = '9999'
             category = self.__dbtree.categories.get(self.pkgname, None)
             if category is not None:
-                self.__desc = SvnDescription(category, self.pkgname)
+                self.__desc = HgDescription(category, self.pkgname)
             else:
                 raise EbuildException('Failed to find the octave-forge category of this package.')
         else:
