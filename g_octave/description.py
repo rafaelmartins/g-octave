@@ -18,7 +18,7 @@ from __future__ import absolute_import
 
 __all__ = [
     'Description',
-    'SvnDescription',
+    'HgDescription',
     're_depends',
     're_pkg_atom'
 ]
@@ -267,15 +267,14 @@ class Description(object):
         return self._desc.get(name, None)
 
 
-class SvnDescription(Description):
+class HgDescription(Description):
     
-    _url = 'http://svn.code.sf.net/p/octave/code/trunk/octave-forge'
+    _url = 'http://sf.net/p/octave'
     
     def __init__(self, category, package):
         temp_desc = config_file = tempfile.mkstemp()[1]
-        desc_url = '%s/%s/%s/DESCRIPTION' % (
+        desc_url = '%s/%s/ci/default/tree/DESCRIPTION?format=raw' % (
             self._url,
-            category,
             package,
         )
         try:
@@ -283,6 +282,6 @@ class SvnDescription(Description):
                 with open(temp_desc, 'wb') as fp_:
                     shutil.copyfileobj(fp, fp_)
         except:
-            raise DescriptionException('Failed to fetch DESCRIPTION file from SVN')
+            raise DescriptionException('Failed to fetch DESCRIPTION file from HG')
         Description.__init__(self, temp_desc, parse_sysreq=True)
         os.unlink(temp_desc)

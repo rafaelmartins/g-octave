@@ -28,6 +28,7 @@ if py3k:
 else:
     import urllib2 as urllib
 
+import codecs
 import glob
 import json
 import os
@@ -54,7 +55,7 @@ class GitHub:
     def __init__(self, user, repo):
         self.user = user
         self.repo = repo
-        self.api_url = 'http://github.com/api/v2/json'
+        self.api_url = 'https://api.github.com'
         self.url = 'http://github.com'
     
     def need_update(self):
@@ -63,7 +64,7 @@ class GitHub:
         ))
     
     def get_commits(self, branch='master'):
-        url = '%s/commits/list/%s/%s/%s/' % (
+        url = '%s/repos/%s/%s/commits/%s' % (
             self.api_url,
             self.user,
             self.repo,
@@ -71,15 +72,16 @@ class GitHub:
         )
         commits = {}
         with closing(urllib.urlopen(url)) as fp:
-            commits = json.load(fp)
-        return commits['commits']
+            reader = codecs.getreader('utf-8')
+            commits = json.load(reader(fp))
+        return commits
     
     def fetch_db(self, branch='master'):
         cache = os.path.join(conf.db, 'cache')
         commit_id = os.path.join(cache, 'commit_id')
         if not os.path.exists(cache):
             os.makedirs(cache)
-        last_commit = self.get_commits()[0]['id']
+        last_commit = self.get_commits()['sha']
         if os.path.exists(commit_id):
             with open_(commit_id) as fp:
                 if fp.read().strip() == last_commit:

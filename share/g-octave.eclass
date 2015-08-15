@@ -13,10 +13,10 @@
 G_OCTAVE_CAT="${G_OCTAVE_CAT:-main}"
 
 
-REPO_URI="http://svn.code.sf.net/p/octave/code/trunk/octave-forge"
+REPO_URI="http://hg.code.sf.net/p/octave"
 if [[ ${PV} = 9999* ]]; then
-	inherit subversion autotools
-	ESVN_REPO_URI="${REPO_URI}/${G_OCTAVE_CAT}/${PN}"
+	inherit mercurial autotools
+	EHG_REPO_URI="${REPO_URI}/${PN}"
 else
 	inherit autotools
 	SRC_URI="mirror://sourceforge/octave/${P}.tar.gz"
@@ -44,7 +44,6 @@ g-octave_src_prepare() {
 		S="${WORKDIR}/${PN}"
 		cd "${S}"
 	fi
-	[[ ${PV} = 9999* ]] && subversion_src_prepare
 	for filename in Makefile configure; do
 		cp "${DISTDIR}/g-octave_${filename}" "${S}/${filename}"
 	done

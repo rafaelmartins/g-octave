@@ -169,14 +169,14 @@ or ::
     # g-octave -i packagename
 
 
-From the octave-forge SVN repository
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+From the octave-forge Mercurial repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you want to test some new feature or to always use the newest version
 of the packages, you'll like to install the packages directly from the
-SVN repository.
+Mercurial repository.
 
-To install a package from SVN, you'll need to configure g-Octave, changing
+To install a package from Mercurial, you'll need to configure g-Octave, changing
 the value of the variable ``use_scm`` on the file ``/etc/g-octave.cfg``
 to ``true``. After that, type::
 
@@ -185,7 +185,7 @@ to ``true``. After that, type::
 If you only want to install a single package, you can use the command-line
 option ``--scm``.
 
-If you enabled the installation from SVN on the configuration file and
+If you enabled the installation from Mercurial on the configuration file and
 wants to install a stable version, you can use the command-line option
 ``--no-scm``.
 
