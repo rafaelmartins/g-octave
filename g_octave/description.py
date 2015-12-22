@@ -32,7 +32,7 @@ from contextlib import closing
 
 from .config import Config
 from .exception import ConfigException, DescriptionException
-from .compat import py3k
+from .compat import py3k, open
 
 if py3k:
     import urllib.request as urllib
