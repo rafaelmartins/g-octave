@@ -219,7 +219,11 @@ class Description(object):
                 log.error('Invalid dependency atom: %s' % depend)
                 raise DescriptionException('Invalid dependency atom: %s' % depend)
 
-        return list(set(depends_list))
+        rv = []
+        for l in depends_list:
+            if l not in rv:
+                rv.append(l)
+        return rv
 
 
     def _parse_self_depends(self, depends):

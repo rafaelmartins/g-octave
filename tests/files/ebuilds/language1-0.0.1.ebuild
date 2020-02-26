@@ -17,9 +17,9 @@ KEYWORDS="~amd64 ~x86"
 IUSE=""
 
 DEPEND=">sci-mathematics/pkg4-1.0.0
-	sci-mathematics/pkg3
+	>=sci-mathematics/pkg1-4.3.2
 	<sci-mathematics/pkg2-1.2.3
-	>=sci-mathematics/pkg1-4.3.2"
+	sci-mathematics/pkg3"
 RDEPEND="${DEPEND}
 	>=sci-mathematics/octave-3.2.0"
 

@@ -191,7 +191,6 @@ class TestDescription(unittest.TestCase):
             '<g-octave/pkg2-1.2.3',
             'g-octave/pkg3'
         ]
-        requirements.sort()
         self.assertEqual(self.desc.systemrequirements, requirements)
         self.assertEqual(self.desc.buildrequires, ['>g-octave/pkg4-1.0.0'])
 
