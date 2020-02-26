@@ -50,9 +50,6 @@ class SfUpdates:
     # feed url from 'http://sourceforge.net/projects/octave/files/Octave%20Forge%20Packages/Individual%20Package%20Releases/'
     feed_url = 'http://sourceforge.net/api/file/index/project-id/2888/mtime/desc/rss?path=%2FOctave%20Forge%20Packages%2FIndividual%20Package%20Releases'
 
-    svnroot_url = 'http://svn.code.sf.net/p/octave/code/trunk/octave-forge'
-    categories = ['main', 'extra', 'language', 'nonfree']
-
     _timestamp = None
 
     def __init__(self, local_dir, repo_dir):
@@ -120,12 +117,6 @@ class SfUpdates:
                 }
         return entries
 
-    def guess_category(self, pkgname):
-        for category in self.categories:
-            f = urllib.request.urlopen(self.svnroot_url + '/' + category + '/' + pkgname + '/DESCRIPTION')
-            if f.getcode() == 200:
-                return category
-
     def check_updates(self):
         local_files = self.local_files()
         remote_files = self.remote_files()
@@ -134,14 +125,15 @@ class SfUpdates:
             print('update found: %s; ' % remote, end='')
             sys.stdout.flush()
             updates[remote] = remote_files[remote]
-            category = self.guess_category(remote_files[remote]['name'])
+            remote_name = remote_files[remote]['name'].lower()
+            category = None
+            for local in local_files:
+                local_name = local_files[local]['name'].lower()
+                if remote_name == local_name:
+                    category = local_files[local]['category']
+                    break
             if category is None:
-                remote_name = remote_files[remote]['name'].lower()
-                for local in local_files:
-                    local_name = local_files[local]['name'].lower()
-                    if remote_name == local_name:
-                        category = local_files[local]['category']
-                        break
+                category = 'unknown'
             remote_files[remote]['category'] = category
             print('category: %s' % category)
             if self.download(remote, remote_files[remote]) != os.EX_OK:
@@ -192,7 +184,7 @@ class SfUpdates:
                         print('DESCRIPTION file not found: %s', tarball_name, file=sys.stderr)
                         continue
                     with closing(src_tar.extractfile(f)) as fp_tar:
-                        with open(description, 'w') as fp:
+                        with open(description, 'wb') as fp:
                             shutil.copyfileobj(fp_tar, fp)
         self._save_timestamp()
 

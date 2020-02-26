@@ -65,63 +65,74 @@ class Description(object):
         # current key
         key = None
 
-        with open(file, 'r', encoding="utf-8") as fp:
-            for line in fp:
-                line_splited = line.split(':')
-
-                # 'key: value' found?
-                if len(line_splited) >= 2:
-
-                    # by default we have a key before the first ':'
-                    key = line_splited[0].strip().lower()
-
-                    # all the stuff after the first ':' is the value
-                    # ':' included.
-                    value = ':'.join(line_splited[1:]).strip()
-
-                    # the key already exists?
-                    if key in self._desc:
-
-                        # it's one of the dependencies?
-                        if key in ('depends', 'systemrequirements', 'buildrequires'):
-
-                            # use ', ' to separate the values
-                            self._desc[key] += ', '
-
-                        else:
-
-                            # use a single space to separate the values
-                            self._desc[key] += ' '
-
-                    # key didn't exists yet. initializing...
-                    else:
-                        self._desc[key] = ''
-
-                    self._desc[key] += value
-
-                # it's not a 'key: value', so it's probably a continuation
-                # of the previous line.
+        data = None
+        for enc in ['utf-8', 'latin1']:
+            with open(file, 'r', encoding=enc) as fp:
+                try:
+                    data = fp.read()
+                except Exception as e:
+                    pass
                 else:
+                    break
+        if data is None:
+            raise DescriptionException('Failed to read DESCRIPTION file: %s' % file)
 
-                    # empty line
-                    if len(line) == 0:
-                        continue
+        for line in data.splitlines():
+            line_splited = line.split(':')
 
-                    # comments (started with '#')
-                    if line[0] == '#':
-                        continue
+            # 'key: value' found?
+            if len(line_splited) >= 2:
 
-                    # line continuations starts with a single space
-                    if line[0] != ' ':
-                        continue
+                # by default we have a key before the first ':'
+                key = line_splited[0].strip().lower()
 
-                    # the first line can't be a continuation, obviously :)
-                    if key is None:
-                        continue
+                # all the stuff after the first ':' is the value
+                # ':' included.
+                value = ':'.join(line_splited[1:]).strip()
 
-                    # our line already have a single space at the start.
-                    # we only needs strip spaces at the end of the line
-                    self._desc[key] += line.rstrip()
+                # the key already exists?
+                if key in self._desc:
+
+                    # it's one of the dependencies?
+                    if key in ('depends', 'systemrequirements', 'buildrequires'):
+
+                        # use ', ' to separate the values
+                        self._desc[key] += ', '
+
+                    else:
+
+                        # use a single space to separate the values
+                        self._desc[key] += ' '
+
+                # key didn't exists yet. initializing...
+                else:
+                    self._desc[key] = ''
+
+                self._desc[key] += value
+
+            # it's not a 'key: value', so it's probably a continuation
+            # of the previous line.
+            else:
+
+                # empty line
+                if len(line) == 0:
+                    continue
+
+                # comments (started with '#')
+                if line[0] == '#':
+                    continue
+
+                # line continuations starts with a single space
+                if line[0] != ' ':
+                    continue
+
+                # the first line can't be a continuation, obviously :)
+                if key is None:
+                    continue
+
+                # our line already have a single space at the start.
+                # we only needs strip spaces at the end of the line
+                self._desc[key] += line.rstrip()
 
         # add the 'self_depends' key
         self._desc['self_depends'] = list()

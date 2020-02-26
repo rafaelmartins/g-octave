@@ -98,10 +98,10 @@ def main(argv):
             temp.append(s.matches['pkg'][i][0])
 
         if dependencies[dep][0] in json_dict['dependencies']:
-            select = eval(input('Select a package [%s]: ' % \
-                json_dict['dependencies'][dependencies[dep][0]]))
+            select = input('Select a package [%s]: ' % \
+                json_dict['dependencies'][dependencies[dep][0]])
         else:
-            select = eval(input('Select a package: '))
+            select = input('Select a package: ')
         try:
             for dep_name in dependencies[dep]:
                 json_dict['dependencies'][dep_name] = temp[int(select)]
@@ -115,16 +115,16 @@ def main(argv):
     print('***** Licenses *****\n')
     for lic in licenses:
         if lic in json_dict['licenses']:
-            temp = eval(input(
+            temp = input(
                 '%s [%s]: ' % (
                     lic,
                     json_dict['licenses'][lic],
                 )
-            ))
+            )
             if temp != '':
                 json_dict['licenses'][lic] = temp
         else:
-            json_dict['licenses'][lic] = eval(input('%s: ' % lic))
+            json_dict['licenses'][lic] = input('%s: ' % lic)
         print('Selected: %s' % json_dict['licenses'][lic])
         print()
 
