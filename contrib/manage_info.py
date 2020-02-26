@@ -28,7 +28,7 @@ if os.path.exists(os.path.join(current_dir, '..', 'g_octave')):
     sys.path.insert(0, os.path.join(current_dir, '..'))
 
 from g_octave import description, description_tree, exception
-from g_octave.compat import py3k, open
+from g_octave.compat import open
 
 def main(argv):
 
@@ -98,17 +98,10 @@ def main(argv):
             temp.append(s.matches['pkg'][i][0])
 
         if dependencies[dep][0] in json_dict['dependencies']:
-            if py3k:
-                select = input('Select a package [%s]: ' % \
-                    json_dict['dependencies'][dependencies[dep][0]])
-            else:
-                select = raw_input('Select a package [%s]: ' % \
-                    json_dict['dependencies'][dependencies[dep][0]])
+            select = input('Select a package [%s]: ' % \
+                json_dict['dependencies'][dependencies[dep][0]])
         else:
-            if py3k:
-                select = input('Select a package: ')
-            else:
-                select = raw_input('Select a package: ')
+            select = input('Select a package: ')
         try:
             for dep_name in dependencies[dep]:
                 json_dict['dependencies'][dep_name] = temp[int(select)]
@@ -122,27 +115,16 @@ def main(argv):
     print('***** Licenses *****\n')
     for lic in licenses:
         if lic in json_dict['licenses']:
-            if py3k:
-                temp = input(
-                    '%s [%s]: ' % (
-                        lic,
-                        json_dict['licenses'][lic],
-                    )
+            temp = input(
+                '%s [%s]: ' % (
+                    lic,
+                    json_dict['licenses'][lic],
                 )
-            else:
-                temp = raw_input(
-                    '%s [%s]: ' % (
-                        lic,
-                        json_dict['licenses'][lic],
-                    )
-                )
+            )
             if temp != '':
                 json_dict['licenses'][lic] = temp
         else:
-            if py3k:
-                json_dict['licenses'][lic] = input('%s: ' % lic)
-            else:
-                json_dict['licenses'][lic] = raw_input('%s: ' % lic)
+            json_dict['licenses'][lic] = input('%s: ' % lic)
         print('Selected: %s' % json_dict['licenses'][lic])
         print()
 

@@ -15,16 +15,13 @@ from __future__ import absolute_import
 
 __all__ = ['Config']
 
+import configparser
 import json
 import os
 
-from .compat import py3k, open
+from .compat import open
 from .exception import ConfigException
 
-if py3k:
-    import configparser
-else:
-    import ConfigParser as configparser
 
 class Config(object):
 

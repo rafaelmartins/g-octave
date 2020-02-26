@@ -11,12 +11,9 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from g_octave.compat import py3k, open
+from g_octave.compat import open
 
-if py3k:
-    import configparser
-else:
-    import ConfigParser as configparser
+import configparser
 import os
 import shutil
 import tempfile

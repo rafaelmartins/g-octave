@@ -32,12 +32,9 @@ from contextlib import closing
 
 from .config import Config
 from .exception import ConfigException, DescriptionException
-from .compat import py3k, open
+from .compat import open
 
-if py3k:
-    import urllib.request as urllib
-else:
-    import urllib2 as urllib
+import urllib.request as urllib
 
 from .log import Log
 log = Log('g_octave.description')

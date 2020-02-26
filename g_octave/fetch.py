@@ -21,12 +21,9 @@ from .config import Config
 conf = Config(True) # fetch phase
 
 from .exception import FetchException
-from .compat import py3k, open as open_
+from .compat import open as open_
 
-if py3k:
-    import urllib.request as urllib
-else:
-    import urllib2 as urllib
+import urllib.request as urllib
 
 import codecs
 import glob
