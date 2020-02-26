@@ -11,7 +11,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from __future__ import print_function
+
 
 import datetime
 import feedparser
@@ -23,7 +23,7 @@ import subprocess
 import sys
 import tarfile
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from contextlib import closing
 
@@ -48,10 +48,10 @@ re_tarball = re.compile(r'(([^/]+)-([0-9.]+)\.tar\.gz)$')
 class SfUpdates:
 
     # feed url from 'http://sourceforge.net/projects/octave/files/Octave%20Forge%20Packages/Individual%20Package%20Releases/'
-    feed_url = u'http://sourceforge.net/api/file/index/project-id/2888/mtime/desc/rss?path=%2FOctave%20Forge%20Packages%2FIndividual%20Package%20Releases'
+    feed_url = 'http://sourceforge.net/api/file/index/project-id/2888/mtime/desc/rss?path=%2FOctave%20Forge%20Packages%2FIndividual%20Package%20Releases'
 
-    svnroot_url = u'http://svn.code.sf.net/p/octave/code/trunk/octave-forge'
-    categories = [u'main', u'extra', u'language', u'nonfree']
+    svnroot_url = 'http://svn.code.sf.net/p/octave/code/trunk/octave-forge'
+    categories = ['main', 'extra', 'language', 'nonfree']
 
     _timestamp = None
 
@@ -116,13 +116,13 @@ class SfUpdates:
                 entries['%s-%s.tar.gz' % (pkg['name'], pkg['version'])] = {
                     'name': pkg['name'],
                     'version': pkg['version'],
-                    'category': unicode(db.categories[pkg['name']]),
+                    'category': str(db.categories[pkg['name']]),
                 }
         return entries
 
     def guess_category(self, pkgname):
         for category in self.categories:
-            f = urllib.urlopen(self.svnroot_url + '/' + category + '/' + pkgname + '/DESCRIPTION')
+            f = urllib.request.urlopen(self.svnroot_url + '/' + category + '/' + pkgname + '/DESCRIPTION')
             if f.getcode() == 200:
                 return category
 

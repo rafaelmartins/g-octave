@@ -13,7 +13,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from __future__ import print_function
+
 
 import json
 import sys
@@ -98,10 +98,10 @@ def main(argv):
             temp.append(s.matches['pkg'][i][0])
 
         if dependencies[dep][0] in json_dict['dependencies']:
-            select = input('Select a package [%s]: ' % \
-                json_dict['dependencies'][dependencies[dep][0]])
+            select = eval(input('Select a package [%s]: ' % \
+                json_dict['dependencies'][dependencies[dep][0]]))
         else:
-            select = input('Select a package: ')
+            select = eval(input('Select a package: '))
         try:
             for dep_name in dependencies[dep]:
                 json_dict['dependencies'][dep_name] = temp[int(select)]
@@ -115,16 +115,16 @@ def main(argv):
     print('***** Licenses *****\n')
     for lic in licenses:
         if lic in json_dict['licenses']:
-            temp = input(
+            temp = eval(input(
                 '%s [%s]: ' % (
                     lic,
                     json_dict['licenses'][lic],
                 )
-            )
+            ))
             if temp != '':
                 json_dict['licenses'][lic] = temp
         else:
-            json_dict['licenses'][lic] = input('%s: ' % lic)
+            json_dict['licenses'][lic] = eval(input('%s: ' % lic))
         print('Selected: %s' % json_dict['licenses'][lic])
         print()
 

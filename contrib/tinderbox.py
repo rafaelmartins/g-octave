@@ -16,7 +16,7 @@ import os
 import portage
 import subprocess
 import sys
-import xmlrpclib
+import xmlrpc.client
 
 out = portage.output.EOutput()
 
@@ -81,7 +81,7 @@ class Trac:
             'user': self._get_config('trac_user'),
             'passwd': self._get_config('trac_passwd'),
         }
-        self.server = xmlrpclib.ServerProxy(complete_url)
+        self.server = xmlrpc.client.ServerProxy(complete_url)
     
     def _get_config(self, key):
         proc = subprocess.Popen([g_octave_client(), '--config', key], stdout=subprocess.PIPE)
@@ -96,7 +96,7 @@ class Trac:
         summary = self.default_summary % {'pkgatom': pkgatom}
         try:
             tickets = self.server.ticket.query('summary=~%s' % summary)
-        except xmlrpclib.Fault, exc:
+        except xmlrpc.client.Fault as exc:
             raise TracError('Failed to list tickets: %s' % exc)
         return tickets
     
@@ -108,7 +108,7 @@ class Trac:
                 self.default_description,
                 self.default_attributes
             )
-        except xmlrpclib.Fault, exc:
+        except xmlrpc.client.Fault as exc:
             raise TracError('Failed to create the ticket (%s): %s' % (pkgatom, exc))
         return ticket_id
     
@@ -116,14 +116,14 @@ class Trac:
         comment = self.default_comment % {'filenames': ', '.join(filenames)}
         try:
             self.server.ticket.update(ticket_id, comment)
-        except xmlrpclib.Fault, exc:
+        except xmlrpc.client.Fault as exc:
             raise TracError('Failed to comment on the ticket (%i): %s' % (ticket_id, exc))
     
     def attach_logs(self, ticket_id, logs):
         filenames = []
         for log in logs:
             with open(log) as fp:
-                log_content = xmlrpclib.Binary(fp.read())
+                log_content = xmlrpc.client.Binary(fp.read())
             filename = os.path.basename(log)
             try:
                 filenames.append(self.server.ticket.putAttachment(
@@ -133,7 +133,7 @@ class Trac:
                     log_content,
                     False
                 ))
-            except xmlrpclib.Fault, exc:
+            except xmlrpc.client.Fault as exc:
                 raise TracError('Failed to upload the attachment (%s): %s' % (log, exc))
         return filenames
 
@@ -168,8 +168,8 @@ def main(argv):
                 out.einfo('Bug report done.')
             else:
                 out.einfo('OK!')
-    except TracError, exc:
-        print >> sys.stderr, exc
+    except TracError as exc:
+        print(exc, file=sys.stderr)
         return os.EX_SOFTWARE
     else:
         if len(failures) > 0:
